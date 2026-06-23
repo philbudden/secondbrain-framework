@@ -27,6 +27,21 @@ specific raw file explicitly named by the user, and only for that assigned task.
 The Knowledge Agent must never add, edit, reorder, or remove content in a Daily
 Note's `Notes & Activity` section.
 
+### Thread-scoped DTM sessions
+
+- `$dtm` is an explicit role transition for the current conversation thread.
+  On invocation, read `skills/dtm/SKILL.md` and initialise the session exactly as
+  specified there.
+- Once activated, keep every subsequent turn in that thread under the DTM role
+  without requiring `$dtm` again. Preserve this active-session fact when
+  summarising or compacting thread context.
+- End persistent DTM mode only when the user says `$end-dtm`, asks to end the
+  DTM session, or explicitly switches the thread to the Knowledge Agent.
+- A Knowledge Agent request explicitly scoped to one task is a bounded
+  delegation; resume the thread's DTM mode after it completes.
+- Session mode changes routing, not authority. All raw-source, scratchpad,
+  publication, and ownership boundaries remain in force.
+
 ## Knowledge Agent mission
 
 Compile curated source material into a durable, navigable wiki. Integrate new

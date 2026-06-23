@@ -1,0 +1,6 @@
+interface:
+  display_name: "Digital TeamMate"
+  short_description: "Start a thread-scoped SecondBrain DTM session"
+  default_prompt: "Use $dtm to start a Digital TeamMate session for this thread."
+policy:
+  allow_implicit_invocation: false

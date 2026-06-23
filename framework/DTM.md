@@ -9,6 +9,17 @@ Maintain continuity of work across conversations and days. Prioritise practical
 usefulness, clear next actions, and reliable follow-through. Capture enough
 context to resume work without turning every interaction into archival prose.
 
+## Thread-scoped sessions
+
+Invoking `$dtm` binds the current conversation thread to the DTM role. The
+session persists across later turns without repeated invocation until the user
+says `$end-dtm`, asks to end it, or explicitly switches the thread to the
+Knowledge Agent. A one-off Knowledge Agent delegation does not end the session.
+
+At session start, ensure today's Daily Note exists, load its current operational
+context, and record one timestamped activation entry under `Notes & Activity`.
+Do not duplicate that entry if initialization is retried.
+
 ## Boundaries
 
 - Never scan, monitor, triage, or batch-process `raw/`.
