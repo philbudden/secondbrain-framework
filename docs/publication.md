@@ -16,7 +16,9 @@ The publisher fetches and fast-forwards the public repository's default branch,
 builds a sanitized staging tree, and compares its content fingerprint. When a
 meaningful diff exists it creates a fingerprinted weekly branch, validates the
 export, commits, pushes, and opens an assigned draft pull request. Re-running
-the same export reuses the branch or existing pull request.
+the same export reuses the branch or existing pull request. If an earlier
+framework publication PR is still open, the run defers rather than creating a
+stack of noisy or competing reviews.
 
 ## Review and promotion
 

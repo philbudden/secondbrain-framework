@@ -93,6 +93,20 @@ def existing_pr(repo: str, branch: str) -> str:
     return result.stdout.strip() if result.returncode == 0 else ""
 
 
+def open_publication_pr(repo: str) -> str:
+    result = run(
+        [
+            "gh", "pr", "list", "--repo", repo, "--state", "open",
+            "--json", "url,headRefName",
+            "--jq", '.[] | select(.headRefName == "codex/initial-secondbrain-framework" or (.headRefName | startswith("automation/framework-sync-"))) | .url',
+        ],
+        check=False,
+    )
+    if result.returncode:
+        return ""
+    return result.stdout.splitlines()[0].strip() if result.stdout.strip() else ""
+
+
 def create_pr(repo: str, branch: str, base: str, assignee: str, week: str) -> str:
     body = (
         "## What changed\n\n"
@@ -131,6 +145,11 @@ def publish(target: Path, repo: str, assignee: str, base: str) -> int:
         fingerprint = export_framework(staging)
         if fingerprint == repository_digest(target):
             print("No meaningful framework changes; no branch, commit, or PR created.")
+            return 0
+
+        pending = open_publication_pr(repo)
+        if pending:
+            print(f"Publication review already open; deferring a new branch: {pending}")
             return 0
 
         today = dt.date.today()
