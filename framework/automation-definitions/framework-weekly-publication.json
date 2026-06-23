@@ -1,0 +1,10 @@
+{
+  "name": "SecondBrain Framework Publication",
+  "role": "Publisher",
+  "schedule": "03:00 every Sunday in the user's local timezone",
+  "execution_environment": "local",
+  "workspace": "{{VAULT_PATH}}",
+  "public_repository_checkout": "{{PUBLIC_REPO_PATH}}",
+  "github_repository": "{{GITHUB_OWNER}}/secondbrain-framework",
+  "prompt": "Run python3 tools/publish_framework.py --target {{PUBLIC_REPO_PATH}} --repo {{GITHUB_OWNER}}/secondbrain-framework --assignee {{GITHUB_LOGIN}}. The tool must export only the allowlisted sanitized framework, create no commit when there is no meaningful diff, and otherwise create or reuse an idempotent publication branch, push it, and open an assigned draft pull request. Never run Git against the live iCloud vault."
+}

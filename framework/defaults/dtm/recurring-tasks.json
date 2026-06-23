@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "tasks": [
+    {
+      "id": "weekly-backlog-prioritisation",
+      "task": "Prioritise the weekly backlog",
+      "area": "professional",
+      "enabled": false,
+      "schedule": {
+        "frequency": "weekly",
+        "weekdays": ["Monday"]
+      }
+    },
+    {
+      "id": "monthly-review",
+      "task": "Complete the monthly review",
+      "area": "schedule",
+      "enabled": false,
+      "schedule": {
+        "frequency": "monthly",
+        "day": "last"
+      }
+    },
+    {
+      "id": "weekly-admin",
+      "task": "Complete the weekly administrative routine",
+      "area": "personal",
+      "enabled": false,
+      "schedule": {
+        "frequency": "weekly",
+        "weekdays": ["Friday"]
+      }
+    }
+  ]
+}

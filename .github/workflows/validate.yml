@@ -1,0 +1,28 @@
+name: Validate framework
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile tools
+        run: python3 -m py_compile framework/tools/*.py install.py
+      - name: Run framework regression tests
+        run: python3 -m unittest discover -s tests
+      - name: Install and lint sanitized example
+        run: |
+          vault="$(mktemp -d)"
+          python3 install.py --vault "$vault"
+          python3 "$vault/tools/wiki.py" lint
+          python3 "$vault/tools/dtm.py" lint

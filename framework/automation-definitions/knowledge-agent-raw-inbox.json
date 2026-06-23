@@ -1,0 +1,8 @@
+{
+  "name": "Knowledge Agent Raw Inbox",
+  "role": "LLM Knowledge Agent",
+  "schedule": "02:00 daily in the user's local timezone",
+  "execution_environment": "local",
+  "workspace": "{{VAULT_PATH}}",
+  "prompt": "Read AGENTS.md and inspect only top-level pending files in raw/. Process each independently through the full ingestion workflow. Archive a source unchanged under raw/processed/ only after integration, index, log and lint all succeed. Leave blocked or failed sources visible and report them."
+}
