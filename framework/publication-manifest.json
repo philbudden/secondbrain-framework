@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "entries": [
+    {"source": "publication/repository", "destination": "."},
+    {"source": "AGENTS.md", "destination": "framework/AGENTS.md"},
+    {"source": "DTM.md", "destination": "framework/DTM.md"},
+    {"source": "templates", "destination": "framework/templates"},
+    {"source": "tools/wiki.py", "destination": "framework/tools/wiki.py"},
+    {"source": "tools/dtm.py", "destination": "framework/tools/dtm.py"},
+    {"source": "tools/export_framework.py", "destination": "framework/tools/export_framework.py"},
+    {"source": "tools/publish_framework.py", "destination": "framework/tools/publish_framework.py"},
+    {"source": ".obsidian/app.json", "destination": "framework/obsidian/app.json"},
+    {"source": ".obsidian/daily-notes.json", "destination": "framework/obsidian/daily-notes.json"},
+    {"source": ".obsidian/templates.json", "destination": "framework/obsidian/templates.json"},
+    {"source": "dtm/README.md", "destination": "framework/defaults/dtm/README.md"},
+    {"source": "dtm/recurring-tasks.json", "destination": "framework/defaults/dtm/recurring-tasks.json"},
+    {"source": "automation-definitions", "destination": "framework/automation-definitions"},
+    {"source": "publication/manifest.json", "destination": "framework/publication-manifest.json"}
+  ],
+  "forbidden_live_prefixes": [
+    "daily",
+    "wiki",
+    "raw",
+    "projects",
+    "work",
+    "scratch.md",
+    ".obsidian/workspace.json",
+    ".obsidian/workspace-mobile.json"
+  ],
+  "forbidden_export_path_patterns": [
+    "(^|/)daily/[0-9]{4}-[0-9]{2}-[0-9]{2}\\.md$",
+    "(^|/)wiki/(sources|entities|concepts|topics|analyses)/",
+    "^raw/processed/[^/]+$"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "promptDelete": false,
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "folder",
+  "newFileFolderPath": "raw",
+  "attachmentFolderPath": "raw/assets",
+  "vimMode": true
+}
