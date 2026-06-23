@@ -88,9 +88,8 @@ def validate_export(target: Path) -> None:
 def existing_pr(repo: str, branch: str) -> str:
     result = run(
         ["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "open", "--json", "url", "--jq", ".[0].url"],
-        check=False,
     )
-    return result.stdout.strip() if result.returncode == 0 else ""
+    return result.stdout.strip()
 
 
 def open_publication_pr(repo: str) -> str:
@@ -100,10 +99,7 @@ def open_publication_pr(repo: str) -> str:
             "--json", "url,headRefName",
             "--jq", '.[] | select(.headRefName == "codex/initial-secondbrain-framework" or (.headRefName | startswith("automation/framework-sync-"))) | .url',
         ],
-        check=False,
     )
-    if result.returncode:
-        return ""
     return result.stdout.splitlines()[0].strip() if result.stdout.strip() else ""
 
 
