@@ -31,6 +31,18 @@ class ObsidianConfigurationTests(unittest.TestCase):
         self.assertEqual(daily["template"], "templates/daily-note")
 
 
+class SkillPackagingTests(unittest.TestCase):
+    def test_dtm_skill_is_explicit_and_thread_scoped(self):
+        skill = ROOT / "framework" / "skills" / "dtm"
+        instructions = (skill / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (skill / "agents" / "openai.yaml").read_text(encoding="utf-8")
+
+        self.assertIn("name: dtm", instructions)
+        self.assertIn("thread-scoped", instructions)
+        self.assertIn("$end-dtm", instructions)
+        self.assertIn("allow_implicit_invocation: false", metadata)
+
+
 class RecurrenceSafetyTests(unittest.TestCase):
     def test_invalid_rule_fails_before_rollover_mutates_notes(self):
         dtm = load_dtm_module()

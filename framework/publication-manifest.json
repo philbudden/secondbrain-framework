@@ -15,6 +15,7 @@
     {"source": "dtm/README.md", "destination": "framework/defaults/dtm/README.md"},
     {"source": "dtm/recurring-tasks.json", "destination": "framework/defaults/dtm/recurring-tasks.json"},
     {"source": "automation-definitions", "destination": "framework/automation-definitions"},
+    {"source": "skills", "destination": "framework/skills"},
     {"source": "publication/manifest.json", "destination": "framework/publication-manifest.json"}
   ],
   "forbidden_live_prefixes": [

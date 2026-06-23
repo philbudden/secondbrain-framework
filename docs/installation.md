@@ -29,6 +29,20 @@ framework files with `--force` after reviewing the changes.
    `{{PLACEHOLDER}}`; never commit the resulting machine-specific values.
 5. Open the directory as an Obsidian vault.
 
+## Install the DTM session skill
+
+The vault installer keeps the canonical skill under `skills/dtm`. To make
+`$dtm` discoverable by Codex, copy it into the user's Codex skills directory:
+
+```sh
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R framework/skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
+```
+
+Start a thread in the installed vault and invoke `$dtm`. That thread remains in
+DTM mode until `$end-dtm` or an explicit permanent switch to the Knowledge
+Agent.
+
 ## Validate
 
 ```sh
