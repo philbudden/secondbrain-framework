@@ -20,3 +20,8 @@ Supported schedule examples:
 
 Areas determine the destination section: `personal`, `professional`, or
 `schedule`. Rule IDs must remain stable and unique.
+
+The DTM validates the complete recurrence file before rollover. Invalid rules
+produce an explicit error before either Daily Note is changed; they are not
+silently skipped, because a missed recurring commitment could otherwise go
+unnoticed.

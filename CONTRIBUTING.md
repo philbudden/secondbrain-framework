@@ -14,6 +14,7 @@ Thank you for improving SecondBrain Framework.
 
 ```sh
 python3 -m py_compile framework/tools/*.py install.py
+python3 -m unittest discover -s tests
 tmpdir="$(mktemp -d)"
 python3 install.py --vault "$tmpdir"
 python3 "$tmpdir/tools/wiki.py" lint

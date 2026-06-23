@@ -18,6 +18,8 @@ jobs:
           python-version: "3.11"
       - name: Compile tools
         run: python3 -m py_compile framework/tools/*.py install.py
+      - name: Run framework regression tests
+        run: python3 -m unittest discover -s tests
       - name: Install and lint sanitized example
         run: |
           vault="$(mktemp -d)"

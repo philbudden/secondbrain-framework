@@ -36,6 +36,10 @@ QUESTION_RE = re.compile(r"^- (?!\[[ xX]\] )(?!<!--)(.+)$", re.M)
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
+class DTMError(RuntimeError):
+    """A safe, user-actionable DTM configuration or lifecycle failure."""
+
+
 def parse_date(value: str) -> date:
     try:
         return date.fromisoformat(value)
@@ -94,6 +98,7 @@ def applies(rule: dict[str, object], day: date) -> bool:
 
 
 def recurrence_instances(day: date) -> dict[str, list[str]]:
+    require_valid_recurrence()
     result = {heading: [] for heading in AREA_SECTION.values()}
     for rule in load_recurrence().get("tasks", []):
         if not isinstance(rule, dict) or not applies(rule, day):
@@ -255,6 +260,9 @@ def open_day(day: date) -> bool:
 
 
 def rollover(day: date) -> int:
+    # Validate before closing yesterday so bad configuration cannot leave the
+    # lifecycle half-applied with no new Daily Note.
+    require_valid_recurrence()
     previous_day = day - timedelta(days=1)
     close_day(previous_day, day)
     open_day(day)
@@ -268,6 +276,9 @@ def validate_recurrence() -> tuple[list[str], list[str]]:
         config = load_recurrence()
     except (OSError, json.JSONDecodeError) as exc:
         return [f"dtm/recurring-tasks.json: {exc}"], warnings
+    if not isinstance(config, dict):
+        errors.append("dtm/recurring-tasks.json: top level must be an object")
+        return errors, warnings
     if config.get("version") != 1 or not isinstance(config.get("tasks"), list):
         errors.append("dtm/recurring-tasks.json: expected version 1 and a tasks list")
         return errors, warnings
@@ -288,6 +299,9 @@ def validate_recurrence() -> tuple[list[str], list[str]]:
             errors.append(f"{label}: duplicate id {rule_id}")
         else:
             ids.add(rule_id)
+        task = rule.get("task")
+        if not isinstance(task, str) or not task.strip():
+            errors.append(f"{label}: task must be a non-empty string")
         if rule.get("area") not in AREA_SECTION:
             errors.append(f"{label}: invalid area {rule.get('area')!r}")
         if not isinstance(rule.get("enabled"), bool):
@@ -310,6 +324,13 @@ def validate_recurrence() -> tuple[list[str], list[str]]:
             elif isinstance(value, int) and value > 28:
                 warnings.append(f"{label}: will not occur in months without day {value}")
     return errors, warnings
+
+
+def require_valid_recurrence() -> None:
+    errors, _ = validate_recurrence()
+    if errors:
+        details = "\n".join(f"- {error}" for error in errors)
+        raise DTMError(f"Invalid recurrence configuration:\n{details}")
 
 
 def lint() -> int:
@@ -345,6 +366,7 @@ def lint() -> int:
 
 
 def status() -> int:
+    require_valid_recurrence()
     notes = sorted(DAILY.glob("*.md"))
     if not notes:
         print("No Daily Notes.")
@@ -375,17 +397,21 @@ def main() -> int:
     sub.add_parser("lint")
     sub.add_parser("status")
     args = parser.parse_args()
-    if args.command == "open":
-        open_day(args.date)
-        return 0
-    if args.command == "close":
-        close_day(args.date)
-        return 0
-    if args.command == "rollover":
-        return rollover(args.date)
-    if args.command == "lint":
-        return lint()
-    return status()
+    try:
+        if args.command == "open":
+            open_day(args.date)
+            return 0
+        if args.command == "close":
+            close_day(args.date)
+            return 0
+        if args.command == "rollover":
+            return rollover(args.date)
+        if args.command == "lint":
+            return lint()
+        return status()
+    except DTMError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
