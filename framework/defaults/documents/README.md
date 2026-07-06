@@ -28,6 +28,9 @@ with a one-line description and concise status context such as updated date or
 linked source document. Agents should consult it before loading multiple files
 just to understand what work already exists.
 
+Create `documents/index.md` before adding the first managed draft, final
+document, or deliverable if it does not already exist in your vault.
+
 ### `drafts/`
 
 Active private drafting. Agents may create and revise drafts when assigned. Use

@@ -82,13 +82,22 @@ def lint() -> int:
     errors: list[str] = []
     all_pieces = pieces()
     names = Counter(path.name for path, _ in all_pieces)
-    index_text = (DOCUMENTS / "index.md").read_text(encoding="utf-8")
-    index_links = [target.removesuffix(".md") for target in INDEX_ENTRY_RE.findall(index_text)]
     deliverable_files = sorted(
         path
         for path in DELIVERABLES.rglob("*")
         if path.is_file() and path.name.lower() != "readme.md" and not path.name.startswith(".")
     )
+    index_path = DOCUMENTS / "index.md"
+    if index_path.exists():
+        index_text = index_path.read_text(encoding="utf-8")
+        index_links = [target.removesuffix(".md") for target in INDEX_ENTRY_RE.findall(index_text)]
+    else:
+        index_text = ""
+        index_links = []
+        if all_pieces or deliverable_files:
+            errors.append(
+                "documents/index.md: missing curated index; create documents/index.md before managing documents or deliverables"
+            )
 
     for name, count in names.items():
         if count > 1:

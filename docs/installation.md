@@ -37,8 +37,8 @@ directory:
 
 ```sh
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R framework/skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
-cp -R framework/skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
 Start a thread in the installed vault and invoke `$dtm`. That thread remains in
@@ -55,4 +55,5 @@ Invoke `$voice` after representative writing has reached `ready/` or
 python3 tools/wiki.py lint
 python3 tools/dtm.py lint
 python3 tools/documents.py lint
+python3 tools/writing.py lint
 ```

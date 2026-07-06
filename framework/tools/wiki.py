@@ -53,8 +53,18 @@ def relative(path: Path) -> str:
 def parse_scalar(value: str) -> str:
     value = value.strip()
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-        return ast.literal_eval(value)
+        try:
+            parsed = ast.literal_eval(value)
+        except (SyntaxError, ValueError):
+            return value[1:-1]
+        return parsed if isinstance(parsed, str) else value[1:-1]
     return value
+
+
+def read_system_log() -> str | None:
+    if not SYSTEM_LOG.exists():
+        return None
+    return SYSTEM_LOG.read_text(encoding="utf-8")
 
 
 def frontmatter(text: str) -> dict[str, object] | None:
@@ -375,8 +385,10 @@ def lint() -> int:
             if not target_exists(target, known):
                 errors.append(f"{relative(path)}: broken link [[{target}]]")
 
-    log_text = SYSTEM_LOG.read_text(encoding="utf-8")
-    if not LOG_RE.search(log_text):
+    log_text = read_system_log()
+    if log_text is None:
+        errors.append("log.md: missing root system log; create log.md with at least one parseable entry")
+    elif not LOG_RE.search(log_text):
         errors.append("log.md: no parseable log entries")
 
     errors = sorted(set(errors))
@@ -429,7 +441,14 @@ def pending() -> int:
 
 
 def recent(limit: int) -> int:
-    entries = LOG_RE.findall(SYSTEM_LOG.read_text(encoding="utf-8"))
+    log_text = read_system_log()
+    if log_text is None:
+        print(
+            "ERROR: missing root system log at log.md; create the file before using `wiki.py recent`.",
+            file=sys.stderr,
+        )
+        return 1
+    entries = LOG_RE.findall(log_text)
     for date, operation, title in entries[-limit:]:
         print(f"{date}  {operation:<7}  {title}")
     return 0
