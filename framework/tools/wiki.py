@@ -171,7 +171,7 @@ def load_question_statuses(path: Path) -> dict[str, str]:
         return {}
     statuses: dict[str, str] = {}
     pattern = re.compile(
-        r"^-\s+\[[ x]\]\s+\[([a-z-]+)\].*?<!--\s*wiki-question-(?:id|thread):([a-z0-9-]+)\s*-->$"
+        r"^-\s+\[[ xX]\]\s+\[([a-z-]+)\].*?<!--\s*wiki-question-(?:id|thread):([a-z0-9-]+)\s*-->$"
     )
     for line in path.read_text(encoding="utf-8").splitlines():
         match = pattern.match(line.strip())

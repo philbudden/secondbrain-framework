@@ -272,8 +272,8 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
         raise DTMError("Activity time must use HH:MM format")
 
     text = path.read_text(encoding="utf-8")
-    marker = "\n## Decisions\n"
-    if marker not in text:
+    decisions_match = re.search(r"^## Decisions\s*$", text, re.M)
+    if decisions_match is None:
         raise DTMError(f"{path.relative_to(ROOT)} is missing the Decisions section")
 
     entry = f"- {time_value} — {actor.strip()} — {message.strip()}"
@@ -281,7 +281,10 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
     if notes_heading not in text:
         raise DTMError(f"{path.relative_to(ROOT)} is missing the Notes & Activity section")
 
-    before, after = text.split(marker, 1)
+    marker_start = decisions_match.start()
+    marker_end = decisions_match.end()
+    before = text[:marker_start]
+    after = text[marker_end:]
     notes_prefix, notes_body = before.split(notes_heading, 1)
     notes_lines = notes_body.rstrip("\n").splitlines()
     if entry in notes_lines:
@@ -294,7 +297,7 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
         notes_lines.append(entry)
 
     updated_before = f"{notes_prefix}{notes_heading}{chr(10).join(notes_lines)}\n"
-    path.write_text(f"{updated_before}{marker.lstrip()}{after}", encoding="utf-8")
+    path.write_text(f"{updated_before}## Decisions{after}", encoding="utf-8")
     print(f"Updated {path.relative_to(ROOT)}")
     return True
 

@@ -108,8 +108,17 @@ def lint() -> int:
     warnings: list[str] = []
     all_pieces = pieces()
     names = Counter(path.name for path, _ in all_pieces)
-    index_text = (WRITING / "index.md").read_text(encoding="utf-8")
-    index_links = [target.removesuffix(".md") for target in LINK_RE.findall(index_text)]
+    index_path = WRITING / "index.md"
+    if index_path.exists():
+        index_text = index_path.read_text(encoding="utf-8")
+        index_links = [target.removesuffix(".md") for target in LINK_RE.findall(index_text)]
+    else:
+        index_text = ""
+        index_links = []
+        if all_pieces:
+            errors.append(
+                "writing/index.md: missing curated index; create writing/index.md before managing drafts, ready pieces, or published pieces"
+            )
 
     voice_path = WRITING / "voice" / "voice-pack.md"
     if not voice_path.exists():
