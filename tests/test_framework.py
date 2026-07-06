@@ -46,10 +46,14 @@ class SkillPackagingTests(unittest.TestCase):
         skill = ROOT / "framework" / "skills" / "voice"
         instructions = (skill / "SKILL.md").read_text(encoding="utf-8")
         metadata = (skill / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        normalized = " ".join(instructions.split())
 
         self.assertIn("writing/ready/", instructions)
         self.assertIn("writing/published/", instructions)
-        self.assertIn("Do not list, search, count, or read", instructions)
+        self.assertIn(
+            "Do not list, search, count, or read files under `writing/drafts/` or `documents/drafts/`.",
+            normalized,
+        )
         self.assertIn("writing/drafts/", instructions)
         self.assertIn("allow_implicit_invocation: false", metadata)
 
