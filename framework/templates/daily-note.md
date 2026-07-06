@@ -26,6 +26,8 @@ tags:
 
 ## Decisions
 
+<!-- Record only concise bullet-point decisions with longer-term implications here; keep detail in Notes & Activity and linked documents. -->
+
 ## References
 
 ## Open Questions

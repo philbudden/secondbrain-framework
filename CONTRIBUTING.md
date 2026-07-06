@@ -19,6 +19,8 @@ tmpdir="$(mktemp -d)"
 python3 install.py --vault "$tmpdir"
 python3 "$tmpdir/tools/wiki.py" lint
 python3 "$tmpdir/tools/dtm.py" lint
+python3 "$tmpdir/tools/documents.py" lint
+python3 "$tmpdir/tools/writing.py" lint
 ```
 
 Pull requests should explain the motivation, user impact, privacy implications,

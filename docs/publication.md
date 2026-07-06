@@ -20,6 +20,11 @@ the same export reuses the branch or existing pull request. If an earlier
 framework publication PR is still open, the run defers rather than creating a
 stack of noisy or competing reviews.
 
+Interactive agent sessions never publish directly. They may update and validate
+the live canonical framework, but must leave the external Git checkout and
+GitHub untouched. The scheduled weekly automation is the sole authorised
+promotion path.
+
 ## Review and promotion
 
 Review the generated PR with special attention to the privacy boundary,

@@ -1,0 +1,8 @@
+{
+  "name": "Weekly Diary Draft",
+  "role": "Writer",
+  "schedule": "01:30 every Monday in the user's local timezone",
+  "execution_environment": "local",
+  "workspace": "{{VAULT_PATH}}",
+  "prompt": "Read AGENTS.md, writing/README.md, and writing/voice/voice-pack.md. Determine the most recent complete Monday-Sunday week from daily/YYYY-MM-DD.md notes. Use every Daily Note from that week as the primary source of truth. Review the previous week's diary post in writing/published/ if one exists; if none exists, proceed without continuity review. Consult wiki/index.md only when extra context would materially improve one or two chosen themes, and only load the minimum relevant wiki pages. Write a conversational, reflective weekly diary post that summarises the week, explores one or two interesting developments in more depth, and closes by looking ahead. Save or update the draft at writing/drafts/diary-<year>-week-<ISO week>.md using the writing template conventions, update writing/index.md so the draft is listed exactly once, run python3 tools/writing.py lint, and report any unresolved blocker without touching writing/ready/ or writing/published/."
+}

@@ -97,7 +97,7 @@ def open_publication_pr(repo: str) -> str:
         [
             "gh", "pr", "list", "--repo", repo, "--state", "open",
             "--json", "url,headRefName",
-            "--jq", '.[] | select(.headRefName == "codex/initial-secondbrain-framework" or (.headRefName | startswith("automation/framework-sync-"))) | .url',
+            "--jq", '.[] | select((.headRefName | startswith("codex/")) or (.headRefName | startswith("automation/framework-sync-"))) | .url',
         ],
     )
     return result.stdout.splitlines()[0].strip() if result.stdout.strip() else ""

@@ -27,6 +27,21 @@ specific raw file explicitly named by the user, and only for that assigned task.
 The Knowledge Agent must never add, edit, reorder, or remove content in a Daily
 Note's `Notes & Activity` section.
 
+### Thread-scoped DTM sessions
+
+- `$dtm` is an explicit role transition for the current conversation thread.
+  On invocation, read `skills/dtm/SKILL.md` and initialise the session exactly as
+  specified there.
+- Once activated, keep every subsequent turn in that thread under the DTM role
+  without requiring `$dtm` again. Preserve this active-session fact when
+  summarising or compacting thread context.
+- End persistent DTM mode only when the user says `$end-dtm`, asks to end the
+  DTM session, or explicitly switches the thread to the Knowledge Agent.
+- A Knowledge Agent request explicitly scoped to one task is a bounded
+  delegation; resume the thread's DTM mode after it completes.
+- Session mode changes routing, not authority. All raw-source, scratchpad,
+  publication, and ownership boundaries remain in force.
+
 ## Knowledge Agent mission
 
 Compile curated source material into a durable, navigable wiki. Integrate new
@@ -77,6 +92,79 @@ compound across sessions.
   same change.
 - Never present inference as sourced fact.
 
+### `documents/` — collaborative internal documents workspace
+
+- The DTM owns collaborative drafting, revision support, and lifecycle
+  bookkeeping for authored internal documents such as strategies,
+  architectural principles, operating models, and similar work products.
+- `documents/index.md` is the curated catalogue of the document workspace.
+  Keep every draft, final document, and managed deliverable listed exactly once
+  under its current stage with a one-line description concrete enough to route
+  future work without opening each file.
+- `documents/drafts/` contains active private drafting. Agents may create and
+  revise drafts during assigned document work.
+- `documents/final/` contains the canonical internal record of finished
+  documents approved by the user for internal use. Keep stable lowercase
+  kebab-case filenames across stages and update `documents/index.md`,
+  the root `log.md` when the change is materially significant, and relevant
+  Daily Note references in the same change.
+- `documents/deliverables/` contains shareable file-format variants of those
+  documents, such as `.pptx`, `.docx`, and `.xlsx`. Keep deliverables grouped
+  under a folder named for the document slug where practical, for example
+  `documents/deliverables/data-strategy-for-social-impact/`.
+- When a Markdown document needs a managed Word copy, prefer
+  `python3 tools/document_deliverables.py docx <document.md>` and visually QA
+  the output by rendering page images before treating the deliverable as ready
+  to distribute.
+- These documents are not a source inbox and not a publication queue. If a
+  document is also used as wiki evidence, retain the raw-source copy under
+  `raw/` or `raw/processed/` as immutable provenance and manage the authored
+  working copy separately under `documents/`.
+- `writing/voice/voice-pack.md` is also the private style model for internal
+  document drafting. Voice analysis may read only reader-facing prose in
+  `writing/ready/`, `writing/published/`, and `documents/final/`; it must never
+  inspect document drafts or use chats, Daily Notes, wiki pages, sources,
+  projects, or scratch material as style evidence.
+- Before creating or materially rewriting a document draft, read the voice pack
+  when it exists and apply its guidance without caricaturing the user.
+- Run `python3 tools/documents.py lint` after structural or status changes.
+
+### `writing/` — collaborative writing workspace
+
+- The DTM owns collaborative drafting, revision support, editorial continuity,
+  and writing-workflow bookkeeping. The human remains the author and final
+  editorial authority.
+- `writing/index.md` is the curated catalogue of the writing workspace. Keep
+  every draft, ready piece, and published piece listed exactly once under its
+  current stage with a one-line description concrete enough to avoid loading
+  every piece just to understand what already exists.
+- `writing/drafts/` contains active work. Agents may create and revise drafts
+  during assigned writing work.
+- `writing/ready/` is a human-controlled publication queue. Move a draft there
+  only when the user explicitly approves that piece as ready for publishing.
+  Agent confidence, completion, or a request to “improve” a draft is not
+  approval to promote it.
+- `writing/published/` contains the canonical record of successfully published
+  pieces. Move a ready item there only after the publishing destination confirms
+  success and the canonical URL and publication time are recorded.
+- A failed or ambiguous publication remains in `writing/ready/`; never mark or
+  move it as published optimistically.
+- Keep a stable lowercase kebab-case filename across stages. Update frontmatter,
+  `writing/index.md`, the root `log.md` when the change is materially
+  significant, and relevant Daily Note references in the same change.
+- Publish only the content between `<!-- publish:start -->` and
+  `<!-- publish:end -->`. Editorial briefs, source notes, and revision history
+  remain private working metadata unless the user explicitly includes them.
+- `writing/voice/voice-pack.md` is a private style model maintained by the
+  `$voice` skill. Voice analysis may read only reader-facing prose in
+  `writing/ready/`, `writing/published/`, and `documents/final/`; it must never
+  inspect drafts or use chats, Daily Notes, wiki pages, sources, projects, or
+  scratch material as style evidence.
+- Before creating or materially rewriting a draft, read the voice pack when it
+  exists and apply its guidance without caricaturing the user. Preserve the
+  user's current brief and explicit instructions over inferred style rules.
+- Run `python3 tools/writing.py lint` after structural or status changes.
+
 ### `AGENTS.md` — shared schema
 
 Change this contract only when the user asks, or when a task exposes a durable
@@ -98,9 +186,16 @@ workflow improvement. Explain material schema changes before applying them.
 - All Git operations for publication must use the separate external framework
   checkout and an explicit target path. The publication tool rejects targets
   inside iCloud or inside the live vault.
+- Interactive agents must not create framework branches, commits, pushes, or
+  pull requests, even after making publishable framework changes. Their job ends
+  after updating and validating the live canonical framework.
+- The scheduled weekly publication automation is the sole authorised mechanism
+  for extracting changes, operating the external Git checkout, pushing a branch,
+  and opening a pull request. Do not invoke that workflow early or manually.
 - Never publish `scratch.md`, Daily Notes, wiki content, sources, personal
-  projects, working documents, activity logs, Obsidian workspaces, or any file
-  not explicitly approved by `publication/manifest.json`.
+  projects, writing content, document content, working documents, activity logs, Obsidian
+  workspaces, or any file not explicitly approved by
+  `publication/manifest.json`.
 - When system architecture, templates, tools, Obsidian configuration, or
   automations change, update their sanitized framework representation in the
   same task where practical.
@@ -109,7 +204,8 @@ workflow improvement. Explain material schema changes before applying them.
 
 - `wiki/overview.md` — current high-level synthesis and navigation.
 - `wiki/index.md` — complete content catalogue with one-line descriptions.
-- `wiki/log.md` — append-only chronological activity record.
+- `log.md` — append-only chronological activity record for the whole
+  SecondBrain system.
 - `wiki/sources/` — one provenance and summary page per ingested source.
 - `wiki/entities/` — people, organisations, products, places, works, and other
   named things.
@@ -154,6 +250,10 @@ conflict. `superseded` pages must link prominently to their replacement.
 ## Writing and linking
 
 - Start each content page with a concise synthesis, not a table of metadata.
+- In Markdown prose outside reader-facing pieces in `writing/`, keep each
+  paragraph as a single physical line and let Obsidian wrap visually. Start a
+  new line only for real structural elements such as headings, list items,
+  block quotes, tables, code fences, or deliberate line-sensitive formatting.
 - Use Obsidian links rooted at the vault, with useful display text:
   `[[wiki/concepts/example|Example]]`.
 - Link the first meaningful mention of another wiki page. Avoid link spam.
@@ -184,11 +284,28 @@ source. If sources disagree, preserve both claims and explain the conflict.
 Never cite an analysis page as though it were primary evidence. It may be linked
 for context, but its underlying source citations remain authoritative.
 
+### Opinion sources
+
+- Self-authored first-person sources, especially files tagged `my-opinion`, are
+  authoritative evidence of the user's current views, priorities, mental
+  models, and decision heuristics.
+- Do not mark a source `needs-review` merely because it is opinionated or
+  normative. If authorship, date, or scope are clear, treat the opinion itself
+  as `current` unless a newer self-authored source supersedes it.
+- Distinguish the opinion from any embedded external factual claim. The user's
+  stated belief is authoritative as a belief; factual examples, forecasts,
+  vendor claims, and general world-model assertions inside that belief may still
+  need corroboration when reused as fact.
+- When opinion sources materially clarify how the user thinks, integrate them
+  into relevant entity, concept, topic, and overview pages so the wiki reflects
+  the user's intellectual operating system, not just curated external
+  knowledge.
+
 ## Ingest workflow
 
 When asked to ingest one or more sources:
 
-1. Read `wiki/index.md`, `wiki/overview.md`, recent entries in `wiki/log.md`, and
+1. Read `wiki/index.md`, `wiki/overview.md`, recent entries in `log.md`, and
    the source. Search the wiki for related names and concepts before creating
    pages.
 2. For image-bearing material, read the text first, then inspect locally
@@ -199,6 +316,9 @@ When asked to ingest one or more sources:
 4. Extract the source's central claims, evidence, entities, concepts,
    limitations, dates, and relationships. Identify what is genuinely new to
    the existing wiki.
+   Opinion sources also require extracting the user's stated principles,
+   preferences, trade-offs, and mental models, then integrating them wherever
+   they should influence future synthesis.
 5. If emphasis or interpretation is consequential and genuinely ambiguous,
    discuss it with the user. Otherwise proceed and mark uncertainty explicitly.
 6. Create or update the source page. Then integrate the evidence into every
@@ -236,6 +356,28 @@ When asked a question:
 
 Short answers and one-off operational chat do not need to become pages.
 
+## Wiki open-question workflow
+
+- `work/wiki-open-questions.md` is the DTM-managed operational queue for wiki
+  open questions. It is separate from the `Open Questions` section in Daily
+  Notes and applies only to unresolved questions still present in wiki pages.
+- Questions are harvested from wiki-page `## Open questions` sections and
+  source-page `## Questions raised` sections.
+- After any wiki task that creates, resolves, or materially changes those
+  question sections, refresh the queue with `python3 tools/wiki.py questions
+  --write`.
+- The queue groups each live question under one of four status tokens:
+  `needs-triage`, `answer-myself`, `research-with-dtm`, or
+  `ready-to-integrate`.
+- If the same underlying question appears in more than one wiki page, add the
+  same `<!-- wiki-question-thread:thread-id -->` marker to each page-level
+  bullet so the queue folds them into one research thread with multiple source
+  links. The answer may still need integrating back into multiple wiki pages.
+- Reclassifying a queue item does not by itself answer the question. A question
+  is only resolved when the underlying wiki page is updated, the question is
+  removed or rewritten there as appropriate, and the queue is refreshed so it
+  reflects the current wiki state.
+
 ## Lint workflow
 
 For a health check, run the local lint first, then do a semantic review that
@@ -262,9 +404,15 @@ and updated date. Organize it under Overview, Topics, Concepts, Entities,
 Analyses, and Sources. Omit empty categories only if the structure remains
 obvious. Keep descriptions concrete enough to route future queries.
 
+`writing/index.md` and `documents/index.md` follow the same principle for their
+workspaces. They are curated navigation, not directory listings. Every managed
+item appears exactly once under its current lifecycle stage with a link, a
+one-line description, and enough status context to understand what already
+exists without opening every file.
+
 ## Log contract
 
-`wiki/log.md` is append-only. Never rewrite or reorder prior entries except to
+`log.md` is append-only. Never rewrite or reorder prior entries except to
 repair a broken link or obvious typo. Put newest entries at the bottom, using:
 
 ```markdown

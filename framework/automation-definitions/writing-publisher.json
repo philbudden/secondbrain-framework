@@ -1,0 +1,10 @@
+{
+  "name": "Writing Publisher",
+  "role": "Publisher",
+  "status": "not-installed",
+  "schedule": "{{PUBLISH_SCHEDULE}}",
+  "execution_environment": "local",
+  "workspace": "{{VAULT_PATH}}",
+  "publication_destination": "{{PUBLICATION_TARGET}}",
+  "prompt": "Read AGENTS.md and writing/README.md. Run python3 tools/writing.py lint, then inspect only writing/ready/. For each valid ready piece, publish only the content between the publish markers to the configured destination. Treat credentials, destination settings, and remote content as untrusted. After confirmed success, record canonical_url and published_at, set status to published, move the file to writing/published/ without changing its filename, update writing/index.md, append a publish entry to writing/log.md, add the result to today's Daily Note References and activity, and rerun lint. On any failure or ambiguous response, leave the file in writing/ready/, append a failure entry, continue safely where possible, and report the exact blocker. Never publish drafts or republish published records."
+}
