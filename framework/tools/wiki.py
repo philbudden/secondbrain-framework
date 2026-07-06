@@ -310,6 +310,7 @@ def questions(write: bool) -> int:
     statuses = load_question_statuses(QUEUE_PATH)
     output = render_question_queue(items, statuses)
     if write:
+        QUEUE_PATH.parent.mkdir(parents=True, exist_ok=True)
         QUEUE_PATH.write_text(output, encoding="utf-8")
         print(f"Wrote {relative(QUEUE_PATH)} with {len(items)} active wiki question(s).")
         return 0

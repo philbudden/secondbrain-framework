@@ -272,20 +272,22 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
         raise DTMError("Activity time must use HH:MM format")
 
     text = path.read_text(encoding="utf-8")
+    notes_match = re.search(r"^## Notes & Activity\s*$", text, re.M)
+    if notes_match is None:
+        raise DTMError(f"{path.relative_to(ROOT)} is missing the Notes & Activity section")
     decisions_match = re.search(r"^## Decisions\s*$", text, re.M)
     if decisions_match is None:
         raise DTMError(f"{path.relative_to(ROOT)} is missing the Decisions section")
 
     entry = f"- {time_value} — {actor.strip()} — {message.strip()}"
-    notes_heading = "## Notes & Activity\n"
-    if notes_heading not in text:
-        raise DTMError(f"{path.relative_to(ROOT)} is missing the Notes & Activity section")
-
+    notes_heading = "## Notes & Activity"
+    notes_start = notes_match.start()
+    notes_end = notes_match.end()
     marker_start = decisions_match.start()
     marker_end = decisions_match.end()
-    before = text[:marker_start]
     after = text[marker_end:]
-    notes_prefix, notes_body = before.split(notes_heading, 1)
+    notes_prefix = text[:notes_start]
+    notes_body = text[notes_end:marker_start]
     notes_lines = notes_body.rstrip("\n").splitlines()
     if entry in notes_lines:
         print(f"Activity already present in {path.relative_to(ROOT)}")
@@ -296,7 +298,7 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
         notes_lines = [line for line in notes_lines if line.strip()]
         notes_lines.append(entry)
 
-    updated_before = f"{notes_prefix}{notes_heading}{chr(10).join(notes_lines)}\n"
+    updated_before = f"{notes_prefix}{notes_heading}\n{chr(10).join(notes_lines)}\n"
     path.write_text(f"{updated_before}## Decisions{after}", encoding="utf-8")
     print(f"Updated {path.relative_to(ROOT)}")
     return True

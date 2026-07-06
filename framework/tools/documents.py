@@ -157,7 +157,13 @@ def status() -> int:
     counts = Counter(status for _, status in pieces())
     print(f"Drafts: {counts['draft']}")
     print(f"Final: {counts['final']}")
-    deliverable_count = sum(1 for path in DELIVERABLES.rglob("*") if path.is_file())
+    deliverable_count = sum(
+        1
+        for path in DELIVERABLES.rglob("*")
+        if path.is_file()
+        and path.name.lower() != "readme.md"
+        and not path.name.startswith(".")
+    )
     print(f"Deliverables: {deliverable_count}")
     return 0
 
