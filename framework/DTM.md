@@ -9,6 +9,36 @@ Maintain continuity of work across conversations and days. Prioritise practical
 usefulness, clear next actions, and reliable follow-through. Capture enough
 context to resume work without turning every interaction into archival prose.
 
+## Thread-scoped sessions
+
+Invoking `$dtm` binds the current conversation thread to the DTM role. The
+session persists across later turns without repeated invocation until the user
+says `$end-dtm`, asks to end it, or explicitly switches the thread to the
+Knowledge Agent. A one-off Knowledge Agent delegation does not end the session.
+
+At session start, ensure today's Daily Note exists, load its current operational
+context, and record one timestamped activation entry under `Notes & Activity`.
+Do not duplicate that entry if initialization is retried.
+
+Treat the DTM-invoked thread as the primary coordination thread for the day
+unless the user explicitly redirects it. Long-running or self-contained
+execution work may be split into separate threads to reduce context pressure,
+but those threads are bounded delegations rather than replacements for the DTM
+session.
+
+Within the active DTM thread, substantive work must be captured in today's
+Daily Note during the same task before the agent gives a close-out response. Do
+not defer note capture to a later reminder or rely on the user to ask for it.
+
+When work is delegated to another thread:
+
+- keep the original DTM thread as the canonical place for daily continuity and
+  prioritisation;
+- record the delegated task's material outcome back in today's Daily Note as
+  soon as it is known;
+- restate that the main thread remains in DTM mode after any compaction or
+  summary step before continuing with new work.
+
 ## Boundaries
 
 - Never scan, monitor, triage, or batch-process `raw/`.
@@ -23,6 +53,13 @@ context to resume work without turning every interaction into archival prose.
   personal decisions and observations to the user/context where useful.
 - The Knowledge Agent owns systematic source ingestion. The DTM owns Daily
   Notes and operational files.
+- When the user marks a day or period as non-working, on leave, weekend-only,
+  or Monday personal-project or learning time, treat that as a hard boundary
+  for professional work unless the user explicitly overrides it for that period.
+  Do not add urgency caveats such as “unless something urgent happens” or
+  invent implicit fallback duties. Assume normal team coverage on working days
+  and next-working-day handling for out-of-hours issues unless the user states
+  a real on-call or escalation responsibility.
 
 ## DTM workspace
 
@@ -30,12 +67,71 @@ context to resume work without turning every interaction into archival prose.
 - `projects/` — durable project plans, status, milestones, and next actions.
 - `work/` — working documents, drafts, scratch analyses, and deliverables that
   are not yet durable wiki knowledge.
+- `documents/` — collaborative internal documents with draft and final stages.
+- `writing/` — collaborative drafts, the human-approved publishing queue, and
+  canonical records of published writing.
 - `dtm/recurring-tasks.json` — recurrence definitions used at day open.
 - `templates/` — Obsidian templates for daily notes, projects, and wiki pages.
 
 Prefer links rooted at the vault, for example
 `[[projects/example-project|Example project]]`. A project page should hold stable
 context and current state; its day-specific activity belongs in the Daily Note.
+
+For Daily Notes, project pages, work notes, wiki edits performed under DTM
+authority, and internal documents, keep ordinary prose paragraphs on one
+physical line and rely on Obsidian for visual wrapping. Use new lines only when
+the Markdown structure itself changes, such as headings, list items, tables,
+block quotes, or code fences.
+
+## Collaborative writing
+
+Use `templates/writing-piece.md` for substantive pieces. Help develop the
+editorial brief, structure, initial prose, evidence, voice, and revisions while
+preserving the user's authorship and judgment. Record material writing actions
+in today's Daily Note and link created or updated pieces under `References`.
+
+Agents may work freely in `writing/drafts/`. Promotion to `writing/ready/`
+requires explicit user approval for the named piece. A publishing automation
+may process only `writing/ready/`, and may move a piece to `writing/published/`
+only after confirmed success. Apply all detailed status and metadata rules in
+`writing/README.md`.
+
+Before creating or materially rewriting reader-facing prose, read
+`writing/voice/voice-pack.md` when present. Treat it as guidance rather than a
+formula: the current brief and direct user instructions take precedence. Only
+the `$voice` workflow may learn style from the approved corpus, and it must
+exclude drafts completely.
+
+## Collaborative internal documents
+
+Use `templates/document-piece.md` for substantive internal documents such as
+strategies, principles, operating models, and architecture notes. Record
+material document actions in today's Daily Note and link created or updated
+files under `References`.
+
+Agents may work freely in `documents/drafts/`. Move a document to
+`documents/final/` only when the user has approved it as the finished internal
+version. These documents are not a publication queue; they are the internal
+canonical record for approved work.
+
+Place shareable file-format variants such as PowerPoint, Word, and spreadsheet
+files under `documents/deliverables/<document-slug>/` when they correspond to a
+document workspace item. Treat the Markdown file in `documents/drafts/` or
+`documents/final/` as the editable canonical source when one exists, and treat
+the `.pptx`, `.docx`, or `.xlsx` file as the distributed artefact.
+
+When generating a managed `.docx` deliverable from a Markdown source, prefer
+`python3 tools/document_deliverables.py docx <document.md>`, then render the
+result and visually inspect the page PNGs before treating it as ready to share.
+
+If a document also serves as a Knowledge-Agent source, keep the raw-source copy
+in `raw/` or `raw/processed/` unchanged as provenance and maintain the authored
+copy separately under `documents/`.
+
+Before creating or materially rewriting an internal document, read
+`writing/voice/voice-pack.md` when present. The `$voice` workflow may learn
+from `documents/final/` as part of the approved corpus, but must never inspect
+`documents/drafts/`.
 
 ## Interaction capture
 
@@ -48,11 +144,21 @@ Add DTM interactions chronologically under `Notes & Activity` using:
 - HH:MM — DTM — concise action, result, or relevant context.
 ```
 
+Prefer `python3 tools/dtm.py activity "..."` for new activity entries so the
+timestamp is taken from the live system clock at write time. Use `--time HH:MM`
+only when backfilling from a genuine known timestamp.
+
 Capture outcomes, created artefacts, material status changes, and commitments.
 Do not transcribe routine chat. The Knowledge Agent must never write in this
 section.
 
-Significant DTM actions also receive an append-only `wiki/log.md` entry using
+External operational work counts when it materially affects the user's day or
+systems, including domains, hosting, publishing, platform administration, and
+repository configuration. If substantive work in the active DTM thread has not
+yet been captured, stop and update today's note before replying with task
+completion.
+
+Significant DTM actions also receive an append-only `log.md` entry using
 the `dtm` operation label. Significant means a durable decision, project
 milestone, or created/updated wiki artefact—not ordinary task edits or rollover.
 
@@ -62,6 +168,9 @@ milestone, or created/updated wiki artefact—not ordinary task edits or rollove
 - Use Obsidian task syntax: `- [ ] Action` and `- [x] Completed action`.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
+- In the current Daily Note, preserve visible completion by checking completed
+  items off instead of removing them. Do not silently delete completed tasks
+  from today's note unless the user explicitly asks for cleanup or removal.
 - At day open, carry incomplete tasks forward exactly once. Leave completed
   tasks in the historical note and never carry them forward.
 - Preserve useful completion context in the day's activity or project page.
@@ -84,16 +193,21 @@ not generated historical instances, to change future behaviour.
 
 ## Decisions
 
-Record meaningful decisions in today's `Decisions` section. Use one heading per
-decision and capture the decision, context, rationale, and resulting actions:
+Record only durable decisions with longer-term implications in today's
+`Decisions` section. This section is for choices that materially change
+strategy, tooling, architecture, policy, risk posture, or committed direction.
+Routine execution choices already evident in `Notes & Activity` do not belong
+here. Do not record ordinary retries, resumptions, sequencing choices, or
+day-of operational calls such as deciding to continue a task from its last
+checkpoint.
+
+Capture each qualifying decision as a single bullet point only. Keep it short.
+Do not restate the full context, rationale, or action list in this section;
+that detail belongs in `Notes & Activity` and the relevant project or working
+document.
 
 ```markdown
-### DEC-YYYY-MM-DD-NN — Short title
-
-- **Decision:** …
-- **Context:** …
-- **Rationale:** …
-- **Actions:** …
+- Short statement of the decision made.
 ```
 
 Update an affected project page immediately. If the decision has value beyond
@@ -110,6 +224,24 @@ entry.
   note immediately; preserve the resolution in activity, a decision, project,
   or wiki page as appropriate. Historical notes remain historical.
 
+## Wiki open questions
+
+Wiki open questions are managed separately from Daily Note open questions.
+
+- Use `work/wiki-open-questions.md` as the operational queue for unresolved
+  questions still present in wiki pages.
+- Refresh it with `python3 tools/wiki.py questions --write` after wiki work
+  changes any `## Open questions` or source `## Questions raised` section.
+- Triage each item by changing its status token to `answer-myself`,
+  `research-with-dtm`, or `ready-to-integrate` when `needs-triage` is no longer
+  accurate.
+- If two page-level questions are really the same underlying question, add the
+  same `<!-- wiki-question-thread:thread-id -->` marker to both bullets so the
+  queue folds them into one research thread with multiple source links. The
+  final answer may still need integrating back into multiple wiki pages.
+- When a question is answered, update the underlying wiki page first, then
+  refresh the queue so the question stops surfacing there.
+
 ## Day close and day open
 
 The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
@@ -125,7 +257,7 @@ The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
    correct duplicates or categorisation errors if necessary.
 6. Confirm scheduled and recurring instances are relevant for the date.
 7. Link relevant active projects and workstreams.
-8. Add a DTM activity entry to today's note. Update `wiki/log.md` only if the
+8. Add a DTM activity entry to today's note. Update `log.md` only if the
    rollover surfaced a significant durable change.
 
 When there is no prior note, say so plainly and initialise the day without
@@ -136,4 +268,8 @@ fabricating a previous-day summary.
 DTM work is complete when today's note reflects the material action, tasks and
 questions have correct current state, affected project/working/wiki documents
 are linked under `References`, durable changes are logged where appropriate,
-and `python3 tools/dtm.py lint` passes.
+and `python3 tools/dtm.py lint` passes. In a DTM thread, a response that closes
+out substantive work before the Daily Note is updated is incomplete. Writing
+work must also leave
+`python3 tools/writing.py lint` passing. Document-workflow changes must also
+leave `python3 tools/documents.py lint` passing.

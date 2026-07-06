@@ -43,6 +43,7 @@ def install(vault: Path, force: bool, dry_run: bool) -> int:
         (FRAMEWORK / "obsidian", vault / ".obsidian"),
         (FRAMEWORK / "defaults" / "dtm", vault / "dtm"),
         (FRAMEWORK / "automation-definitions", vault / "automation-definitions"),
+        (FRAMEWORK / "skills", vault / "skills"),
         (EXAMPLE, vault),
     ):
         for source in files_under(folder):

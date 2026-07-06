@@ -2,6 +2,36 @@
   "version": 1,
   "tasks": [
     {
+      "id": "weekday-wiki-open-question",
+      "task": "Answer one wiki open question if any remain in [[work/wiki-open-questions|Wiki Open Questions]]",
+      "area": "schedule",
+      "enabled": true,
+      "schedule": {
+        "frequency": "weekly",
+        "weekdays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      }
+    },
+    {
+      "id": "monday-review-diary-post",
+      "task": "Review the generated weekly diary draft",
+      "area": "professional",
+      "enabled": true,
+      "schedule": {
+        "frequency": "weekly",
+        "weekdays": ["Monday"]
+      }
+    },
+    {
+      "id": "tuesday-review-wiki-blog-post",
+      "task": "Review the generated weekly wiki blog draft",
+      "area": "professional",
+      "enabled": true,
+      "schedule": {
+        "frequency": "weekly",
+        "weekdays": ["Tuesday"]
+      }
+    },
+    {
       "id": "weekly-backlog-prioritisation",
       "task": "Prioritise the weekly backlog",
       "area": "professional",

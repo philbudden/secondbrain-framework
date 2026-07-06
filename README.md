@@ -6,7 +6,7 @@ deliberately separate LLM roles:
 - the **LLM Knowledge Agent**, which compiles curated sources into a persistent,
   cited wiki; and
 - the **Digital TeamMate (DTM)**, which maintains day-to-day continuity across
-  notes, tasks, projects, decisions, and follow-ups.
+  notes, tasks, projects, decisions, follow-ups, and authored work products.
 
 This repository contains only the reusable framework. It contains no personal
 vault data, source material, Daily Notes, project content, or activity history.

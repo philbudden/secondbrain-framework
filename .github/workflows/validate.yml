@@ -24,5 +24,8 @@ jobs:
         run: |
           vault="$(mktemp -d)"
           python3 install.py --vault "$vault"
+          test -f "$vault/skills/dtm/SKILL.md"
+          test -f "$vault/skills/voice/SKILL.md"
           python3 "$vault/tools/wiki.py" lint
           python3 "$vault/tools/dtm.py" lint
+          python3 "$vault/tools/writing.py" lint

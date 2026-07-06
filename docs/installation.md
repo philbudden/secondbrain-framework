@@ -29,9 +29,30 @@ framework files with `--force` after reviewing the changes.
    `{{PLACEHOLDER}}`; never commit the resulting machine-specific values.
 5. Open the directory as an Obsidian vault.
 
+## Install the SecondBrain skills
+
+The vault installer keeps canonical skills under `skills/`. To make `$dtm` and
+`$voice` discoverable by Codex, copy them into the user's Codex skills
+directory:
+
+```sh
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R framework/skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R framework/skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
+```
+
+Start a thread in the installed vault and invoke `$dtm`. That thread remains in
+DTM mode until `$end-dtm` or an explicit permanent switch to the Knowledge
+Agent.
+
+Invoke `$voice` after representative writing has reached `ready/` or
+`published/`, or after representative internal documents have reached
+`documents/final/`. It updates the private voice pack without analysing drafts.
+
 ## Validate
 
 ```sh
 python3 tools/wiki.py lint
 python3 tools/dtm.py lint
+python3 tools/documents.py lint
 ```

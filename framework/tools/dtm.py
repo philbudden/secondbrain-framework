@@ -205,7 +205,7 @@ tags:
 
 ## Decisions
 
-<!-- Meaningful decisions use DEC-YYYY-MM-DD-NN records. -->
+<!-- Record only concise bullet-point decisions with longer-term implications here; keep detail in Notes & Activity and linked documents. -->
 
 ## References
 
@@ -256,6 +256,46 @@ def open_day(day: date) -> bool:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_note(day, previous_text), encoding="utf-8")
     print(f"Created {path.relative_to(ROOT)}")
+    return True
+
+
+def append_activity(day: date, actor: str, message: str, timestamp: str | None = None) -> bool:
+    path = note_path(day)
+    if not path.exists():
+        raise DTMError(f"No Daily Note exists for {day.isoformat()}")
+    if not actor.strip():
+        raise DTMError("Activity actor must be non-empty")
+    if not message.strip():
+        raise DTMError("Activity message must be non-empty")
+    time_value = timestamp or datetime.now().strftime("%H:%M")
+    if not re.fullmatch(r"\d{2}:\d{2}", time_value):
+        raise DTMError("Activity time must use HH:MM format")
+
+    text = path.read_text(encoding="utf-8")
+    marker = "\n## Decisions\n"
+    if marker not in text:
+        raise DTMError(f"{path.relative_to(ROOT)} is missing the Decisions section")
+
+    entry = f"- {time_value} — {actor.strip()} — {message.strip()}"
+    notes_heading = "## Notes & Activity\n"
+    if notes_heading not in text:
+        raise DTMError(f"{path.relative_to(ROOT)} is missing the Notes & Activity section")
+
+    before, after = text.split(marker, 1)
+    notes_prefix, notes_body = before.split(notes_heading, 1)
+    notes_lines = notes_body.rstrip("\n").splitlines()
+    if entry in notes_lines:
+        print(f"Activity already present in {path.relative_to(ROOT)}")
+        return False
+    if notes_lines and notes_lines[-1].strip():
+        notes_lines.append(entry)
+    else:
+        notes_lines = [line for line in notes_lines if line.strip()]
+        notes_lines.append(entry)
+
+    updated_before = f"{notes_prefix}{notes_heading}{chr(10).join(notes_lines)}\n"
+    path.write_text(f"{updated_before}{marker.lstrip()}{after}", encoding="utf-8")
+    print(f"Updated {path.relative_to(ROOT)}")
     return True
 
 
@@ -394,6 +434,11 @@ def main() -> int:
     for command in ("open", "close", "rollover"):
         command_parser = sub.add_parser(command)
         command_parser.add_argument("--date", type=parse_date, default=date.today())
+    activity_parser = sub.add_parser("activity")
+    activity_parser.add_argument("--date", type=parse_date, default=date.today())
+    activity_parser.add_argument("--actor", default="DTM")
+    activity_parser.add_argument("--time", dest="timestamp")
+    activity_parser.add_argument("message")
     sub.add_parser("lint")
     sub.add_parser("status")
     args = parser.parse_args()
@@ -406,6 +451,9 @@ def main() -> int:
             return 0
         if args.command == "rollover":
             return rollover(args.date)
+        if args.command == "activity":
+            append_activity(args.date, args.actor, args.message, args.timestamp)
+            return 0
         if args.command == "lint":
             return lint()
         return status()

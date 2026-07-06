@@ -4,9 +4,12 @@
     {"source": "publication/repository", "destination": "."},
     {"source": "AGENTS.md", "destination": "framework/AGENTS.md"},
     {"source": "DTM.md", "destination": "framework/DTM.md"},
+    {"source": "documents/README.md", "destination": "framework/defaults/documents/README.md"},
     {"source": "templates", "destination": "framework/templates"},
     {"source": "tools/wiki.py", "destination": "framework/tools/wiki.py"},
     {"source": "tools/dtm.py", "destination": "framework/tools/dtm.py"},
+    {"source": "tools/documents.py", "destination": "framework/tools/documents.py"},
+    {"source": "tools/writing.py", "destination": "framework/tools/writing.py"},
     {"source": "tools/export_framework.py", "destination": "framework/tools/export_framework.py"},
     {"source": "tools/publish_framework.py", "destination": "framework/tools/publish_framework.py"},
     {"source": ".obsidian/app.json", "destination": "framework/obsidian/app.json"},
@@ -15,6 +18,7 @@
     {"source": "dtm/README.md", "destination": "framework/defaults/dtm/README.md"},
     {"source": "dtm/recurring-tasks.json", "destination": "framework/defaults/dtm/recurring-tasks.json"},
     {"source": "automation-definitions", "destination": "framework/automation-definitions"},
+    {"source": "skills", "destination": "framework/skills"},
     {"source": "publication/manifest.json", "destination": "framework/publication-manifest.json"}
   ],
   "forbidden_live_prefixes": [
@@ -22,7 +26,12 @@
     "wiki",
     "raw",
     "projects",
+    "documents/drafts",
+    "documents/final",
+    "documents/deliverables",
+    "documents/index.md",
     "work",
+    "writing",
     "scratch.md",
     ".obsidian/workspace.json",
     ".obsidian/workspace-mobile.json"

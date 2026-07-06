@@ -25,7 +25,7 @@ Where the project stands now.
 
 ## Decisions
 
-Links to relevant Daily Note decision records.
+Relevant decisions and links back to the supporting Daily Note or working context.
 
 ## Risks and open questions
 
