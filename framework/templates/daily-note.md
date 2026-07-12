@@ -16,6 +16,8 @@ tags:
 
 ## Focus
 
+## Blockers
+
 ## Personal To-Do
 
 ## Professional To-Do

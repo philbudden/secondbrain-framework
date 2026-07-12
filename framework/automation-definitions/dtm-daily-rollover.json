@@ -4,5 +4,5 @@
   "schedule": "00:01 daily in the user's local timezone",
   "execution_environment": "local",
   "workspace": "{{VAULT_PATH}}",
-  "prompt": "Read AGENTS.md and DTM.md, run python3 tools/dtm.py rollover, finalise the previous note from recorded evidence, populate today's Previous Day and Focus, preserve valid carried tasks and questions, instantiate recurrence, link active projects, record DTM activity, capture only concise bullet-point durable decisions in the Decisions section, log only significant durable changes, and run DTM and wiki lint checks."
+  "prompt": "Read AGENTS.md and DTM.md, run python3 tools/dtm.py rollover, finalise the previous note from recorded evidence, populate today's Previous Day and actionable-only Focus, keep genuine blockers in a separate Blockers section, preserve valid carried tasks and questions, instantiate recurrence, link active projects, record DTM activity, capture only concise bullet-point durable decisions in the Decisions section, log only significant durable changes, and run DTM and wiki lint checks."
 }

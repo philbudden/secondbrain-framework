@@ -9,6 +9,7 @@
     {"source": "tools/wiki.py", "destination": "framework/tools/wiki.py"},
     {"source": "tools/dtm.py", "destination": "framework/tools/dtm.py"},
     {"source": "tools/documents.py", "destination": "framework/tools/documents.py"},
+    {"source": "tools/document_deliverables.py", "destination": "framework/tools/document_deliverables.py"},
     {"source": "tools/writing.py", "destination": "framework/tools/writing.py"},
     {"source": "tools/export_framework.py", "destination": "framework/tools/export_framework.py"},
     {"source": "tools/publish_framework.py", "destination": "framework/tools/publish_framework.py"},

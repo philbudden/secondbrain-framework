@@ -93,7 +93,27 @@ python3 tools/document_deliverables.py docx documents/drafts/example.md
 
 ## Deliverable generation
 
-Use `tools/document_deliverables.py` when a managed Markdown document needs a shareable `.docx` copy under `documents/deliverables/<document-slug>/`.
+Use `tools/document_deliverables.py` when a managed Markdown document needs a shareable deliverable under `documents/deliverables/<document-slug>/`.
+
+Word copy:
+
+```sh
+python3 tools/document_deliverables.py docx documents/drafts/example.md
+```
+
+PDF copy, including Mermaid diagrams when present:
+
+```sh
+python3 tools/document_deliverables.py pdf documents/drafts/example.md
+```
+
+To omit an author-facing section from the reader copy, add `--exclude-heading`, for example:
+
+```sh
+python3 tools/document_deliverables.py pdf documents/drafts/example.md --exclude-heading Notes
+```
+
+The PDF path depends on `pandoc`, `typst`, and `mermaid-cli`. Mermaid rendering launches a headless browser, so agents running inside a sandbox may need unsandboxed execution approval when a source contains Mermaid diagrams.
 
 The current supported path is:
 

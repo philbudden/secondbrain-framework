@@ -13,11 +13,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DAILY = ROOT / "daily"
+DAILY_ARCHIVE = DAILY / "archive"
 RECURRENCE = ROOT / "dtm" / "recurring-tasks.json"
 
 SECTIONS = [
     "Previous Day",
     "Focus",
+    "Blockers",
     "Personal To-Do",
     "Professional To-Do",
     "Schedule & Recurring",
@@ -34,6 +36,7 @@ AREA_SECTION = {
 TASK_RE = re.compile(r"^- \[ \] .+$", re.M)
 QUESTION_RE = re.compile(r"^- (?!\[[ xX]\] )(?!<!--)(.+)$", re.M)
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+BLOCKERS_REQUIRED_FROM = date(2026, 7, 7)
 
 
 class DTMError(RuntimeError):
@@ -47,8 +50,40 @@ def parse_date(value: str) -> date:
         raise argparse.ArgumentTypeError(f"invalid ISO date: {value}") from exc
 
 
-def note_path(day: date) -> Path:
+def active_note_path(day: date) -> Path:
     return DAILY / f"{day.isoformat()}.md"
+
+
+def archived_note_path(day: date) -> Path:
+    return DAILY_ARCHIVE / f"{day.isoformat()}.md"
+
+
+def note_path(day: date) -> Path:
+    active = active_note_path(day)
+    if active.exists():
+        return active
+    archived = archived_note_path(day)
+    if archived.exists():
+        return archived
+    return active
+
+
+def note_exists(day: date) -> bool:
+    return note_path(day).exists()
+
+
+def note_link(day: date) -> str:
+    return note_path(day).relative_to(ROOT).with_suffix("").as_posix()
+
+
+def active_note_files() -> list[Path]:
+    return sorted(path for path in DAILY.glob("*.md") if path.name != "README.md")
+
+
+def all_note_files() -> list[Path]:
+    active = active_note_files()
+    archived = sorted(path for path in DAILY_ARCHIVE.glob("*.md") if path.name != "README.md")
+    return active + archived
 
 
 def read_note(day: date) -> str | None:
@@ -69,8 +104,60 @@ def incomplete_tasks(text: str, heading: str) -> list[str]:
     return TASK_RE.findall(section(text, heading))
 
 
+def carryable_schedule_tasks(text: str) -> list[str]:
+    return [
+        line
+        for line in incomplete_tasks(text, "Schedule & Recurring")
+        if "<!-- recurring:" not in line
+    ]
+
+
 def open_questions(text: str) -> list[str]:
     return [f"- {item.strip()}" for item in QUESTION_RE.findall(section(text, "Open Questions"))]
+
+
+def set_previous_day_line(text: str, replacement: str) -> str:
+    previous_section = re.search(
+        r"(^## Previous Day\s*$\n)(.*?)(?=^## |\Z)",
+        text,
+        flags=re.M | re.S,
+    )
+    if previous_section is None:
+        return text
+    body = previous_section.group(2)
+    updated_body = re.sub(
+        r"^(Previous note: .+|No Daily Note exists for the previous calendar day\.)$",
+        replacement,
+        body,
+        count=1,
+        flags=re.M,
+    )
+    if updated_body == body:
+        updated_body = f"{replacement}\n\n{body.lstrip()}" if body.strip() else f"{replacement}\n"
+    return text[: previous_section.start(2)] + updated_body + text[previous_section.end(2) :]
+
+
+def sync_note_links(day: date) -> bool:
+    path = note_path(day)
+    if not path.exists():
+        return False
+    text = path.read_text(encoding="utf-8")
+    previous_day = day - timedelta(days=1)
+    next_day = day + timedelta(days=1)
+    previous_value = f'"[[{note_link(previous_day)}|{previous_day.isoformat()}]]"' if note_exists(previous_day) else ""
+    next_value = f'"[[{note_link(next_day)}|{next_day.isoformat()}]]"' if note_exists(next_day) else ""
+    previous_line = (
+        f"Previous note: [[{note_link(previous_day)}|{previous_day.isoformat()}]]"
+        if note_exists(previous_day)
+        else "No Daily Note exists for the previous calendar day."
+    )
+    changed = replace_frontmatter_value(text, "previous", previous_value)
+    changed = replace_frontmatter_value(changed, "next", next_value)
+    changed = set_previous_day_line(changed, previous_line)
+    if changed != text:
+        path.write_text(changed, encoding="utf-8")
+        return True
+    return False
 
 
 def load_recurrence() -> dict[str, object]:
@@ -140,14 +227,14 @@ def render_note(day: date, previous_text: str | None) -> str:
     if previous_text:
         personal = incomplete_tasks(previous_text, "Personal To-Do")
         professional = incomplete_tasks(previous_text, "Professional To-Do")
-        schedule = incomplete_tasks(previous_text, "Schedule & Recurring")
+        schedule = carryable_schedule_tasks(previous_text)
         questions = open_questions(previous_text)
 
     personal = unique(personal + recurrence["Personal To-Do"])
     professional = unique(professional + recurrence["Professional To-Do"])
     schedule = unique(schedule + recurrence["Schedule & Recurring"])
     previous_link = (
-        f"[[daily/{previous_day.isoformat()}|{previous_day.isoformat()}]]"
+        f"[[{note_link(previous_day)}|{previous_day.isoformat()}]]"
         if previous_text
         else "No Daily Note exists for the previous calendar day."
     )
@@ -186,6 +273,10 @@ tags:
 ## Focus
 
 {focus}
+
+## Blockers
+
+<!-- DTM: list only genuine blockers here. If an item is blocked because progress depends on a third party or another condition outside the user's control, keep it out of Focus unless there is a real actionable step available today. -->
 
 ## Personal To-Do
 
@@ -237,7 +328,7 @@ def close_day(day: date, next_day: date | None = None) -> bool:
     changed = replace_frontmatter_value(text, "status", "closed")
     if next_day:
         changed = replace_frontmatter_value(
-            changed, "next", f'"[[daily/{next_day.isoformat()}|{next_day.isoformat()}]]"'
+            changed, "next", f'"[[{note_link(next_day)}|{next_day.isoformat()}]]"'
         )
     if changed != text:
         path.write_text(changed, encoding="utf-8")
@@ -248,7 +339,7 @@ def close_day(day: date, next_day: date | None = None) -> bool:
 
 
 def open_day(day: date) -> bool:
-    path = note_path(day)
+    path = active_note_path(day)
     if path.exists():
         print(f"Already open/present: {path.relative_to(ROOT)}")
         return False
@@ -311,6 +402,36 @@ def rollover(day: date) -> int:
     previous_day = day - timedelta(days=1)
     close_day(previous_day, day)
     open_day(day)
+    return 0
+
+
+def archive_notes(keep: int) -> int:
+    if keep < 1:
+        raise DTMError("Keep count must be at least 1")
+    note_files = active_note_files()
+    if len(note_files) <= keep:
+        print(f"No Daily Notes archived; {len(note_files)} active note(s) within keep window {keep}.")
+        return 0
+    DAILY_ARCHIVE.mkdir(parents=True, exist_ok=True)
+    to_move = note_files[:-keep]
+    moved_days: list[date] = []
+    for path in to_move:
+        if not DATE_RE.fullmatch(path.stem):
+            raise DTMError(f"Cannot archive non-date Daily Note {path.relative_to(ROOT)}")
+        day = date.fromisoformat(path.stem)
+        target = archived_note_path(day)
+        if target.exists():
+            raise DTMError(f"Archive destination already exists: {target.relative_to(ROOT)}")
+        path.rename(target)
+        moved_days.append(day)
+        print(f"Archived {path.relative_to(ROOT)} -> {target.relative_to(ROOT)}")
+    affected_days = set(moved_days)
+    for moved_day in moved_days:
+        affected_days.add(moved_day - timedelta(days=1))
+        affected_days.add(moved_day + timedelta(days=1))
+    for affected_day in sorted(affected_days):
+        sync_note_links(affected_day)
+    print(f"Archived {len(moved_days)} Daily Note(s); kept {keep} active.")
     return 0
 
 
@@ -380,19 +501,25 @@ def require_valid_recurrence() -> None:
 
 def lint() -> int:
     errors, warnings = validate_recurrence()
-    note_files = sorted(path for path in DAILY.glob("*.md") if path.name != "README.md")
+    note_files = all_note_files()
     for path in note_files:
         if not DATE_RE.fullmatch(path.stem):
             warnings.append(f"{path.relative_to(ROOT)}: filename is not an ISO date")
             continue
+        note_day = date.fromisoformat(path.stem)
         text = path.read_text(encoding="utf-8")
-        for heading in SECTIONS:
+        required_sections = [
+            heading
+            for heading in SECTIONS
+            if heading != "Blockers" or note_day >= BLOCKERS_REQUIRED_FROM
+        ]
+        for heading in required_sections:
             count = len(re.findall(rf"^## {re.escape(heading)}\s*$", text, re.M))
             if count != 1:
                 errors.append(
                     f"{path.relative_to(ROOT)}: section {heading!r} occurs {count} times"
                 )
-        positions = [text.find(f"## {heading}") for heading in SECTIONS]
+        positions = [text.find(f"## {heading}") for heading in required_sections]
         if all(position >= 0 for position in positions) and positions != sorted(positions):
             errors.append(f"{path.relative_to(ROOT)}: required sections are out of order")
         for field in ("type: daily-note", f"date: {path.stem}", "status:"):
@@ -412,7 +539,7 @@ def lint() -> int:
 
 def status() -> int:
     require_valid_recurrence()
-    notes = sorted(DAILY.glob("*.md"))
+    notes = active_note_files()
     if not notes:
         print("No Daily Notes.")
         return 0
@@ -444,6 +571,8 @@ def main() -> int:
     activity_parser.add_argument("--actor", default="DTM")
     activity_parser.add_argument("--time", dest="timestamp")
     activity_parser.add_argument("message")
+    archive_parser = sub.add_parser("archive")
+    archive_parser.add_argument("--keep", type=int, default=14)
     sub.add_parser("lint")
     sub.add_parser("status")
     args = parser.parse_args()
@@ -459,6 +588,8 @@ def main() -> int:
         if args.command == "activity":
             append_activity(args.date, args.actor, args.message, args.timestamp)
             return 0
+        if args.command == "archive":
+            return archive_notes(args.keep)
         if args.command == "lint":
             return lint()
         return status()

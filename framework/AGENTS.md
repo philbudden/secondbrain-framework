@@ -92,6 +92,40 @@ compound across sessions.
   same change.
 - Never present inference as sourced fact.
 
+### `projects/` — DTM-managed durable project workspace
+
+- `projects/index.md` is the curated catalogue of durable project pages. Keep
+  every managed project listed exactly once under its current lifecycle state
+  with a one-line description concrete enough to route future work without
+  opening each file.
+- Project pages hold stable objectives, current state, next actions, decisions,
+  and major activity for work that spans days or needs durable coordination.
+- Valid project statuses are `active`, `on-hold`, and `completed`.
+- `completed` projects are retained for reference; completion does not imply
+  deletion or automatic relocation.
+- Keep stable lowercase kebab-case filenames and update `projects/index.md`,
+  the relevant Daily Note references, and the root `log.md` when the change is
+  materially significant.
+
+### `work/` — DTM-managed working-note workspace
+
+- `work/index.md` is the curated catalogue of managed working notes. Keep every
+  managed top-level `work/*.md` note listed exactly once under its current
+  lifecycle state with a one-line description concrete enough to avoid loading
+  each note just to understand what still matters.
+- This area is for active or retained operational working material such as
+  meeting prep, research packs, temporary plans, scratch analyses, examples,
+  and intermediate outputs that do not yet belong in `wiki/`, `projects/`,
+  `documents/`, or `writing/`.
+- Valid working-note statuses are `current`, `parked`, and `reference`.
+- `reference` means the note is no longer an active work item but is retained
+  because its reasoning, examples, or context still have value.
+- Keep stable lowercase kebab-case filenames for managed working notes and
+  update `work/index.md` plus relevant Daily Note references when lifecycle
+  state or scope changes materially.
+- `work/wiki-open-questions.md` remains the DTM-managed operational queue for
+  unresolved wiki questions and follows the same workspace conventions.
+
 ### `documents/` — collaborative internal documents workspace
 
 - The DTM owns collaborative drafting, revision support, and lifecycle
@@ -423,8 +457,11 @@ Summary of what changed, with links to affected pages.
 
 Allowed operation labels are `setup`, `ingest`, `query`, `lint`, `schema`, and
 `dtm`. DTM log entries are reserved for significant operational changes such as
-project milestones, durable decisions, or created/updated wiki artefacts; routine
-daily rollover does not need a wiki log entry.
+project milestones, durable decisions, created or materially updated artefacts,
+or unattended automated actions that created, promoted, published, or
+materially changed something in the system. Routine daily rollover does not
+need a wiki log entry unless it produced a material unattended change beyond
+ordinary note lifecycle housekeeping.
 Mention unresolved conflicts, gaps, or follow-ups in the same entry.
 
 ## Completion standard

@@ -49,6 +49,10 @@ When work is delegated to another thread:
 - The DTM may create or update wiki pages when durable knowledge emerges. Apply
   the wiki schema and citation rules in `AGENTS.md`, update `wiki/index.md`, and
   log the material change.
+- When DTM-scoped work creates or materially extends a wiki artefact, capture it
+  in both today's Daily Note and the root `log.md`. Daily Note activity preserves
+  day-level operational continuity; the root log preserves system-level
+  traceability for the wiki change itself.
 - Do not treat conversational claims as externally verified facts. Attribute
   personal decisions and observations to the user/context where useful.
 - The Knowledge Agent owns systematic source ingestion. The DTM owns Daily
@@ -63,7 +67,8 @@ When work is delegated to another thread:
 
 ## DTM workspace
 
-- `daily/YYYY-MM-DD.md` — canonical Daily Notes.
+- `daily/YYYY-MM-DD.md` — active Daily Notes for the current 14-day retro period.
+- `daily/archive/YYYY-MM-DD.md` — archived Daily Notes retained for reference once they age out of the active window.
 - `projects/` — durable project plans, status, milestones, and next actions.
 - `work/` — working documents, drafts, scratch analyses, and deliverables that
   are not yet durable wiki knowledge.
@@ -76,6 +81,30 @@ When work is delegated to another thread:
 Prefer links rooted at the vault, for example
 `[[projects/example-project|Example project]]`. A project page should hold stable
 context and current state; its day-specific activity belongs in the Daily Note.
+
+`projects/index.md` and `work/index.md` are the curated navigation layers for
+those workspaces. Keep every managed note listed exactly once under its current
+lifecycle state with a concrete one-line description.
+
+Project statuses are:
+
+- `active` — live delivery or active coordination work.
+- `on-hold` — intentionally paused but expected to resume.
+- `completed` — retained for reference after active delivery ends.
+
+Working-note statuses are:
+
+- `current` — active work material still supporting a live task or integration step.
+- `parked` — inactive for now but likely to resume.
+- `reference` — no longer active work, but retained because the note still has useful context or reasoning.
+
+Keep project filenames and managed working-note filenames in stable lowercase
+kebab-case. Use `templates/project.md` for projects and
+`templates/working-note.md` for new managed working notes.
+
+Run `python3 tools/workspaces.py write` followed by
+`python3 tools/workspaces.py lint` after structural or lifecycle-status changes
+in `projects/` or managed top-level `work/*.md` notes.
 
 For Daily Notes, project pages, work notes, wiki edits performed under DTM
 authority, and internal documents, keep ordinary prose paragraphs on one
@@ -160,7 +189,16 @@ completion.
 
 Significant DTM actions also receive an append-only `log.md` entry using
 the `dtm` operation label. Significant means a durable decision, project
-milestone, or created/updated wiki artefact—not ordinary task edits or rollover.
+milestone, created or materially updated artefact, or an unattended automated
+action that created, promoted, published, or materially changed something in
+the system. Ordinary task edits, conversational clarification, and routine day
+rollover do not need a vault log entry unless they were performed unattended as
+part of an automation whose outcome materially changed the system.
+
+If the significant action is specifically the creation or material extension of
+a wiki artefact, do not rely on Daily Note capture alone. Record the outcome in
+today's Daily Note and also append a root-log entry that makes the wiki change
+traceable at system level.
 
 ## Tasks
 
@@ -253,6 +291,11 @@ The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
    outcomes, meaningful developments, and unfinished threads.
 4. Refine today's `Focus` into a short ranked recommendation based on carried
    work, active projects, questions, deadlines, and outcomes.
+   `Focus` is for actionable priorities only. Do not place blocked items there
+   when no material progress is possible under the user's control. Track those
+   items under a separate `Blockers` section instead. A blocked item may appear
+   in `Focus` only if there is a genuine actionable step the user can take
+   today beyond merely waiting or monitoring.
 5. Keep the mechanically carried personal/professional tasks and open questions;
    correct duplicates or categorisation errors if necessary.
 6. Confirm scheduled and recurring instances are relevant for the date.

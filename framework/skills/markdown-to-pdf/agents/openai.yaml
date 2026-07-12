@@ -1,0 +1,6 @@
+interface:
+  display_name: "Markdown to PDF"
+  short_description: "Generate shareable PDFs from vault Markdown"
+  default_prompt: "Use $markdown-to-pdf to create a shareable PDF from this Markdown note."
+policy:
+  allow_implicit_invocation: false

@@ -34,3 +34,5 @@ Relevant decisions and links back to the supporting Daily Note or working contex
 ## Activity
 
 - YYYY-MM-DD — Material change with a link to the Daily Note.
+
+<!-- Valid project statuses: active, on-hold, completed -->
