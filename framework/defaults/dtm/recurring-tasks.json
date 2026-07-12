@@ -32,26 +32,6 @@
       }
     },
     {
-      "id": "tuesday-publish-working-with-ai",
-      "task": "Publish or schedule this week's non-diary piece for 16:00, alternating between Working with AI and Interview posts, with a linked LinkedIn post",
-      "area": "schedule",
-      "enabled": true,
-      "schedule": {
-        "frequency": "weekly",
-        "weekdays": ["Tuesday"]
-      }
-    },
-    {
-      "id": "thursday-publish-interview-piece",
-      "task": "Publish or schedule an Interview piece with a linked LinkedIn post for 16:00",
-      "area": "schedule",
-      "enabled": false,
-      "schedule": {
-        "frequency": "weekly",
-        "weekdays": ["Thursday"]
-      }
-    },
-    {
       "id": "weekly-backlog-prioritisation",
       "task": "Prioritise the weekly backlog",
       "area": "professional",
