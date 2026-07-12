@@ -14,7 +14,7 @@
     {
       "id": "monday-review-diary-post",
       "task": "Review the generated weekly diary draft",
-      "area": "professional",
+      "area": "schedule",
       "enabled": true,
       "schedule": {
         "frequency": "weekly",
@@ -24,7 +24,7 @@
     {
       "id": "tuesday-review-wiki-blog-post",
       "task": "Review the generated weekly wiki blog draft",
-      "area": "professional",
+      "area": "schedule",
       "enabled": true,
       "schedule": {
         "frequency": "weekly",

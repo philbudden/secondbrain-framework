@@ -56,6 +56,8 @@ def copy_entry(source: Path, destination: Path) -> None:
     if source.is_symlink():
         raise ExportError(f"Symlinks are not publishable: {source.relative_to(LIVE_ROOT)}")
     if source.is_file():
+        if source.name == ".DS_Store":
+            return
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
         return
@@ -65,13 +67,15 @@ def copy_entry(source: Path, destination: Path) -> None:
         if item.is_symlink():
             raise ExportError(f"Symlinks are not publishable: {item.relative_to(LIVE_ROOT)}")
         if item.is_file():
+            if item.name == ".DS_Store":
+                continue
             target = destination / item.relative_to(source)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, target)
 
 
 def staged_files(root: Path) -> list[Path]:
-    return sorted(path for path in root.rglob("*") if path.is_file())
+    return sorted(path for path in root.rglob("*") if path.is_file() and path.name != ".DS_Store")
 
 
 def privacy_scan(root: Path, manifest: dict[str, object]) -> None:

@@ -39,6 +39,7 @@ directory:
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/markdown-to-pdf "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
 Start a thread in the installed vault and invoke `$dtm`. That thread remains in
@@ -48,6 +49,28 @@ Agent.
 Invoke `$voice` after representative writing has reached `ready/` or
 `published/`, or after representative internal documents have reached
 `documents/final/`. It updates the private voice pack without analysing drafts.
+
+Invoke `$markdown-to-pdf` when you want a shareable PDF from a Markdown note or
+managed document, including Mermaid diagrams when present.
+
+## Optional PDF deliverable toolchain
+
+If you want managed Markdown-to-PDF generation with Mermaid support, install:
+
+```sh
+brew install pandoc typst mermaid-cli
+npx puppeteer browsers install chrome-headless-shell
+```
+
+The PDF command is:
+
+```sh
+python3 tools/document_deliverables.py pdf documents/drafts/example.md
+```
+
+Mermaid rendering launches a headless browser. Inside sandboxed agent
+environments, that step may require unsandboxed execution approval even after
+the dependencies are installed.
 
 ## Validate
 
