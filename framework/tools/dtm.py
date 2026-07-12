@@ -13,7 +13,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DAILY = ROOT / "daily"
-DAILY_ARCHIVE = DAILY / "archive"
 RECURRENCE = ROOT / "dtm" / "recurring-tasks.json"
 
 SECTIONS = [
@@ -43,6 +42,14 @@ class DTMError(RuntimeError):
     """A safe, user-actionable DTM configuration or lifecycle failure."""
 
 
+def vault_root() -> Path:
+    return DAILY.parent
+
+
+def daily_archive_dir() -> Path:
+    return DAILY / "archive"
+
+
 def parse_date(value: str) -> date:
     try:
         return date.fromisoformat(value)
@@ -55,7 +62,7 @@ def active_note_path(day: date) -> Path:
 
 
 def archived_note_path(day: date) -> Path:
-    return DAILY_ARCHIVE / f"{day.isoformat()}.md"
+    return daily_archive_dir() / f"{day.isoformat()}.md"
 
 
 def note_path(day: date) -> Path:
@@ -73,7 +80,7 @@ def note_exists(day: date) -> bool:
 
 
 def note_link(day: date) -> str:
-    return note_path(day).relative_to(ROOT).with_suffix("").as_posix()
+    return note_path(day).relative_to(vault_root()).with_suffix("").as_posix()
 
 
 def active_note_files() -> list[Path]:
@@ -82,7 +89,7 @@ def active_note_files() -> list[Path]:
 
 def all_note_files() -> list[Path]:
     active = active_note_files()
-    archived = sorted(path for path in DAILY_ARCHIVE.glob("*.md") if path.name != "README.md")
+    archived = sorted(path for path in daily_archive_dir().glob("*.md") if path.name != "README.md")
     return active + archived
 
 
@@ -322,7 +329,7 @@ def replace_frontmatter_value(text: str, field: str, value: str) -> str:
 def close_day(day: date, next_day: date | None = None) -> bool:
     path = note_path(day)
     if not path.exists():
-        print(f"No Daily Note to close: {path.relative_to(ROOT)}")
+        print(f"No Daily Note to close: {path.relative_to(vault_root())}")
         return False
     text = path.read_text(encoding="utf-8")
     changed = replace_frontmatter_value(text, "status", "closed")
@@ -332,21 +339,21 @@ def close_day(day: date, next_day: date | None = None) -> bool:
         )
     if changed != text:
         path.write_text(changed, encoding="utf-8")
-        print(f"Closed {path.relative_to(ROOT)}")
+        print(f"Closed {path.relative_to(vault_root())}")
     else:
-        print(f"Already closed {path.relative_to(ROOT)}")
+        print(f"Already closed {path.relative_to(vault_root())}")
     return True
 
 
 def open_day(day: date) -> bool:
     path = active_note_path(day)
     if path.exists():
-        print(f"Already open/present: {path.relative_to(ROOT)}")
+        print(f"Already open/present: {path.relative_to(vault_root())}")
         return False
     previous_text = read_note(day - timedelta(days=1))
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_note(day, previous_text), encoding="utf-8")
-    print(f"Created {path.relative_to(ROOT)}")
+    print(f"Created {path.relative_to(vault_root())}")
     return True
 
 
@@ -365,10 +372,10 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
     text = path.read_text(encoding="utf-8")
     notes_match = re.search(r"^## Notes & Activity\s*$", text, re.M)
     if notes_match is None:
-        raise DTMError(f"{path.relative_to(ROOT)} is missing the Notes & Activity section")
+        raise DTMError(f"{path.relative_to(vault_root())} is missing the Notes & Activity section")
     decisions_match = re.search(r"^## Decisions\s*$", text, re.M)
     if decisions_match is None:
-        raise DTMError(f"{path.relative_to(ROOT)} is missing the Decisions section")
+        raise DTMError(f"{path.relative_to(vault_root())} is missing the Decisions section")
 
     entry = f"- {time_value} — {actor.strip()} — {message.strip()}"
     notes_heading = "## Notes & Activity"
@@ -381,7 +388,7 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
     notes_body = text[notes_end:marker_start]
     notes_lines = notes_body.rstrip("\n").splitlines()
     if entry in notes_lines:
-        print(f"Activity already present in {path.relative_to(ROOT)}")
+        print(f"Activity already present in {path.relative_to(vault_root())}")
         return False
     if notes_lines and notes_lines[-1].strip():
         notes_lines.append(entry)
@@ -391,7 +398,7 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
 
     updated_before = f"{notes_prefix}{notes_heading}\n{chr(10).join(notes_lines)}\n"
     path.write_text(f"{updated_before}## Decisions{after}", encoding="utf-8")
-    print(f"Updated {path.relative_to(ROOT)}")
+    print(f"Updated {path.relative_to(vault_root())}")
     return True
 
 
@@ -412,19 +419,20 @@ def archive_notes(keep: int) -> int:
     if len(note_files) <= keep:
         print(f"No Daily Notes archived; {len(note_files)} active note(s) within keep window {keep}.")
         return 0
-    DAILY_ARCHIVE.mkdir(parents=True, exist_ok=True)
+    archive_dir = daily_archive_dir()
+    archive_dir.mkdir(parents=True, exist_ok=True)
     to_move = note_files[:-keep]
     moved_days: list[date] = []
     for path in to_move:
         if not DATE_RE.fullmatch(path.stem):
-            raise DTMError(f"Cannot archive non-date Daily Note {path.relative_to(ROOT)}")
+            raise DTMError(f"Cannot archive non-date Daily Note {path.relative_to(vault_root())}")
         day = date.fromisoformat(path.stem)
         target = archived_note_path(day)
         if target.exists():
-            raise DTMError(f"Archive destination already exists: {target.relative_to(ROOT)}")
+            raise DTMError(f"Archive destination already exists: {target.relative_to(vault_root())}")
         path.rename(target)
         moved_days.append(day)
-        print(f"Archived {path.relative_to(ROOT)} -> {target.relative_to(ROOT)}")
+        print(f"Archived {path.relative_to(vault_root())} -> {target.relative_to(vault_root())}")
     affected_days = set(moved_days)
     for moved_day in moved_days:
         affected_days.add(moved_day - timedelta(days=1))
