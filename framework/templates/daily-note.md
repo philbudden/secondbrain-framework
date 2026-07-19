@@ -16,6 +16,8 @@ tags:
 
 ## Focus
 
+<!-- Each numbered focus item must cover one distinct project or task only. -->
+
 ## Blockers
 
 ## Personal To-Do

@@ -143,6 +143,8 @@ def publish(target: Path, repo: str, assignee: str, base: str) -> int:
             print("No meaningful framework changes; no branch, commit, or PR created.")
             return 0
 
+        validate_export(staging)
+
         pending = open_publication_pr(repo)
         if pending:
             print(f"Publication review already open; deferring a new branch: {pending}")
@@ -165,7 +167,6 @@ def publish(target: Path, repo: str, assignee: str, base: str) -> int:
 
         git(target, "switch", "-c", branch)
         replace_worktree(target, staging)
-        validate_export(target)
         git(target, "add", "-A")
         if git(target, "diff", "--cached", "--quiet", check=False).returncode == 0:
             print("No meaningful staged changes; no commit or PR created.")

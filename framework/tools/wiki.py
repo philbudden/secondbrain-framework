@@ -34,6 +34,7 @@ QUESTION_HEADINGS = {
 }
 QUEUE_PATH = ROOT / "work" / "wiki-open-questions.md"
 QUESTION_THREAD_RE = re.compile(r"<!--\s*wiki-question-thread:([a-z0-9-]+)\s*-->")
+RAW_PENDING_IGNORED_NAMES = {".DS_Store", ".gitkeep", "README.md"}
 
 
 def pages() -> list[Path]:
@@ -65,6 +66,22 @@ def read_system_log() -> str | None:
     if not SYSTEM_LOG.exists():
         return None
     return SYSTEM_LOG.read_text(encoding="utf-8")
+
+
+def parse_iso_date(value: object) -> date | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        return date.fromisoformat(value.strip())
+    except ValueError:
+        return None
+
+
+def pending_raw_sources() -> list[Path]:
+    return sorted(
+        path for path in RAW.iterdir()
+        if path.is_file() and path.name not in RAW_PENDING_IGNORED_NAMES
+    )
 
 
 def frontmatter(text: str) -> dict[str, object] | None:
@@ -132,6 +149,9 @@ def question_id(path: Path, question: str) -> str:
 
 def extract_questions(path: Path) -> list[dict[str, str]]:
     text = path.read_text(encoding="utf-8")
+    meta = frontmatter(text) or {}
+    if meta.get("type") == "project" and meta.get("status") == "completed":
+        return []
     title = page_title(path, text)
     items: list[dict[str, str]] = []
     lines = text.splitlines()
@@ -330,6 +350,8 @@ def lint() -> int:
     )
     titles: list[str] = []
     inbound: Counter[str] = Counter()
+    wiki_updated_dates: set[date] = set()
+    source_ingests: list[tuple[str, str, date]] = []
 
     for path in contents:
         text = path.read_text(encoding="utf-8")
@@ -348,6 +370,11 @@ def lint() -> int:
                 errors.append(f"{relative(path)}: invalid status {meta.get('status')!r}")
             if meta.get("title"):
                 titles.append(str(meta["title"]).casefold())
+            updated_at = parse_iso_date(meta.get("updated"))
+            if updated_at is None:
+                errors.append(f"{relative(path)}: invalid updated date {meta.get('updated')!r}")
+            else:
+                wiki_updated_dates.add(updated_at)
             if meta.get("type") == "source":
                 for field in ("source_path", "source_kind", "ingested"):
                     if not meta.get(field):
@@ -357,6 +384,11 @@ def lint() -> int:
                     errors.append(
                         f"{relative(path)}: source_path does not exist: {source_path}"
                     )
+                ingested_at = parse_iso_date(meta.get("ingested"))
+                if ingested_at is None:
+                    errors.append(f"{relative(path)}: invalid ingested date {meta.get('ingested')!r}")
+                elif isinstance(meta.get("title"), str) and meta["title"].strip():
+                    source_ingests.append((relative(path), meta["title"].strip(), ingested_at))
 
         for target in LINK_RE.findall(text):
             normalized = normalize_target(target)
@@ -391,6 +423,52 @@ def lint() -> int:
         errors.append("log.md: missing root system log; create log.md with at least one parseable entry")
     elif not LOG_RE.search(log_text):
         errors.append("log.md: no parseable log entries")
+    else:
+        log_entries = [
+            (date.fromisoformat(entry_date), operation, title.strip())
+            for entry_date, operation, title in LOG_RE.findall(log_text)
+        ]
+        log_entry_blocks: list[tuple[date, str, str, str]] = []
+        matches = list(LOG_RE.finditer(log_text))
+        for index, match in enumerate(matches):
+            body_start = match.end()
+            body_end = matches[index + 1].start() if index + 1 < len(matches) else len(log_text)
+            entry_date, operation, title = match.groups()
+            log_entry_blocks.append(
+                (
+                    date.fromisoformat(entry_date),
+                    operation,
+                    title.strip(),
+                    log_text[body_start:body_end],
+                )
+            )
+        log_dates = {entry_date for entry_date, _, _ in log_entries}
+        logged_source_entries = {
+            (entry_date, title.casefold())
+            for entry_date, operation, title in log_entries
+            if operation in {"ingest", "dtm", "query", "lint"}
+        }
+        for updated_at in sorted(wiki_updated_dates):
+            if updated_at not in log_dates:
+                errors.append(
+                    "log.md: missing log entry for wiki content updated on "
+                    f"{updated_at.isoformat()}"
+                )
+        for source_path, source_title, ingested_at in source_ingests:
+            source_key = source_path[:-3]
+            has_matching_entry = (ingested_at, source_title.casefold()) in logged_source_entries
+            if not has_matching_entry:
+                has_matching_entry = any(
+                    entry_date == ingested_at
+                    and operation in {"ingest", "dtm", "query", "lint"}
+                    and f"[[{source_key}" in body
+                    for entry_date, operation, _, body in log_entry_blocks
+                )
+            if not has_matching_entry:
+                errors.append(
+                    f"log.md: missing source-specific entry for {source_path} "
+                    f"on {ingested_at.isoformat()} titled {source_title!r}"
+                )
 
     errors = sorted(set(errors))
     warnings = sorted(set(warnings))
@@ -412,10 +490,7 @@ def status() -> int:
         meta = frontmatter(path.read_text(encoding="utf-8")) or {}
         counts[str(meta.get("type", "unknown"))] += 1
         states[str(meta.get("status", "unknown"))] += 1
-    pending = sorted(
-        path for path in RAW.iterdir()
-        if path.is_file() and path.name not in {".gitkeep", "README.md"}
-    )
+    pending = pending_raw_sources()
     processed = sum(
         1 for path in (RAW / "processed").rglob("*")
         if path.is_file() and path.name not in {".gitkeep", "README.md"}
@@ -429,10 +504,7 @@ def status() -> int:
 
 
 def pending() -> int:
-    sources = sorted(
-        path for path in RAW.iterdir()
-        if path.is_file() and path.name not in {".gitkeep", "README.md"}
-    )
+    sources = pending_raw_sources()
     if not sources:
         print("No pending raw sources.")
         return 0

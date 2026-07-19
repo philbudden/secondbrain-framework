@@ -16,6 +16,7 @@ STAGES = {
     "drafts": "draft",
     "ready": "ready",
     "published": "published",
+    "archive": "archived",
 }
 REQUIRED = {
     "title",
@@ -204,6 +205,15 @@ def lint() -> int:
                 errors.append(f"{label}: published piece needs canonical_url")
             if not value(meta, "published_at"):
                 errors.append(f"{label}: published piece needs published_at")
+        if expected_status == "archived":
+            if not value(meta, "canonical_url"):
+                errors.append(f"{label}: archived piece needs former canonical_url")
+            if not value(meta, "published_at"):
+                errors.append(f"{label}: archived piece needs former published_at")
+            if not DATE_RE.fullmatch(value(meta, "archived_at")):
+                errors.append(f"{label}: archived_at must be YYYY-MM-DD")
+            if not value(meta, "archive_reason"):
+                errors.append(f"{label}: archived piece needs archive_reason")
 
         start_count = text.count("<!-- publish:start -->")
         end_count = text.count("<!-- publish:end -->")

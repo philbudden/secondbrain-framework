@@ -36,6 +36,12 @@ TASK_RE = re.compile(r"^- \[ \] .+$", re.M)
 QUESTION_RE = re.compile(r"^- (?!\[[ xX]\] )(?!<!--)(.+)$", re.M)
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 BLOCKERS_REQUIRED_FROM = date(2026, 7, 7)
+FOCUS_SPLIT_MARKERS = (
+    " then ",
+    " and then ",
+    ", then ",
+    " followed by ",
+)
 
 
 class DTMError(RuntimeError):
@@ -121,6 +127,15 @@ def carryable_schedule_tasks(text: str) -> list[str]:
 
 def open_questions(text: str) -> list[str]:
     return [f"- {item.strip()}" for item in QUESTION_RE.findall(section(text, "Open Questions"))]
+
+
+def focus_items(text: str) -> list[str]:
+    return re.findall(r"^\d+\.\s+(.+)$", section(text, "Focus"), re.M)
+
+
+def looks_like_bundled_focus_item(item: str) -> bool:
+    normalised = f" {item.strip().casefold()} "
+    return any(marker in normalised for marker in FOCUS_SPLIT_MARKERS)
 
 
 def set_previous_day_line(text: str, replacement: str) -> str:
@@ -247,9 +262,9 @@ def render_note(day: date, previous_text: str | None) -> str:
     )
     focus = (
         "1. Review and prioritise carried work, active projects, and open questions.\n"
-        "<!-- DTM: replace this with a concise, evidence-based focus recommendation. -->"
+        "<!-- DTM: replace this with a concise, evidence-based focus recommendation. Each numbered item must cover one distinct project or task only. -->"
         if previous_text
-        else "1. Establish today's priorities and active workstreams."
+        else "1. Establish today's highest-priority distinct task or project."
     )
     previous_summary = (
         f"Previous note: {previous_link}\n\n"
@@ -283,7 +298,7 @@ tags:
 
 ## Blockers
 
-<!-- DTM: list only genuine blockers here. If an item is blocked because progress depends on a third party or another condition outside the user's control, keep it out of Focus unless there is a real actionable step available today. -->
+<!-- DTM: list only genuine blockers here. If an item is blocked because progress depends on a third party or another condition outside the user's control, keep it out of Focus unless there is a real actionable step available today. Do not mention the blocked path inside Focus as a caveat or "not this" reminder; Focus should name only positive actions. -->
 
 ## Personal To-Do
 
@@ -533,6 +548,11 @@ def lint() -> int:
         for field in ("type: daily-note", f"date: {path.stem}", "status:"):
             if field not in text[: text.find("\n---\n", 4) + 5]:
                 errors.append(f"{path.relative_to(ROOT)}: missing frontmatter value {field}")
+        for item in focus_items(text):
+            if looks_like_bundled_focus_item(item):
+                errors.append(
+                    f"{path.relative_to(ROOT)}: bundled Focus item should be split into distinct tasks: {item!r}"
+                )
 
     for item in sorted(set(errors)):
         print(f"ERROR   {item}")

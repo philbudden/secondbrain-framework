@@ -98,6 +98,8 @@ Working-note statuses are:
 - `parked` — inactive for now but likely to resume.
 - `reference` — no longer active work, but retained because the note still has useful context or reasoning.
 
+Reusable operational assets in `work/`, such as prompt templates, checklists, research packs, or working methods that are still being actively used or revised, should remain `current`. Do not mark a note `reference` merely because it is reusable.
+
 Keep project filenames and managed working-note filenames in stable lowercase
 kebab-case. Use `templates/project.md` for projects and
 `templates/working-note.md` for new managed working notes.
@@ -143,6 +145,12 @@ Agents may work freely in `documents/drafts/`. Move a document to
 version. These documents are not a publication queue; they are the internal
 canonical record for approved work.
 
+Use `documents/reference/` for non-authored reference documents that should
+live inside the document workspace without becoming authored canonicals or wiki
+sources. Keep them in their original formats where that is the point of the
+reference copy, catalogue them in `documents/index.md`, and do not treat them
+as drafts, finals, or deliverables.
+
 Place shareable file-format variants such as PowerPoint, Word, and spreadsheet
 files under `documents/deliverables/<document-slug>/` when they correspond to a
 document workspace item. Treat the Markdown file in `documents/drafts/` or
@@ -161,6 +169,12 @@ Before creating or materially rewriting an internal document, read
 `writing/voice/voice-pack.md` when present. The `$voice` workflow may learn
 from `documents/final/` as part of the approved corpus, but must never inspect
 `documents/drafts/`.
+
+If the user says they have edited a managed document directly in Obsidian or
+otherwise outside the current chat, treat the on-disk file as authoritative.
+Re-read that file immediately before promotion, deliverable generation, or any
+final review step that depends on the latest wording. Do not rely solely on the
+version already held in conversational context.
 
 ## Interaction capture
 
@@ -262,23 +276,24 @@ entry.
   note immediately; preserve the resolution in activity, a decision, project,
   or wiki page as appropriate. Historical notes remain historical.
 
-## Wiki open questions
+## Open questions
 
-Wiki open questions are managed separately from Daily Note open questions.
+Use `work/wiki-open-questions.md` as the single operational queue for open
+questions that are worth carrying beyond one day.
 
-- Use `work/wiki-open-questions.md` as the operational queue for unresolved
-  questions still present in wiki pages.
-- Refresh it with `python3 tools/wiki.py questions --write` after wiki work
-  changes any `## Open questions` or source `## Questions raised` section.
-- Triage each item by changing its status token to `answer-myself`,
-  `research-with-dtm`, or `ready-to-integrate` when `needs-triage` is no longer
-  accurate.
-- If two page-level questions are really the same underlying question, add the
-  same `<!-- wiki-question-thread:thread-id -->` marker to both bullets so the
-  queue folds them into one research thread with multiple source links. The
+- Promote a Daily Note question into this queue when it is durable enough to
+  matter beyond one day and should be tracked without repeated carry-forward.
+- Keep each queued question linked to the note or project where the answer will
+  eventually need integrating.
+- When a question is answered, update the relevant note or project first, then
+  remove the question from the queue so the queue reflects the live state.
+- Wiki-originated questions still require `python3 tools/wiki.py questions --write`
+  after wiki work changes any `## Open questions` or source `## Questions raised`
+  section.
+- If two wiki page-level questions are really the same underlying question, add
+  the same `<!-- wiki-question-thread:thread-id -->` marker to both bullets so
+  the queue folds them into one research thread with multiple source links. The
   final answer may still need integrating back into multiple wiki pages.
-- When a question is answered, update the underlying wiki page first, then
-  refresh the queue so the question stops surfacing there.
 
 ## Day close and day open
 
@@ -295,7 +310,14 @@ The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
    when no material progress is possible under the user's control. Track those
    items under a separate `Blockers` section instead. A blocked item may appear
    in `Focus` only if there is a genuine actionable step the user can take
-   today beyond merely waiting or monitoring.
+   today beyond merely waiting or monitoring. Do not mention blocked paths in a
+   focus item as contrast, caveat, or "do not work on this" framing; the focus
+   line should name only the positive action to take, and the blocked path
+   belongs only in `Blockers`. Each numbered focus item must cover exactly one
+   distinct project or task. Do not bundle unrelated work into one focus line,
+   even when the second item is smaller, adjacent, or non-urgent. Put that
+   follow-through in the appropriate to-do section unless it genuinely deserves
+   its own focus slot.
 5. Keep the mechanically carried personal/professional tasks and open questions;
    correct duplicates or categorisation errors if necessary.
 6. Confirm scheduled and recurring instances are relevant for the date.

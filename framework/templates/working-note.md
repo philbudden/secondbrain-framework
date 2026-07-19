@@ -22,4 +22,4 @@ Working material, drafts, analysis, or interim outputs.
 
 ## Next use
 
-How this note is expected to be used next, integrated, or retired to reference status.
+How this note is expected to be used next, integrated, or retired to reference status once it is no longer an active working asset.
