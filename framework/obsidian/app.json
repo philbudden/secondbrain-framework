@@ -4,5 +4,6 @@
   "newFileLocation": "folder",
   "newFileFolderPath": "raw",
   "attachmentFolderPath": "raw/assets",
-  "vimMode": true
+  "vimMode": true,
+  "openBehavior": "file:start-here"
 }

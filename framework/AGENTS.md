@@ -120,11 +120,17 @@ compound across sessions.
 - Valid working-note statuses are `current`, `parked`, and `reference`.
 - `reference` means the note is no longer an active work item but is retained
   because its reasoning, examples, or context still have value.
+- Reusable operational assets such as prompt templates, checklists, method
+  notes, and actively used research packs remain `current` while they are still
+  being used or iterated. Do not treat `reference` as meaning merely
+  "reusable".
 - Keep stable lowercase kebab-case filenames for managed working notes and
   update `work/index.md` plus relevant Daily Note references when lifecycle
   state or scope changes materially.
-- `work/wiki-open-questions.md` remains the DTM-managed operational queue for
-  unresolved wiki questions and follows the same workspace conventions.
+- `work/wiki-open-questions.md` is the DTM-managed operational queue for open
+  questions that are worth carrying beyond one day. It centralises both
+  unresolved wiki questions and non-wiki DTM questions so they do not remain
+  fragmented across Daily Notes and individual working documents.
 
 ### `documents/` — collaborative internal documents workspace
 
@@ -132,7 +138,7 @@ compound across sessions.
   bookkeeping for authored internal documents such as strategies,
   architectural principles, operating models, and similar work products.
 - `documents/index.md` is the curated catalogue of the document workspace.
-  Keep every draft, final document, and managed deliverable listed exactly once
+  Keep every draft, final document, reference document, and managed deliverable listed exactly once
   under its current stage with a one-line description concrete enough to route
   future work without opening each file.
 - `documents/drafts/` contains active private drafting. Agents may create and
@@ -142,6 +148,12 @@ compound across sessions.
   kebab-case filenames across stages and update `documents/index.md`,
   the root `log.md` when the change is materially significant, and relevant
   Daily Note references in the same change.
+- `documents/reference/` contains non-authored reference documents kept for
+  context, citation, or future drafting support. These may remain in their
+  original file formats and filenames. They are part of the document workspace,
+  not the wiki source-ingestion queue, and must never be treated as authored
+  canonical documents unless the user explicitly promotes or rewrites them into
+  `documents/drafts/` or `documents/final/`.
 - `documents/deliverables/` contains shareable file-format variants of those
   documents, such as `.pptx`, `.docx`, and `.xlsx`. Keep deliverables grouped
   under a folder named for the document slug where practical, for example
@@ -183,6 +195,10 @@ compound across sessions.
   success and the canonical URL and publication time are recorded.
 - A failed or ambiguous publication remains in `writing/ready/`; never mark or
   move it as published optimistically.
+- `writing/archive/` contains retained records of formerly published pieces
+  that should no longer be treated as part of the active public website corpus.
+  Use `status: archived`, preserve the former `canonical_url` and
+  `published_at`, and add `archived_at` plus a concise `archive_reason`.
 - Keep a stable lowercase kebab-case filename across stages. Update frontmatter,
   `writing/index.md`, the root `log.md` when the change is materially
   significant, and relevant Daily Note references in the same change.

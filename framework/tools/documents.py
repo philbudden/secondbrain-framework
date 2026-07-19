@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCUMENTS = ROOT / "documents"
 DELIVERABLES = DOCUMENTS / "deliverables"
+REFERENCE = DOCUMENTS / "reference"
 STAGES = {
     "drafts": "draft",
     "final": "final",
@@ -87,6 +88,11 @@ def lint() -> int:
         for path in DELIVERABLES.rglob("*")
         if path.is_file() and path.name.lower() != "readme.md" and not path.name.startswith(".")
     )
+    reference_files = sorted(
+        path
+        for path in REFERENCE.rglob("*")
+        if path.is_file() and path.name.lower() != "readme.md" and not path.name.startswith(".")
+    )
     index_path = DOCUMENTS / "index.md"
     if index_path.exists():
         index_text = index_path.read_text(encoding="utf-8")
@@ -94,9 +100,9 @@ def lint() -> int:
     else:
         index_text = ""
         index_links = []
-        if all_pieces or deliverable_files:
+        if all_pieces or deliverable_files or reference_files:
             errors.append(
-                "documents/index.md: missing curated index; create documents/index.md before managing documents or deliverables"
+                "documents/index.md: missing curated index; create documents/index.md before managing documents, references, or deliverables"
             )
 
     for name, count in names.items():
@@ -147,6 +153,14 @@ def lint() -> int:
             elif count > 1:
                 errors.append(f"{relative(path)}: listed {count} times in documents/index.md")
 
+    if REFERENCE.exists():
+        for path in reference_files:
+            count = index_links.count(relative(path))
+            if count == 0:
+                errors.append(f"{relative(path)}: missing from documents/index.md")
+            elif count > 1:
+                errors.append(f"{relative(path)}: listed {count} times in documents/index.md")
+
     for item in sorted(set(errors)):
         print(f"ERROR   {item}")
     print(f"Checked {len(all_pieces)} document(s): {len(set(errors))} error(s), 0 warning(s).")
@@ -157,6 +171,14 @@ def status() -> int:
     counts = Counter(status for _, status in pieces())
     print(f"Drafts: {counts['draft']}")
     print(f"Final: {counts['final']}")
+    reference_count = sum(
+        1
+        for path in REFERENCE.rglob("*")
+        if path.is_file()
+        and path.name.lower() != "readme.md"
+        and not path.name.startswith(".")
+    )
+    print(f"Reference: {reference_count}")
     deliverable_count = sum(
         1
         for path in DELIVERABLES.rglob("*")
