@@ -67,6 +67,17 @@ class SkillPackagingTests(unittest.TestCase):
         self.assertIn("Mermaid", instructions)
         self.assertIn("allow_implicit_invocation: false", metadata)
 
+    def test_resolve_document_items_skill_is_non_adversarial_and_explicit(self):
+        skill = ROOT / "framework" / "skills" / "resolve-document-items"
+        instructions = (skill / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (skill / "agents" / "openai.yaml").read_text(encoding="utf-8")
+
+        self.assertIn("name: resolve-document-items", instructions)
+        self.assertIn("Ask exactly one primary question at a time.", instructions)
+        self.assertIn("not idea exploration, red-team review, or Socratic challenge", instructions)
+        self.assertIn("Update the source document", instructions)
+        self.assertIn("allow_implicit_invocation: false", metadata)
+
 
 class RecurrenceSafetyTests(unittest.TestCase):
     def test_invalid_rule_fails_before_rollover_mutates_notes(self):

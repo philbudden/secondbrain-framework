@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DAILY = ROOT / "daily"
 RECURRENCE = ROOT / "dtm" / "recurring-tasks.json"
+LOG = ROOT / "log.md"
 
 SECTIONS = [
     "Previous Day",
@@ -34,8 +35,11 @@ AREA_SECTION = {
 }
 TASK_RE = re.compile(r"^- \[ \] .+$", re.M)
 QUESTION_RE = re.compile(r"^- (?!\[[ xX]\] )(?!<!--)(.+)$", re.M)
+WIKI_LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 BLOCKERS_REQUIRED_FROM = date(2026, 7, 7)
+REFERENCE_LOG_REQUIRED_FROM = date(2026, 7, 22)
+LOG_REQUIRED_PREFIXES = ("projects/", "work/", "documents/", "writing/")
 FOCUS_SPLIT_MARKERS = (
     " then ",
     " and then ",
@@ -52,10 +56,6 @@ def vault_root() -> Path:
     return DAILY.parent
 
 
-def daily_archive_dir() -> Path:
-    return DAILY / "archive"
-
-
 def parse_date(value: str) -> date:
     try:
         return date.fromisoformat(value)
@@ -67,18 +67,8 @@ def active_note_path(day: date) -> Path:
     return DAILY / f"{day.isoformat()}.md"
 
 
-def archived_note_path(day: date) -> Path:
-    return daily_archive_dir() / f"{day.isoformat()}.md"
-
-
 def note_path(day: date) -> Path:
-    active = active_note_path(day)
-    if active.exists():
-        return active
-    archived = archived_note_path(day)
-    if archived.exists():
-        return archived
-    return active
+    return active_note_path(day)
 
 
 def note_exists(day: date) -> bool:
@@ -94,9 +84,7 @@ def active_note_files() -> list[Path]:
 
 
 def all_note_files() -> list[Path]:
-    active = active_note_files()
-    archived = sorted(path for path in daily_archive_dir().glob("*.md") if path.name != "README.md")
-    return active + archived
+    return active_note_files()
 
 
 def read_note(day: date) -> str | None:
@@ -127,6 +115,15 @@ def carryable_schedule_tasks(text: str) -> list[str]:
 
 def open_questions(text: str) -> list[str]:
     return [f"- {item.strip()}" for item in QUESTION_RE.findall(section(text, "Open Questions"))]
+
+
+def reference_links(text: str) -> list[str]:
+    links: list[str] = []
+    for target in WIKI_LINK_RE.findall(section(text, "References")):
+        normalised = target.removesuffix(".md")
+        if normalised.startswith(LOG_REQUIRED_PREFIXES):
+            links.append(normalised)
+    return links
 
 
 def focus_items(text: str) -> list[str]:
@@ -427,37 +424,6 @@ def rollover(day: date) -> int:
     return 0
 
 
-def archive_notes(keep: int) -> int:
-    if keep < 1:
-        raise DTMError("Keep count must be at least 1")
-    note_files = active_note_files()
-    if len(note_files) <= keep:
-        print(f"No Daily Notes archived; {len(note_files)} active note(s) within keep window {keep}.")
-        return 0
-    archive_dir = daily_archive_dir()
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    to_move = note_files[:-keep]
-    moved_days: list[date] = []
-    for path in to_move:
-        if not DATE_RE.fullmatch(path.stem):
-            raise DTMError(f"Cannot archive non-date Daily Note {path.relative_to(vault_root())}")
-        day = date.fromisoformat(path.stem)
-        target = archived_note_path(day)
-        if target.exists():
-            raise DTMError(f"Archive destination already exists: {target.relative_to(vault_root())}")
-        path.rename(target)
-        moved_days.append(day)
-        print(f"Archived {path.relative_to(vault_root())} -> {target.relative_to(vault_root())}")
-    affected_days = set(moved_days)
-    for moved_day in moved_days:
-        affected_days.add(moved_day - timedelta(days=1))
-        affected_days.add(moved_day + timedelta(days=1))
-    for affected_day in sorted(affected_days):
-        sync_note_links(affected_day)
-    print(f"Archived {len(moved_days)} Daily Note(s); kept {keep} active.")
-    return 0
-
-
 def validate_recurrence() -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -522,8 +488,21 @@ def require_valid_recurrence() -> None:
         raise DTMError(f"Invalid recurrence configuration:\n{details}")
 
 
+def log_entries_by_date(log_text: str, day: date) -> list[str]:
+    header = re.compile(r"^## \[(\d{4}-\d{2}-\d{2})\] ([a-z-]+) \| .+$", re.M)
+    matches = list(header.finditer(log_text))
+    entries: list[str] = []
+    for index, match in enumerate(matches):
+        if match.group(1) != day.isoformat() or match.group(2) != "dtm":
+            continue
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(log_text)
+        entries.append(log_text[match.start() : end])
+    return entries
+
+
 def lint() -> int:
     errors, warnings = validate_recurrence()
+    log_text = LOG.read_text(encoding="utf-8") if LOG.exists() else ""
     note_files = all_note_files()
     for path in note_files:
         if not DATE_RE.fullmatch(path.stem):
@@ -553,6 +532,13 @@ def lint() -> int:
                 errors.append(
                     f"{path.relative_to(ROOT)}: bundled Focus item should be split into distinct tasks: {item!r}"
                 )
+        if note_day >= REFERENCE_LOG_REQUIRED_FROM:
+            day_entries = log_entries_by_date(log_text, note_day)
+            for target in sorted(set(reference_links(text))):
+                if not any(target in entry for entry in day_entries):
+                    errors.append(
+                        f"{path.relative_to(ROOT)}: Reference [[{target}]] lacks a same-day dtm entry in log.md"
+                    )
 
     for item in sorted(set(errors)):
         print(f"ERROR   {item}")
@@ -599,8 +585,6 @@ def main() -> int:
     activity_parser.add_argument("--actor", default="DTM")
     activity_parser.add_argument("--time", dest="timestamp")
     activity_parser.add_argument("message")
-    archive_parser = sub.add_parser("archive")
-    archive_parser.add_argument("--keep", type=int, default=14)
     sub.add_parser("lint")
     sub.add_parser("status")
     args = parser.parse_args()
@@ -616,8 +600,6 @@ def main() -> int:
         if args.command == "activity":
             append_activity(args.date, args.actor, args.message, args.timestamp)
             return 0
-        if args.command == "archive":
-            return archive_notes(args.keep)
         if args.command == "lint":
             return lint()
         return status()

@@ -333,6 +333,63 @@ def list_kind(block: str) -> str | None:
     return None
 
 
+def is_markdown_table(block: str) -> bool:
+    lines = [line.strip() for line in block.splitlines() if line.strip()]
+    if len(lines) < 2:
+        return False
+    if not all(line.startswith("|") and line.endswith("|") for line in lines[:2]):
+        return False
+    separator_cells = [cell.strip() for cell in lines[1].strip("|").split("|")]
+    return bool(separator_cells) and all(re.match(r"^:?-{3,}:?$", cell) for cell in separator_cells)
+
+
+def parse_markdown_table(block: str) -> tuple[list[str], list[list[str]]]:
+    lines = [line.strip() for line in block.splitlines() if line.strip()]
+    rows = [[cell.strip() for cell in line.strip("|").split("|")] for line in lines]
+    header = rows[0]
+    body = rows[2:]
+    width = len(header)
+    normalized = [(row + [""] * width)[:width] for row in body]
+    return header, normalized
+
+
+def set_cell_margins(cell, *, top: int = 80, start: int = 80, bottom: int = 80, end: int = 80) -> None:
+    tc_pr = cell._tc.get_or_add_tcPr()
+    tc_mar = tc_pr.first_child_found_in("w:tcMar")
+    if tc_mar is None:
+        tc_mar = OxmlElement("w:tcMar")
+        tc_pr.append(tc_mar)
+    for name, value in (("top", top), ("start", start), ("bottom", bottom), ("end", end)):
+        element = tc_mar.find(qn(f"w:{name}"))
+        if element is None:
+            element = OxmlElement(f"w:{name}")
+            tc_mar.append(element)
+        element.set(qn("w:w"), str(value))
+        element.set(qn("w:type"), "dxa")
+
+
+def shade_cell(cell, fill: str) -> None:
+    tc_pr = cell._tc.get_or_add_tcPr()
+    shd = tc_pr.find(qn("w:shd"))
+    if shd is None:
+        shd = OxmlElement("w:shd")
+        tc_pr.append(shd)
+    shd.set(qn("w:fill"), fill)
+
+
+def markdown_table_widths(headers: list[str], rows: list[list[str]]) -> list[float]:
+    lengths: list[int] = []
+    for idx, header in enumerate(headers):
+        body_lengths = [len(row[idx]) for row in rows if idx < len(row)]
+        lengths.append(max([len(header), *body_lengths, 4]))
+    total = sum(lengths) or 1
+    raw = [CONTENT_WIDTH_IN * (length / total) for length in lengths]
+    minimum = 0.65 if len(headers) >= 5 else 0.9
+    adjusted = [max(minimum, width) for width in raw]
+    scale = CONTENT_WIDTH_IN / sum(adjusted)
+    return [width * scale for width in adjusted]
+
+
 def set_font(run, name: str, size: float, *, bold: bool = False, italic: bool = False, color: str = "000000") -> None:
     run.font.name = name
     run._element.rPr.rFonts.set(qn("w:ascii"), name)
@@ -464,6 +521,40 @@ def add_list(doc: Document, block: str, ordered: bool) -> None:
         set_font(run, "Calibri", 11, color="000000")
 
 
+def add_markdown_table(doc: Document, block: str) -> None:
+    headers, rows = parse_markdown_table(block)
+    if not headers:
+        return
+
+    table = doc.add_table(rows=1, cols=len(headers))
+    table.style = "Table Grid"
+    table.autofit = False
+    widths = markdown_table_widths(headers, rows)
+    font_size = 8 if len(headers) >= 5 else 9
+
+    for idx, (cell, header) in enumerate(zip(table.rows[0].cells, headers, strict=True)):
+        cell.width = Inches(widths[idx])
+        set_cell_margins(cell, top=100, start=100, bottom=100, end=100)
+        shade_cell(cell, "D9EAF7")
+        para = cell.paragraphs[0]
+        style_paragraph(para, after=0, line=240)
+        run = para.add_run(clean_inline(header))
+        set_font(run, "Calibri", font_size, bold=True, color="1F1F1F")
+
+    for row_values in rows:
+        row = table.add_row()
+        for idx, cell in enumerate(row.cells):
+            cell.width = Inches(widths[idx])
+            set_cell_margins(cell, top=90, start=100, bottom=90, end=100)
+            para = cell.paragraphs[0]
+            style_paragraph(para, after=0, line=240)
+            run = para.add_run(clean_inline(row_values[idx]))
+            set_font(run, "Calibri", font_size, color="000000")
+
+    spacer = doc.add_paragraph()
+    style_paragraph(spacer, after=8, line=240)
+
+
 def add_summary_table(doc: Document, title: str, summary: str, recommendation: str) -> None:
     table = doc.add_table(rows=3, cols=2)
     table.style = "Table Grid"
@@ -522,6 +613,9 @@ def build_docx(source: Path, output: Path) -> Path:
         if section.title and lowered != "document":
             add_heading(doc, section.title, section.level)
         for block in section.blocks:
+            if is_markdown_table(block):
+                add_markdown_table(doc, block)
+                continue
             kind = list_kind(block)
             if kind == "bullet":
                 add_list(doc, block, ordered=False)
