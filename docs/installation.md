@@ -31,8 +31,8 @@ framework files with `--force` after reviewing the changes.
 
 ## Install the SecondBrain skills
 
-The vault installer keeps canonical skills under `skills/`. To make `$dtm` and
-`$voice` discoverable by Codex, copy them into the user's Codex skills
+The vault installer keeps canonical skills under `skills/`. To make the
+framework skills discoverable by Codex, copy them into the user's Codex skills
 directory:
 
 ```sh
@@ -40,6 +40,7 @@ mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/markdown-to-pdf "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/resolve-document-items "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
 Start a thread in the installed vault and invoke `$dtm`. That thread remains in
@@ -52,6 +53,11 @@ Invoke `$voice` after representative writing has reached `ready/` or
 
 Invoke `$markdown-to-pdf` when you want a shareable PDF from a Markdown note or
 managed document, including Mermaid diagrams when present.
+
+Invoke `$resolve-document-items` when you want to work through open questions,
+unowned actions, assumptions, and pending decisions in a document one question
+at a time, updating the document only when the answer resolves or records the
+item.
 
 ## Optional PDF deliverable toolchain
 

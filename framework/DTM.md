@@ -67,8 +67,7 @@ When work is delegated to another thread:
 
 ## DTM workspace
 
-- `daily/YYYY-MM-DD.md` — active Daily Notes for the current 14-day retro period.
-- `daily/archive/YYYY-MM-DD.md` — archived Daily Notes retained for reference once they age out of the active window.
+- `daily/YYYY-MM-DD.md` — Daily Notes retained together in the main daily workspace.
 - `projects/` — durable project plans, status, milestones, and next actions.
 - `work/` — working documents, drafts, scratch analyses, and deliverables that
   are not yet durable wiki knowledge.
@@ -100,6 +99,8 @@ Working-note statuses are:
 
 Reusable operational assets in `work/`, such as prompt templates, checklists, research packs, or working methods that are still being actively used or revised, should remain `current`. Do not mark a note `reference` merely because it is reusable.
 
+New managed working notes default to `current` while they have an expected next use, even if that use is occasional or advisory. Create a new note directly as `reference` only when it is explicitly a retained historical record, superseded artefact, imported review, or other non-active material, and make the retention reason clear in the note. A newly created working note must not be marked `reference` just because it is a reusable comparison, research pack, or decision-support aid.
+
 Keep project filenames and managed working-note filenames in stable lowercase
 kebab-case. Use `templates/project.md` for projects and
 `templates/working-note.md` for new managed working notes.
@@ -113,6 +114,14 @@ authority, and internal documents, keep ordinary prose paragraphs on one
 physical line and rely on Obsidian for visual wrapping. Use new lines only when
 the Markdown structure itself changes, such as headings, list items, tables,
 block quotes, or code fences.
+
+## Implementation environment preferences
+
+When advising on, creating, or changing containerised development environments, preserve the user's architecture preference unless the task supplies a stronger local constraint:
+
+- For containers that run custom application code on the user's Mac, prefer `linux/amd64` images under Rosetta, accepting the performance tradeoff in exchange for consistency with the more common non-ARM deployment and runtime architecture.
+- For hosted services or off-the-shelf dependency containers where the container is not running custom application code, prefer native ARM images when they are available.
+- Deviate from this only for a clear compatibility, tooling, or operational reason, and call out that reason explicitly before proceeding.
 
 ## Collaborative writing
 
@@ -218,6 +227,7 @@ traceable at system level.
 
 - Put personal and professional tasks in their respective Daily Note sections.
 - Use Obsidian task syntax: `- [ ] Action` and `- [x] Completed action`.
+- Treat the Daily Note `Focus` section as the morning commitment for the day, not a live next-action list. After the day has started, do not rewrite `Focus` to reflect progress, newly discovered details, or the next task unless the user explicitly asks to correct the focus wording itself. Track completion and changing operational state in to-do items, `Notes & Activity`, and linked project or working notes.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
 - In the current Daily Note, preserve visible completion by checking completed

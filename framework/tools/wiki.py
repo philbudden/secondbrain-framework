@@ -428,6 +428,16 @@ def lint() -> int:
             (date.fromisoformat(entry_date), operation, title.strip())
             for entry_date, operation, title in LOG_RE.findall(log_text)
         ]
+        for previous, current in zip(log_entries, log_entries[1:]):
+            previous_date, previous_operation, previous_title = previous
+            current_date, current_operation, current_title = current
+            if current_date < previous_date:
+                errors.append(
+                    "log.md: entries are out of chronological order; "
+                    f"{current_date.isoformat()} {current_operation} | {current_title} "
+                    "appears after "
+                    f"{previous_date.isoformat()} {previous_operation} | {previous_title}"
+                )
         log_entry_blocks: list[tuple[date, str, str, str]] = []
         matches = list(LOG_RE.finditer(log_text))
         for index, match in enumerate(matches):
