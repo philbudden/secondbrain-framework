@@ -10,7 +10,7 @@ canonical_url:
 published_at:
 human_author:
 ai_assistance: true
-voice_pack: writing/voice/voice-pack.md
+voice_pack: writing/voice/blog-voice-pack.md
 tags:
   - writing
 ---

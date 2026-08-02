@@ -58,6 +58,7 @@ MERMAID_BLOCK_RE = re.compile(r"```mermaid\s*\n(.*?)\n```", re.S)
 OBSIDIAN_EMBED_RE = re.compile(r"!\[\[([^\]]+)\]\]")
 OBSIDIAN_LINK_RE = re.compile(r"(?<!!)\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]")
 OBSIDIAN_BLOCK_ID_RE = re.compile(r"(\s)\^([A-Za-z0-9_-]+)(?=\s*$)", re.M)
+MARKDOWN_IMAGE_RE = re.compile(r"^!\[([^\]]*)\]\((?:<([^>]+)>|([^)]+))\)$")
 
 
 @dataclass
@@ -343,6 +344,35 @@ def is_markdown_table(block: str) -> bool:
     return bool(separator_cells) and all(re.match(r"^:?-{3,}:?$", cell) for cell in separator_cells)
 
 
+def markdown_image_target(block: str) -> str | None:
+    match = MARKDOWN_IMAGE_RE.match(block.strip())
+    if not match:
+        return None
+    return (match.group(2) or match.group(3) or "").strip()
+
+
+def resolve_markdown_image(raw_target: str, source: Path) -> Path | None:
+    target = raw_target.split("#", 1)[0].strip()
+    if not target:
+        return None
+    candidate = (source.parent / target).resolve()
+    if candidate.exists():
+        return candidate
+    root_candidate = (ROOT / target).resolve()
+    if root_candidate.exists():
+        return root_candidate
+    return None
+
+
+def docx_image_path(path: Path) -> Path:
+    if path.suffix.lower() != ".svg":
+        return path
+    png_candidate = path.parent / "docx-png" / f"{path.stem}.png"
+    if png_candidate.exists():
+        return png_candidate
+    return path
+
+
 def parse_markdown_table(block: str) -> tuple[list[str], list[list[str]]]:
     lines = [line.strip() for line in block.splitlines() if line.strip()]
     rows = [[cell.strip() for cell in line.strip("|").split("|")] for line in lines]
@@ -473,17 +503,18 @@ def add_footer(doc: Document, title: str) -> None:
     set_font(page_run, "Calibri", 9, color="666666")
 
 
-def add_title_block(doc: Document, title: str, audience: str, updated: str) -> None:
+def add_title_block(doc: Document, title: str, subtitle: str = "") -> None:
     title_p = doc.add_paragraph(style="Title")
     title_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     style_paragraph(title_p, after=6, line=240)
     set_font(title_p.add_run(title), "Calibri", 18, bold=True, color="1F1F1F")
 
-    meta = doc.add_paragraph()
-    style_paragraph(meta, after=12, line=240)
-    meta.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    meta_run = meta.add_run(f"Audience: {audience} | Updated: {updated}")
-    set_font(meta_run, "Calibri", 10, color="666666")
+    if subtitle:
+        subtitle_p = doc.add_paragraph()
+        style_paragraph(subtitle_p, after=14, line=252)
+        subtitle_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        subtitle_run = subtitle_p.add_run(clean_inline(subtitle))
+        set_font(subtitle_run, "Calibri", 11, italic=True, color="666666")
 
 
 def add_heading(doc: Document, title: str, level: int) -> None:
@@ -511,13 +542,14 @@ def add_paragraph(doc: Document, text: str) -> None:
 
 
 def add_list(doc: Document, block: str, ordered: bool) -> None:
-    for line in block.splitlines():
+    for idx, line in enumerate(block.splitlines(), start=1):
         item = re.sub(r"^(- |\d+\. )", "", line).strip()
-        para = doc.add_paragraph(style="List Number" if ordered else "List Bullet")
+        para = doc.add_paragraph(style="List Bullet" if not ordered else None)
         style_paragraph(para, after=6, line=280)
         para.paragraph_format.left_indent = Inches(0.25)
         para.paragraph_format.first_line_indent = Inches(-0.25)
-        run = para.add_run(clean_inline(item))
+        prefix = f"{idx}.    " if ordered else ""
+        run = para.add_run(prefix + clean_inline(item))
         set_font(run, "Calibri", 11, color="000000")
 
 
@@ -555,6 +587,20 @@ def add_markdown_table(doc: Document, block: str) -> None:
     style_paragraph(spacer, after=8, line=240)
 
 
+def add_markdown_image(doc: Document, path: Path, alt_text: str = "") -> None:
+    paragraph = doc.add_paragraph()
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    style_paragraph(paragraph, before=6, after=10, line=240)
+    run = paragraph.add_run()
+    run.add_picture(str(path), width=Inches(CONTENT_WIDTH_IN))
+    if alt_text:
+        drawing = run._element.xpath(".//wp:inline")
+        if drawing:
+            doc_pr = drawing[0].find(qn("wp:docPr"))
+            if doc_pr is not None:
+                doc_pr.set("descr", alt_text)
+
+
 def add_summary_table(doc: Document, title: str, summary: str, recommendation: str) -> None:
     table = doc.add_table(rows=3, cols=2)
     table.style = "Table Grid"
@@ -579,8 +625,13 @@ def add_summary_table(doc: Document, title: str, summary: str, recommendation: s
 def build_docx(source: Path, output: Path) -> Path:
     meta, raw_body = parse_frontmatter(source.read_text(encoding="utf-8"))
     body = publish_body(raw_body)
+    body = replace_obsidian_embeds(body, source)
+    body = replace_obsidian_links(body)
+    body = replace_obsidian_block_ids(body)
     sections = parse_sections(body)
+    subtitle = ""
     if sections and sections[0].level == 1:
+        subtitle = " ".join(sections[0].blocks).strip()
         sections = sections[1:]
 
     doc = Document()
@@ -588,31 +639,26 @@ def build_docx(source: Path, output: Path) -> Path:
     set_page_geometry(doc)
 
     title = meta.get("title", source.stem.replace("-", " ").title())
-    audience = meta.get("audience", "")
-    updated = meta.get("updated", "")
-    add_title_block(doc, title, audience, updated)
+    add_title_block(doc, title, subtitle)
     add_footer(doc, title)
-
-    summary_section = next((section for section in sections if section.title.lower() == "summary"), None)
-    recommendation = ""
-    for section in sections:
-        if section.title.lower() == "recommendation":
-            recommendation = " ".join(clean_inline(block) for block in section.blocks[:2])
-            break
-    if summary_section:
-        summary = " ".join(clean_inline(block) for block in summary_section.blocks[:2])
-        add_summary_table(doc, title, summary, recommendation or "Treat the staged model as a pilot and refine it with evidence.")
-        doc.add_paragraph()
 
     for section in sections:
         lowered = section.title.lower()
-        if lowered in {"summary", "notes"}:
+        if lowered == "notes":
             continue
         if lowered == "document" and not section.blocks:
             continue
         if section.title and lowered != "document":
             add_heading(doc, section.title, section.level)
         for block in section.blocks:
+            image_target = markdown_image_target(block)
+            if image_target:
+                image_path = resolve_markdown_image(image_target, source)
+                if image_path is not None:
+                    add_markdown_image(doc, docx_image_path(image_path), clean_inline(block))
+                else:
+                    add_paragraph(doc, block)
+                continue
             if is_markdown_table(block):
                 add_markdown_table(doc, block)
                 continue

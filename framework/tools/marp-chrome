@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+exec "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --user-data-dir="/private/tmp/secondbrain-marp-chrome-profile" \
+  --no-first-run \
+  --no-default-browser-check \
+  "$@"

@@ -13,10 +13,15 @@ here under `documents/`.
 
 ## Voice pack
 
-`../writing/voice/voice-pack.md` is the private style guide shared across
-writing and internal documents. Invoke `$voice` to learn from approved prose in
-`../writing/ready/`, `../writing/published/`, and `final/`. The skill never
-reads `drafts/`.
+`voice/document-voice-pack.md` is the canonical private guide to the user's
+internal document style. It is generated from approved reader-facing prose in
+`final/`. `../writing/voice/blog-voice-pack.md` is generated separately from
+public writing, and `../writing/voice/anti-ai-style-rules.md` supplies the
+protected anti-AI avoidance layer shared by both writing modes.
+
+Invoke `$voice` to refresh the blog and document voice packs. The skill never
+reads `drafts/` or `../writing/drafts/`, and it must not learn from chats,
+Daily Notes, wiki pages, raw sources, projects, or scratch material.
 
 ## Lifecycle
 
@@ -73,7 +78,7 @@ updated: YYYY-MM-DD
 audience:
 human_author:
 ai_assistance: true
-voice_pack: writing/voice/voice-pack.md
+voice_pack: documents/voice/document-voice-pack.md
 origin_path:
 tags:
   - document
@@ -118,5 +123,64 @@ The PDF path depends on `pandoc`, `typst`, and `mermaid-cli`. Mermaid rendering 
 The current supported path is:
 
 - Markdown document to Word `.docx`
+
+## Marp slide decks
+
+Use Marp Markdown as the canonical source for slide decks that should remain easy to edit in Obsidian and revise with Codex. This remains true throughout the whole lifecycle: draft, final, published, and later revised deck sources are Markdown-first. Exported `.pptx`, PDF, HTML, image, and speaker-note files are generated deliverables only; promoting a deck to a final version does not make an exported file the primary copy.
+
+The preferred Obsidian plugin is `Marp Slides Presenter` (`marp-slides-presenter`), configured to use the local Marp CLI, Chrome launch wrapper, and `templates/marp-themes` as the custom theme folder.
+
+Keep active draft deck sources under:
+
+```text
+documents/drafts/<deck-slug>/<deck-slug>.marp.md
+```
+
+When a deck is approved as final, move the Markdown source folder to:
+
+```text
+documents/final/<deck-slug>/<deck-slug>.marp.md
+```
+
+Create exported files only when the Markdown source has been reviewed and the user asks for a deliverable pass. Generated PDFs, PPTX files, speaker-note exports, and deck-local export artefacts belong under:
+
+```text
+documents/deliverables/<deck-slug>/exports/
+```
+
+Keep deck-local images, diagrams, and style overrides beside the Markdown source while the deck is still being edited:
+
+```text
+documents/drafts/<deck-slug>/assets/
+documents/final/<deck-slug>/assets/
+```
+
+Start new decks from `templates/marp-deck.md`. Use `templates/marp-themes/secondbrain.css` as the default theme unless a branded or event-specific deck needs a different visual treatment.
+
+Speaker notes belong in HTML comments on the slide they support:
+
+```markdown
+<!--
+Speaker note:
+Say the spoken argument here rather than crowding the slide.
+-->
+```
+
+Prefer standard Markdown image links over Obsidian embeds inside decks, for example:
+
+```markdown
+![Delegation modes](assets/diagrams/delegation-modes.svg)
+```
+
+Use SVG or PNG assets for important visuals. Mermaid is acceptable for rough drafting, but important conference visuals should be exported to SVG or PNG before final delivery so Obsidian preview, PDF export, and PowerPoint export all use the same asset. Keep `MarkdownIt Plugins` disabled in the presenter plugin unless there is a deliberate need for Kroki-backed diagram rendering.
+
+Deck export:
+
+```sh
+python3 tools/decks.py check
+python3 tools/decks.py export documents/drafts/example-deck/example-deck.marp.md
+```
+
+The helper exports PDF, image-based PPTX, and speaker notes by default. Editable PPTX remains a special-case path because Marp's editable export has lower fidelity and does not preserve presenter notes reliably.
 
 After generating a deliverable, render it through the bundled document-skill renderer and visually inspect the PNG output before treating it as ready to share. The current operating note for this workflow lives in `../work/document-deliverables-workflow.md`.

@@ -158,6 +158,16 @@ compound across sessions.
   documents, such as `.pptx`, `.docx`, and `.xlsx`. Keep deliverables grouped
   under a folder named for the document slug where practical, for example
   `documents/deliverables/data-strategy-for-social-impact/`.
+- Markdown remains the canonical source of truth for every authored document
+  and slide deck throughout its lifecycle. Draft and final Markdown files are
+  the maintained copies. Exported `.pptx`, PDF, HTML, image, Word, spreadsheet,
+  and speaker-note files are generated deliverables only; promoting a Markdown
+  source to final status does not make an exported file primary.
+- Marp slide decks are canonical Markdown sources. Keep active deck sources
+  under `documents/drafts/<deck-slug>/<deck-slug>.marp.md` and approved final
+  deck sources under `documents/final/<deck-slug>/<deck-slug>.marp.md`.
+  Generate slide outputs under `documents/deliverables/<deck-slug>/exports/`
+  only when the user asks for a deliverable pass.
 - When a Markdown document needs a managed Word copy, prefer
   `python3 tools/document_deliverables.py docx <document.md>` and visually QA
   the output by rendering page images before treating the deliverable as ready
@@ -166,13 +176,16 @@ compound across sessions.
   document is also used as wiki evidence, retain the raw-source copy under
   `raw/` or `raw/processed/` as immutable provenance and manage the authored
   working copy separately under `documents/`.
-- `writing/voice/voice-pack.md` is also the private style model for internal
-  document drafting. Voice analysis may read only reader-facing prose in
-  `writing/ready/`, `writing/published/`, and `documents/final/`; it must never
-  inspect document drafts or use chats, Daily Notes, wiki pages, sources,
-  projects, or scratch material as style evidence.
-- Before creating or materially rewriting a document draft, read the voice pack
-  when it exists and apply its guidance without caricaturing the user.
+- `documents/voice/document-voice-pack.md` is the private style model for
+  internal document drafting. `writing/voice/anti-ai-style-rules.md` is the
+  shared protected avoidance layer for both writing and documents. Voice
+  analysis may read only reader-facing prose in `writing/ready/`,
+  `writing/published/`, and `documents/final/`; it must never inspect document
+  drafts or use chats, Daily Notes, wiki pages, sources, projects, or scratch
+  material as style evidence.
+- Before creating or materially rewriting a document draft, read the document
+  voice pack and anti-AI style rules when they exist and apply their guidance
+  without caricaturing the user.
 - Run `python3 tools/documents.py lint` after structural or status changes.
 
 ### `writing/` — collaborative writing workspace
@@ -205,14 +218,17 @@ compound across sessions.
 - Publish only the content between `<!-- publish:start -->` and
   `<!-- publish:end -->`. Editorial briefs, source notes, and revision history
   remain private working metadata unless the user explicitly includes them.
-- `writing/voice/voice-pack.md` is a private style model maintained by the
-  `$voice` skill. Voice analysis may read only reader-facing prose in
-  `writing/ready/`, `writing/published/`, and `documents/final/`; it must never
-  inspect drafts or use chats, Daily Notes, wiki pages, sources, projects, or
-  scratch material as style evidence.
-- Before creating or materially rewriting a draft, read the voice pack when it
-  exists and apply its guidance without caricaturing the user. Preserve the
-  user's current brief and explicit instructions over inferred style rules.
+- `writing/voice/blog-voice-pack.md` is the private style model for public
+  writing maintained by the `$voice` skill. `writing/voice/voice-pack.md` is a
+  compatibility mirror for older artefacts. `writing/voice/anti-ai-style-rules.md`
+  is the shared protected avoidance layer. Voice analysis may read only
+  reader-facing prose in `writing/ready/`, `writing/published/`, and
+  `documents/final/`; it must never inspect drafts or use chats, Daily Notes,
+  wiki pages, sources, projects, or scratch material as style evidence.
+- Before creating or materially rewriting a draft, read the blog voice pack and
+  anti-AI style rules when they exist and apply their guidance without
+  caricaturing the user. Preserve the user's current brief and explicit
+  instructions over inferred style rules.
 - Run `python3 tools/writing.py lint` after structural or status changes.
 
 ### `AGENTS.md` — shared schema
