@@ -7,7 +7,7 @@ updated: {{date:YYYY-MM-DD}}
 audience:
 human_author:
 ai_assistance: true
-voice_pack: writing/voice/voice-pack.md
+voice_pack: documents/voice/document-voice-pack.md
 origin_path:
 tags:
   - document

@@ -137,10 +137,10 @@ only after confirmed success. Apply all detailed status and metadata rules in
 `writing/README.md`.
 
 Before creating or materially rewriting reader-facing prose, read
-`writing/voice/voice-pack.md` when present. Treat it as guidance rather than a
-formula: the current brief and direct user instructions take precedence. Only
-the `$voice` workflow may learn style from the approved corpus, and it must
-exclude drafts completely.
+`writing/voice/blog-voice-pack.md` and `writing/voice/anti-ai-style-rules.md`
+when present. Treat them as guidance rather than a formula: the current brief
+and direct user instructions take precedence. Only the `$voice` workflow may
+learn style from the approved corpus, and it must exclude drafts completely.
 
 ## Collaborative internal documents
 
@@ -166,6 +166,12 @@ document workspace item. Treat the Markdown file in `documents/drafts/` or
 `documents/final/` as the editable canonical source when one exists, and treat
 the `.pptx`, `.docx`, or `.xlsx` file as the distributed artefact.
 
+The same rule applies to slide decks. A Marp `.marp.md` deck remains the
+canonical source in draft and final states. Generate `.pptx`, PDF, HTML,
+image, and speaker-note exports only when the user asks for a deliverable pass;
+do not create or promote exported slide files merely because a Markdown deck
+has been created or revised.
+
 When generating a managed `.docx` deliverable from a Markdown source, prefer
 `python3 tools/document_deliverables.py docx <document.md>`, then render the
 result and visually inspect the page PNGs before treating it as ready to share.
@@ -175,8 +181,9 @@ in `raw/` or `raw/processed/` unchanged as provenance and maintain the authored
 copy separately under `documents/`.
 
 Before creating or materially rewriting an internal document, read
-`writing/voice/voice-pack.md` when present. The `$voice` workflow may learn
-from `documents/final/` as part of the approved corpus, but must never inspect
+`documents/voice/document-voice-pack.md` and
+`writing/voice/anti-ai-style-rules.md` when present. The `$voice` workflow may
+learn from `documents/final/` for the document pack, but must never inspect
 `documents/drafts/`.
 
 If the user says they have edited a managed document directly in Obsidian or

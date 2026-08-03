@@ -4,9 +4,11 @@ type: voice-pack
 status: provisional
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+profile: generic
 ready_sources: 0
 published_sources: 0
 document_sources: 0
+anti_ai_rules: writing/voice/anti-ai-style-rules.md
 tags:
   - writing
   - voice
@@ -20,10 +22,17 @@ Apply these patterns as flexible guidance. The current editorial brief and
 direct user instructions take precedence. Do not exaggerate traits into a
 caricature.
 
+Read the shared anti-AI style rules before drafting or regenerating this pack.
+Those rules are protected inputs, not learned style evidence.
+
 ## Confidence and coverage
 
 No approved writing or final internal documents have been analysed yet. The
 pack is provisional.
+
+Before overwriting an existing generated voice pack, copy it to the single
+rollback backup for that profile. Replace the previous backup; do not keep a
+chain of historical backups.
 
 ## Declared preferences
 
@@ -57,7 +66,7 @@ Insufficient evidence.
 
 ## Avoid
 
-No evidence-based avoidances identified yet.
+Apply `writing/voice/anti-ai-style-rules.md` as the shared avoidance layer.
 
 ## Context variations
 
@@ -66,6 +75,8 @@ No genre-specific variations identified yet.
 ## Drafting checklist
 
 - Follow the current brief before inferred tendencies.
+- Preserve declared preferences verbatim during regeneration.
+- Keep anti-AI rules as durable constraints, not as positive style evidence.
 - Recheck this pack after representative approved writing is added.
 
 ## Evidence ledger

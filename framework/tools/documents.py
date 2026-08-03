@@ -17,6 +17,19 @@ STAGES = {
     "drafts": "draft",
     "final": "final",
 }
+DECK_REQUIRED = {
+    "marp",
+    "type",
+    "status",
+    "created",
+    "updated",
+    "title",
+    "author",
+    "human_author",
+    "ai_assistance",
+    "voice_pack",
+    "tags",
+}
 REQUIRED = {
     "title",
     "type",
@@ -30,6 +43,7 @@ REQUIRED = {
     "tags",
 }
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
+DECK_SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*\.marp\.md$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
 INDEX_ENTRY_RE = re.compile(r"^\s*-\s+\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]", re.M)
@@ -43,6 +57,13 @@ def pieces() -> list[tuple[Path, str]]:
     result: list[tuple[Path, str]] = []
     for folder, status in STAGES.items():
         result.extend((path, status) for path in sorted((DOCUMENTS / folder).glob("*.md")))
+    return result
+
+
+def deck_sources() -> list[tuple[Path, str]]:
+    result: list[tuple[Path, str]] = []
+    for folder, status in STAGES.items():
+        result.extend((path, status) for path in sorted((DOCUMENTS / folder).glob("*/*.marp.md")))
     return result
 
 
@@ -82,7 +103,8 @@ def value(meta: dict[str, object], field: str) -> str:
 def lint() -> int:
     errors: list[str] = []
     all_pieces = pieces()
-    names = Counter(path.name for path, _ in all_pieces)
+    all_decks = deck_sources()
+    names = Counter(path.name for path, _ in [*all_pieces, *all_decks])
     deliverable_files = sorted(
         path
         for path in DELIVERABLES.rglob("*")
@@ -100,7 +122,7 @@ def lint() -> int:
     else:
         index_text = ""
         index_links = []
-        if all_pieces or deliverable_files or reference_files:
+        if all_pieces or all_decks or deliverable_files or reference_files:
             errors.append(
                 "documents/index.md: missing curated index; create documents/index.md before managing documents, references, or deliverables"
             )
@@ -108,6 +130,40 @@ def lint() -> int:
     for name, count in names.items():
         if count > 1:
             errors.append(f"duplicate document filename across stages: {name}")
+
+    for path, expected_status in all_decks:
+        label = relative(path)
+        text = path.read_text(encoding="utf-8")
+        meta = frontmatter(text)
+        if not DECK_SLUG_RE.fullmatch(path.name):
+            errors.append(f"{label}: deck filename must use lowercase kebab-case ending .marp.md")
+        if meta is None:
+            errors.append(f"{label}: missing or malformed frontmatter")
+            continue
+        missing = DECK_REQUIRED - meta.keys()
+        if missing:
+            errors.append(f"{label}: missing fields {', '.join(sorted(missing))}")
+        if str(meta.get("marp", "")).lower() != "true":
+            errors.append(f"{label}: marp must be true")
+        if meta.get("type") != "deck":
+            errors.append(f"{label}: type must be 'deck'")
+        if meta.get("status") != expected_status:
+            errors.append(
+                f"{label}: folder requires status {expected_status!r}, found {meta.get('status')!r}"
+            )
+        for field in ("created", "updated"):
+            if not DATE_RE.fullmatch(value(meta, field)):
+                errors.append(f"{label}: {field} must be YYYY-MM-DD")
+        if not value(meta, "title"):
+            errors.append(f"{label}: title must not be empty")
+        if not value(meta, "voice_pack"):
+            errors.append(f"{label}: voice_pack must not be empty")
+        target = label.removesuffix(".md")
+        count = index_links.count(target)
+        if count == 0:
+            errors.append(f"{label}: missing from documents/index.md")
+        elif count > 1:
+            errors.append(f"{label}: listed {count} times in documents/index.md")
 
     for path, expected_status in all_pieces:
         label = relative(path)
@@ -163,14 +219,19 @@ def lint() -> int:
 
     for item in sorted(set(errors)):
         print(f"ERROR   {item}")
-    print(f"Checked {len(all_pieces)} document(s): {len(set(errors))} error(s), 0 warning(s).")
+    print(
+        f"Checked {len(all_pieces)} document(s) and {len(all_decks)} deck source(s): {len(set(errors))} error(s), 0 warning(s)."
+    )
     return 1 if errors else 0
 
 
 def status() -> int:
     counts = Counter(status for _, status in pieces())
+    deck_counts = Counter(status for _, status in deck_sources())
     print(f"Drafts: {counts['draft']}")
     print(f"Final: {counts['final']}")
+    print(f"Draft decks: {deck_counts['draft']}")
+    print(f"Final decks: {deck_counts['final']}")
     reference_count = sum(
         1
         for path in REFERENCE.rglob("*")

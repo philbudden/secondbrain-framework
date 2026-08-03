@@ -146,13 +146,11 @@ def set_previous_day_line(text: str, replacement: str) -> str:
     body = previous_section.group(2)
     updated_body = re.sub(
         r"^(Previous note: .+|No Daily Note exists for the previous calendar day\.)$",
-        replacement,
+        "",
         body,
-        count=1,
         flags=re.M,
-    )
-    if updated_body == body:
-        updated_body = f"{replacement}\n\n{body.lstrip()}" if body.strip() else f"{replacement}\n"
+    ).lstrip("\n")
+    updated_body = f"{replacement}\n\n{updated_body}" if updated_body.strip() else f"{replacement}\n"
     return text[: previous_section.start(2)] + updated_body + text[previous_section.end(2) :]
 
 
@@ -408,7 +406,7 @@ def append_activity(day: date, actor: str, message: str, timestamp: str | None =
         notes_lines = [line for line in notes_lines if line.strip()]
         notes_lines.append(entry)
 
-    updated_before = f"{notes_prefix}{notes_heading}\n{chr(10).join(notes_lines)}\n"
+    updated_before = f"{notes_prefix}{notes_heading}\n{chr(10).join(notes_lines)}\n\n"
     path.write_text(f"{updated_before}## Decisions{after}", encoding="utf-8")
     print(f"Updated {path.relative_to(vault_root())}")
     return True
