@@ -12,8 +12,8 @@
       }
     },
     {
-      "id": "monday-review-diary-post",
-      "task": "Review the generated weekly diary draft",
+      "id": "monday-review-newsletter-issue",
+      "task": "Review the generated weekly newsletter issue",
       "area": "schedule",
       "enabled": true,
       "schedule": {
