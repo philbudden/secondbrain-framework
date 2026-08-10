@@ -12,6 +12,8 @@ for tagged releases.
 
 ### Changed
 
+- Public blog posts with social cards now carry accessible image metadata through their ready and published stages, using the blog's shared card generator and visual system.
+- The Monday recurring review task now refers to the generated weekly newsletter issue rather than a diary draft.
 - Document and slide-deck workflows now keep Markdown as the canonical source throughout drafting, approval, and delivery; exported files remain generated deliverables.
 - DOCX generation now supports standard Markdown image links and preserves a more natural document structure in exported Word files.
 - Daily Note rollover now replaces earlier previous-note pointers cleanly, keeping a single current link to the preceding note.

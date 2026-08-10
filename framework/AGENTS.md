@@ -218,6 +218,11 @@ compound across sessions.
 - Publish only the content between `<!-- publish:start -->` and
   `<!-- publish:end -->`. Editorial briefs, source notes, and revision history
   remain private working metadata unless the user explicitly includes them.
+- When a public blog piece has a social card, keep `social_image` and
+  `social_image_alt` in its ready-item frontmatter and carry both fields into
+  the published Jekyll article. Social cards use the blog repository's shared
+  generator and stylesheet-derived visual system; do not create one-off card
+  designs or omit the accessible alternative text.
 - `writing/voice/blog-voice-pack.md` is the private style model for public
   writing maintained by the `$voice` skill. `writing/voice/voice-pack.md` is a
   compatibility mirror for older artefacts. `writing/voice/anti-ai-style-rules.md`
