@@ -13,7 +13,7 @@
     },
     {
       "id": "monday-review-newsletter-issue",
-      "task": "Review the generated weekly newsletter issue",
+      "task": "Review the generated weekly One Concept, One Example, One Question newsletter issue",
       "area": "schedule",
       "enabled": true,
       "schedule": {
@@ -22,13 +22,13 @@
       }
     },
     {
-      "id": "tuesday-review-wiki-blog-post",
+      "id": "monday-review-wiki-blog-post",
       "task": "Review the generated weekly wiki blog draft",
-      "area": "schedule",
+      "area": "personal",
       "enabled": true,
       "schedule": {
         "frequency": "weekly",
-        "weekdays": ["Tuesday"]
+        "weekdays": ["Monday"]
       }
     },
     {
