@@ -31,6 +31,10 @@ tags:
 
 Write the reader-facing piece here.
 
+---
+
+_Generative AI is a powerful tool. I openly use it to conduct research, challenge my thinking, generate drafts, and review my work. AI never owns what I think, or my personal judgement. Everything I publish is a reflection of my own thoughts and opinions._
+
 <!-- publish:end -->
 
 ## Sources and claim checks
