@@ -32,6 +32,11 @@ contracts, automation behaviour, and install output. Merge only intentional
 changes. Release tags should use semantic versioning and summarize migration
 requirements in the changelog.
 
+Keep `CHANGELOG.md` grouped by the date the framework change was made. The
+`[Unreleased]` section is only a holding heading; `Added`, `Changed`, and other
+Keep a Changelog subsections must appear under a dated `## [YYYY-MM-DD]`
+section, never directly under `[Unreleased]`.
+
 ## Rollback
 
 Do not use Git directly in a live synchronized vault. Instead:
