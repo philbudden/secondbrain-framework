@@ -5,16 +5,40 @@ for tagged releases.
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [2026-08-17]
+
+### Added
+
+- Core guidance now recognises a practical review tools index for reusable tests, heuristics, taxonomies, checklists, and decision lenses created in the wiki.
+
+### Changed
+
+- Writing and newsletter templates now include an italic generative-AI-use preface at the end of new publishable bodies.
+- Voice analysis now weights more recent approved writing more strongly, so older accepted prose does not permanently anchor the user's developing style.
+
+## [2026-08-03]
+
+### Changed
+
+- Daily Note rollover now replaces earlier previous-note pointers cleanly, keeping a single current link to the preceding note.
+
+## [2026-07-30]
+
+### Added
+
+- Separate voice-pack profiles for public writing and internal documents, with shared protected anti-AI style rules and a rollback copy for each generated profile.
+
+## [2026-07-28]
+
 ### Added
 
 - Marp slide-deck support, with a canonical Markdown deck template, a SecondBrain theme, deck-aware validation, and managed PDF, PowerPoint, and speaker-note exports.
-- Separate voice-pack profiles for public writing and internal documents, with shared protected anti-AI style rules and a rollback copy for each generated profile.
 
 ### Changed
 
 - Document and slide-deck workflows now keep Markdown as the canonical source throughout drafting, approval, and delivery; exported files remain generated deliverables.
-- DOCX generation now supports standard Markdown image links and preserves a more natural document structure in exported Word files.
-- Daily Note rollover now replaces earlier previous-note pointers cleanly, keeping a single current link to the preceding note.
 
 ## [2026-07-27]
 
@@ -25,6 +49,7 @@ for tagged releases.
 
 ### Changed
 
+- DOCX generation now supports standard Markdown image links and preserves a more natural document structure in exported Word files.
 - Daily Notes are retained together in the main workspace, and DTM validation checks that referenced projects, working notes, documents, and writing items have a same-day activity-log record.
 - Framework validation now detects out-of-order system-log entries.
 

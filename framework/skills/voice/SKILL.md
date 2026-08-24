@@ -42,10 +42,16 @@ Protected input:
    documents in `documents/final/`, analyse the reader-facing body while
    ignoring private notes, metadata, and drafting residue.
 6. Analyse blog and document corpora separately. Weight published blog work
-   more strongly than ready blog work. Use final internal documents only for
-   the document pack. Separate stable habits seen across pieces from topic,
-   format, or genre-specific choices. Do not infer a confident rule from a
-   single example.
+   more strongly than ready blog work. Within each approved corpus, weight more
+   recent pieces more strongly than older pieces because the user's voice
+   develops through practice. Older approved prose is historical evidence of
+   accepted work in context, not permanent proof that every surviving pattern is
+   a desired style habit. Use final internal documents only for the document
+   pack. Separate stable habits seen across pieces from topic, format, or
+   genre-specific choices. Do not infer a confident rule from a single example.
+   When newer approved work and declared preferences point away from older
+   patterns, treat the newer direction as stronger evidence unless there is a
+   clear reason not to.
 7. Extract actionable positive style patterns for each pack: tone, stance,
    syntax and rhythm, diction, structure, transitions, openings, closings,
    rhetorical habits, formatting, and context variations. Use short examples
@@ -75,8 +81,9 @@ Protected input:
   have moved to the canonical blog pack path.
 - Keep observations concrete enough to guide drafting. Prefer “Use X under Y
   conditions” over vague labels such as “engaging” or “authentic.”
-- Record coverage, confidence, eligible source counts, an evidence ledger, and
-  what changed in this analysis pass for each generated pack.
+- Record coverage, confidence, eligible source counts, recency weighting, an
+  evidence ledger, and what changed in this analysis pass for each generated
+  pack.
 - Mark a pack `provisional` when evidence is sparse or narrow. Never invent a
   style to fill gaps; state what cannot yet be learned.
 - Append a `voice` entry to `writing/log.md`. If the current thread is an active

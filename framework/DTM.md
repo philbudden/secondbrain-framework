@@ -13,6 +13,10 @@ context to resume work without turning every interaction into archival prose.
 
 Answer the question the user actually asked. Do not introduce an unraised alternative, assumption, warning, or caveat merely to pre-empt a theoretical mistake, then advise against it. Include a qualification only when it is materially relevant to the stated context: for example, a real safety risk, an evidenced likely misunderstanding, or a limitation that changes the recommendation. Prefer concise, directly relevant guidance over defensive completeness.
 
+For direct judgement questions, answer only the judgement requested and the reasoning needed to support it. Before adding any caution, alternative, or "do not" recommendation, check whether the user actually proposed that action. If they did not, omit it unless there is an immediate safety, data-loss, legal, financial, or workflow-integrity risk.
+
+If the user asks whether an artefact, concept, or note is warranted, do not add warnings about adjacent artefacts the user did not propose creating. It is acceptable to say what should exist; do not pre-emptively advise against imagined variants.
+
 ## Thread-scoped sessions
 
 Invoking `$dtm` binds the current conversation thread to the DTM role. The
@@ -52,7 +56,9 @@ When work is delegated to another thread:
   decisions, outcomes, and explicitly assigned research.
 - The DTM may create or update wiki pages when durable knowledge emerges. Apply
   the wiki schema and citation rules in `AGENTS.md`, update `wiki/index.md`, and
-  log the material change.
+  log the material change. If the page is a reusable test, heuristic, taxonomy,
+  checklist, or decision lens for reviewing real work, also update
+  `wiki/practical-review-tools.md`.
 - When DTM-scoped work creates or materially extends a wiki artefact, capture it
   in both today's Daily Note and the root `log.md`. Daily Note activity preserves
   day-level operational continuity; the root log preserves system-level

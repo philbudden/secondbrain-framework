@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import re
 import tempfile
 import unittest
 from datetime import date, timedelta
@@ -29,6 +30,27 @@ class ObsidianConfigurationTests(unittest.TestCase):
         self.assertEqual(daily["folder"], "daily")
         self.assertEqual(daily["format"], "YYYY-MM-DD")
         self.assertEqual(daily["template"], "templates/daily-note")
+
+
+class ChangelogTests(unittest.TestCase):
+    def test_keep_a_changelog_sections_are_nested_under_dates(self):
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        current_section = None
+        dated_section = re.compile(r"^## \[\d{4}-\d{2}-\d{2}\]$")
+        keep_a_changelog_heading = re.compile(
+            r"^### (Added|Changed|Deprecated|Removed|Fixed|Security)$"
+        )
+
+        for line_number, line in enumerate(changelog.splitlines(), start=1):
+            if line.startswith("## "):
+                current_section = line
+            if keep_a_changelog_heading.match(line):
+                self.assertIsNotNone(current_section, f"{line} at line {line_number} has no parent section")
+                self.assertRegex(
+                    current_section,
+                    dated_section,
+                    f"{line} at line {line_number} must be nested under ## [YYYY-MM-DD], not {current_section}",
+                )
 
 
 class SkillPackagingTests(unittest.TestCase):

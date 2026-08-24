@@ -400,6 +400,9 @@ When asked to ingest one or more sources:
    `superseded` when appropriate.
 8. Update `wiki/index.md` for every created, renamed, or materially re-scoped
    page. Keep entries in their category and sorted by title.
+   If a created or materially updated page is a reusable test, heuristic,
+   taxonomy, checklist, or decision lens for reviewing real work, also update
+   `wiki/practical-review-tools.md`.
 9. Append one log entry describing the source and all important pages created
    or revised.
 10. Run `python3 tools/wiki.py lint`. Fix safe structural issues; report
@@ -474,6 +477,13 @@ content page appears exactly once with a link, one-line description, status,
 and updated date. Organize it under Overview, Topics, Concepts, Entities,
 Analyses, and Sources. Omit empty categories only if the structure remains
 obvious. Keep descriptions concrete enough to route future queries.
+
+`wiki/practical-review-tools.md` is the dedicated navigation index for reusable
+tests, heuristics, taxonomies, checklists, and decision lenses that can be
+applied when reviewing real work. Keep it updated whenever wiki work creates or
+materially changes a page that serves this purpose, even if the page itself
+lives under `wiki/concepts/`, `wiki/analyses/`, or another wiki section. Entries
+should explain when the tool is useful, not merely restate the page title.
 
 `writing/index.md` and `documents/index.md` follow the same principle for their
 workspaces. They are curated navigation, not directory listings. Every managed
