@@ -208,10 +208,12 @@ compound across sessions.
   success and the canonical URL and publication time are recorded.
 - A failed or ambiguous publication remains in `writing/ready/`; never mark or
   move it as published optimistically.
-- `writing/archive/` contains retained records of formerly published pieces
-  that should no longer be treated as part of the active public website corpus.
-  Use `status: archived`, preserve the former `canonical_url` and
-  `published_at`, and add `archived_at` plus a concise `archive_reason`.
+- `writing/archive/` contains retained records that should no longer be treated
+  as active writing. This includes formerly published pieces removed from the
+  public corpus and unpublished drafts retained as source material, superseded
+  alternatives, or useful history. Use `status: archived`, add `archived_at`
+  plus a concise `archive_reason`, and preserve former `canonical_url` and
+  `published_at` when the archived item was previously published.
 - Keep a stable lowercase kebab-case filename across stages. Update frontmatter,
   `writing/index.md`, the root `log.md` when the change is materially
   significant, and relevant Daily Note references in the same change.
@@ -359,14 +361,31 @@ for context, but its underlying source citations remain authoritative.
 
 - Self-authored first-person sources, especially files tagged `my-opinion`, are
   authoritative evidence of the user's current views, priorities, mental
-  models, and decision heuristics.
+  models, decision heuristics, intentions, memories, interpretations,
+  conclusions, and working assumptions.
 - Do not mark a source `needs-review` merely because it is opinionated or
   normative. If authorship, date, or scope are clear, treat the opinion itself
   as `current` unless a newer self-authored source supersedes it.
-- Distinguish the opinion from any embedded external factual claim. The user's
-  stated belief is authoritative as a belief; factual examples, forecasts,
-  vendor claims, and general world-model assertions inside that belief may still
-  need corroboration when reused as fact.
+- This SecondBrain is a private personal knowledge system, not a public
+  reference source or objective fact-checking system. When the user writes that
+  they believe, think, conclude, prefer, intend, remember, interpret, or
+  understand something, preserve that confidently as first-party knowledge about
+  the user. Do not weaken it with generic caveats such as "not independently
+  verified", "should be corroborated before reuse", or "requires external
+  validation".
+- Distinguish first-party authority from external factual authority. A
+  self-authored source can be fully authoritative evidence of the user's
+  position without being treated as independent proof of every external
+  proposition embedded in that position.
+- Apply external verification only when the task is to establish objective
+  external truth, make a public factual claim, or use an embedded example,
+  forecast, vendor claim, quantitative assertion, or general world-model
+  proposition as evidence independent of the user's position. Even then, do not
+  state or imply that the user's own view needs corroboration before the wiki
+  can store, integrate, or reuse it as the user's view.
+- When summarising limits on self-authored sources, phrase the boundary in
+  terms of scope: authoritative about the user's position; not, by itself, a
+  primary external evidence source for unrelated factual propositions.
 - When opinion sources materially clarify how the user thinks, integrate them
   into relevant entity, concept, topic, and overview pages so the wiki reflects
   the user's intellectual operating system, not just curated external

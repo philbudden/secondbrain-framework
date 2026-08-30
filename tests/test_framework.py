@@ -100,7 +100,6 @@ class SkillPackagingTests(unittest.TestCase):
         self.assertIn("Update the source document", instructions)
         self.assertIn("allow_implicit_invocation: false", metadata)
 
-
 class RecurrenceSafetyTests(unittest.TestCase):
     def test_invalid_rule_fails_before_rollover_mutates_notes(self):
         dtm = load_dtm_module()
