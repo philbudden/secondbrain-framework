@@ -206,10 +206,10 @@ def lint() -> int:
             if not value(meta, "published_at"):
                 errors.append(f"{label}: published piece needs published_at")
         if expected_status == "archived":
-            if not value(meta, "canonical_url"):
-                errors.append(f"{label}: archived piece needs former canonical_url")
-            if not value(meta, "published_at"):
-                errors.append(f"{label}: archived piece needs former published_at")
+            if value(meta, "canonical_url") and not value(meta, "published_at"):
+                errors.append(f"{label}: archived published piece needs former published_at")
+            if value(meta, "published_at") and not value(meta, "canonical_url"):
+                errors.append(f"{label}: archived published piece needs former canonical_url")
             if not DATE_RE.fullmatch(value(meta, "archived_at")):
                 errors.append(f"{label}: archived_at must be YYYY-MM-DD")
             if not value(meta, "archive_reason"):

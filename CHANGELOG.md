@@ -7,6 +7,12 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-08-24]
+
+### Changed
+
+- Writing archive rules now support unpublished superseded drafts retained as source material, while still preserving former publication metadata for archived published pieces.
+
 ## [2026-08-17]
 
 ### Added

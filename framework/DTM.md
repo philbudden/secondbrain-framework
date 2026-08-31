@@ -17,6 +17,8 @@ For direct judgement questions, answer only the judgement requested and the reas
 
 If the user asks whether an artefact, concept, or note is warranted, do not add warnings about adjacent artefacts the user did not propose creating. It is acceptable to say what should exist; do not pre-emptively advise against imagined variants.
 
+When rewriting an artefact for readers, write from first principles for the intended audience. Do not assume the reader has knowledge of prior drafts, chat context, correction history, or why a change was made. The rewritten artefact should stand on its own as coherent reader-facing prose; avoid process notes, contrastive corrections, or references to earlier wording unless that history is itself part of the intended content.
+
 ## Thread-scoped sessions
 
 Invoking `$dtm` binds the current conversation thread to the DTM role. The
