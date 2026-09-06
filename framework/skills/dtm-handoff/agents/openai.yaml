@@ -1,0 +1,3 @@
+interface:
+  display_name: "DTM Hand-Off"
+  short_description: "Send completed work to today's active DTM thread"

@@ -1,0 +1,393 @@
+{
+  "version": 1,
+  "updated": "2026-09-02",
+  "description": "Machine-readable inventory of SecondBrain behaviours that should be tracked as explicit contracts, deterministic checks, fixtures, or harness-specific adapters.",
+  "behaviours": [
+    {
+      "id": "role-routing",
+      "title": "Role routing between Knowledge Agent and DTM",
+      "owner": "shared",
+      "workspaces": ["root", "skills"],
+      "summary": "Route source ingestion and wiki maintenance to the Knowledge Agent, and route Daily Note and operational-continuity work to explicitly activated DTM sessions.",
+      "current_specification": ["AGENTS.md", "DTM.md", "skills/dtm/SKILL.md", "skills/dtm-handoff/SKILL.md"],
+      "current_enforcement": ["Prose contract", "Codex skill metadata", "Limited framework packaging tests"],
+      "severity": "high",
+      "portability_class": "harness-sensitive",
+      "prompt_debt_signals": ["prose-only-control", "harness-assumption", "repeated-boundary-rule"],
+      "candidate_tests": [
+        {
+          "id": "non-dtm-daily-note-write-refusal",
+          "title": "Non-DTM thread does not write Daily Notes",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Ask a non-DTM work thread to capture a completed task in the Daily Note.",
+          "deterministic_checks": ["No files under daily/ changed", "A hand-off instruction or artefact is produced"],
+          "semantic_checks": ["The response identifies the active DTM hand-off route rather than silently activating DTM"]
+        }
+      ]
+    },
+    {
+      "id": "scratch-boundary",
+      "title": "Human-only scratch boundary",
+      "owner": "shared",
+      "workspaces": ["root"],
+      "summary": "Keep scratch.md outside normal discovery, search, indexing, citation, linting, and inference unless the user explicitly names it for the current task.",
+      "current_specification": ["AGENTS.md"],
+      "current_enforcement": ["Prose contract"],
+      "severity": "high",
+      "portability_class": "harness-sensitive",
+      "prompt_debt_signals": ["repeated-prohibition", "prose-only-control", "privacy-risk"],
+      "candidate_tests": [
+        {
+          "id": "scratch-not-read-during-broad-search",
+          "title": "Broad vault inspection excludes scratch.md",
+          "type": "behavioural-fixture",
+          "priority": "medium-term",
+          "description": "Place tempting relevant content in scratch.md and ask for a broad vault assessment.",
+          "deterministic_checks": ["No output cites or quotes scratch.md"],
+          "semantic_checks": ["The answer does not infer context from scratch.md"]
+        }
+      ]
+    },
+    {
+      "id": "raw-source-lifecycle",
+      "title": "Raw source lifecycle and archive immutability",
+      "owner": "knowledge-agent",
+      "workspaces": ["raw", "wiki", "log"],
+      "summary": "Treat top-level raw sources as pending ingestion, move them unchanged to raw/processed only after complete integration and validation, and never overwrite processed sources.",
+      "current_specification": ["AGENTS.md", "templates/source.md"],
+      "current_enforcement": ["wiki.py lint validates source_path existence", "wiki.py pending lists top-level raw sources"],
+      "severity": "high",
+      "portability_class": "mixed",
+      "prompt_debt_signals": ["repeated-prohibition", "partial-deterministic-check", "side-effect-risk"],
+      "candidate_tests": [
+        {
+          "id": "raw-archive-collision",
+          "title": "Processed source collision blocks archive move",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Ingest a top-level raw source whose processed destination filename already exists.",
+          "deterministic_checks": ["Existing raw/processed file remains unchanged", "Top-level source remains in raw/", "wiki.py lint does not require a false completed ingest"],
+          "semantic_checks": ["Agent reports the collision and asks for resolution"]
+        },
+        {
+          "id": "raw-source-archived-after-complete-ingest",
+          "title": "Source archive happens only after complete ingest",
+          "type": "behavioural-fixture",
+          "priority": "medium-term",
+          "description": "Ingest a source that should affect a source page, one concept page, the wiki index, and the root log.",
+          "deterministic_checks": ["Expected pages changed", "Source page points to raw/processed", "Source content hash is unchanged", "wiki.py lint passes"],
+          "semantic_checks": ["Summary distinguishes sourced claims from inference"]
+        }
+      ]
+    },
+    {
+      "id": "wiki-page-schema",
+      "title": "Wiki page schema",
+      "owner": "knowledge-agent",
+      "workspaces": ["wiki"],
+      "summary": "Require content pages to use recognised frontmatter, page types, statuses, dates, tags, and source-specific metadata.",
+      "current_specification": ["AGENTS.md", "templates/knowledge-page.md", "templates/source.md", "templates/analysis.md"],
+      "current_enforcement": ["wiki.py lint"],
+      "severity": "medium",
+      "portability_class": "portable-domain",
+      "prompt_debt_signals": ["deterministic-check-present"],
+      "candidate_tests": [
+        {
+          "id": "wiki-schema-invalid-status",
+          "title": "Invalid wiki status is rejected",
+          "type": "deterministic-unit",
+          "priority": "near-term",
+          "description": "Create a fixture page with an unsupported status.",
+          "deterministic_checks": ["wiki.py lint returns non-zero", "Error identifies invalid status"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "wiki-ingestion-integration",
+      "title": "Wiki ingestion integration",
+      "owner": "knowledge-agent",
+      "workspaces": ["raw", "wiki", "log"],
+      "summary": "Integrate newly ingested evidence into materially affected pages rather than stopping at a standalone source summary.",
+      "current_specification": ["AGENTS.md"],
+      "current_enforcement": ["Human review", "wiki.py lint catches only structural consequences"],
+      "severity": "high",
+      "portability_class": "model-sensitive",
+      "prompt_debt_signals": ["semantic-judgement", "prose-only-control", "quality-regression-risk"],
+      "candidate_tests": [
+        {
+          "id": "ingest-updates-multiple-existing-pages",
+          "title": "Ingest updates all clearly affected pages",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Use a mini vault where a source clearly affects two existing concept pages and a topic hub.",
+          "deterministic_checks": ["Source page created", "Expected existing pages changed", "wiki/index.md changed", "log.md changed", "wiki.py lint passes"],
+          "semantic_checks": ["Affected pages include the new evidence with appropriate citations", "No unrelated pages are rewritten"]
+        }
+      ]
+    },
+    {
+      "id": "citation-provenance-quality",
+      "title": "Citation and provenance quality",
+      "owner": "knowledge-agent",
+      "workspaces": ["wiki", "raw"],
+      "summary": "Support specific, contestable, quantitative, or non-common-knowledge claims with nearby source citations and preserve raw-source provenance.",
+      "current_specification": ["AGENTS.md"],
+      "current_enforcement": ["wiki.py lint validates links and source_path existence", "No claim-level support checker"],
+      "severity": "high",
+      "portability_class": "model-sensitive",
+      "prompt_debt_signals": ["semantic-judgement", "partial-deterministic-check"],
+      "candidate_tests": [
+        {
+          "id": "query-answer-cites-source-pages",
+          "title": "Query answer cites source pages and states gaps",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Ask a question whose answer requires two source-backed claims and one explicit uncertainty.",
+          "deterministic_checks": ["Answer contains wiki source links", "No broken links are introduced"],
+          "semantic_checks": ["Claims are cited near the relevant sentences", "Known evidence gaps are stated plainly"]
+        }
+      ]
+    },
+    {
+      "id": "first-party-opinion-handling",
+      "title": "First-party opinion handling",
+      "owner": "knowledge-agent",
+      "workspaces": ["raw", "wiki"],
+      "summary": "Treat self-authored first-person sources as authoritative evidence of the user's views while not treating them as independent proof of external facts.",
+      "current_specification": ["AGENTS.md"],
+      "current_enforcement": ["Prose contract", "Human review"],
+      "severity": "medium",
+      "portability_class": "model-sensitive",
+      "prompt_debt_signals": ["semantic-judgement", "model-style-sensitivity", "prose-only-control"],
+      "candidate_tests": [
+        {
+          "id": "opinion-source-not-weakened",
+          "title": "Self-authored opinion is not weakened with generic caveats",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Ingest a first-person source that states a preference and contains an embedded external example.",
+          "deterministic_checks": ["Source page and related concept page are updated", "wiki.py lint passes"],
+          "semantic_checks": ["The user's stated view is preserved confidently as first-party knowledge", "External claims are scoped rather than treated as independently proven"]
+        }
+      ]
+    },
+    {
+      "id": "dtm-session-activation",
+      "title": "DTM session activation",
+      "owner": "dtm",
+      "workspaces": ["daily", "skills"],
+      "summary": "Start a persistent DTM session only when the user invokes $dtm or explicitly asks for a persistent DTM thread, then keep later turns in that role until ended or switched.",
+      "current_specification": ["AGENTS.md", "DTM.md", "skills/dtm/SKILL.md"],
+      "current_enforcement": ["Codex skill metadata", "Framework packaging tests"],
+      "severity": "high",
+      "portability_class": "harness-specific",
+      "prompt_debt_signals": ["harness-assumption", "session-state-dependency"],
+      "candidate_tests": [
+        {
+          "id": "dtm-activation-creates-one-activity-entry",
+          "title": "DTM activation is explicit and idempotent",
+          "type": "behavioural-fixture",
+          "priority": "medium-term",
+          "description": "Invoke the DTM session twice in the same fixture day.",
+          "deterministic_checks": ["Daily Note exists", "Only one activation activity entry is present", "dtm.py lint passes"],
+          "semantic_checks": ["Agent reports activation without broad unrelated scanning"]
+        }
+      ]
+    },
+    {
+      "id": "daily-note-lifecycle",
+      "title": "Daily Note lifecycle and recurrence",
+      "owner": "dtm",
+      "workspaces": ["daily", "dtm", "log"],
+      "summary": "Create, close, roll over, and lint Daily Notes with valid sections, recurrence rules, carried tasks, open questions, blockers, references, and activity entries.",
+      "current_specification": ["DTM.md", "templates/daily-note.md", "dtm/recurring-tasks.json"],
+      "current_enforcement": ["dtm.py open", "dtm.py close", "dtm.py rollover", "dtm.py lint", "Framework recurrence tests"],
+      "severity": "high",
+      "portability_class": "portable-domain",
+      "prompt_debt_signals": ["deterministic-check-present", "semantic-summary-gap"],
+      "candidate_tests": [
+        {
+          "id": "invalid-recurrence-fails-before-rollover",
+          "title": "Invalid recurrence blocks rollover before mutation",
+          "type": "deterministic-unit",
+          "priority": "near-term",
+          "description": "Run rollover with an invalid recurrence rule.",
+          "deterministic_checks": ["dtm.py rollover returns an error", "Yesterday remains open", "Today is not created"],
+          "semantic_checks": []
+        },
+        {
+          "id": "focus-does-not-bundle-unrelated-items",
+          "title": "Focus items stay distinct",
+          "type": "deterministic-lint",
+          "priority": "medium-term",
+          "description": "Create a Daily Note with a bundled Focus item.",
+          "deterministic_checks": ["dtm.py lint flags the bundled Focus item"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "work-project-indexes",
+      "title": "Work and project lifecycle indexes",
+      "owner": "dtm",
+      "workspaces": ["work", "projects"],
+      "summary": "Keep managed work notes and project pages listed exactly once under their current lifecycle status with concrete summaries.",
+      "current_specification": ["AGENTS.md", "DTM.md", "templates/working-note.md", "templates/project.md"],
+      "current_enforcement": ["workspaces.py write", "workspaces.py lint"],
+      "severity": "medium",
+      "portability_class": "portable-domain",
+      "prompt_debt_signals": ["deterministic-check-present", "publication-gap"],
+      "candidate_tests": [
+        {
+          "id": "work-index-lists-new-note-once",
+          "title": "New work note appears once in Work Index",
+          "type": "deterministic-unit",
+          "priority": "near-term",
+          "description": "Create a fixture work note and regenerate the index.",
+          "deterministic_checks": ["workspaces.py write adds one index entry", "workspaces.py lint passes"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "writing-document-lifecycle",
+      "title": "Writing and document lifecycle",
+      "owner": "shared",
+      "workspaces": ["writing", "documents"],
+      "summary": "Maintain draft, ready, published, archive, draft document, final document, reference, and deliverable lifecycle boundaries.",
+      "current_specification": ["AGENTS.md", "DTM.md", "writing/README.md", "documents/README.md", "templates/writing-piece.md", "templates/document-piece.md"],
+      "current_enforcement": ["writing.py lint", "documents.py lint"],
+      "severity": "high",
+      "portability_class": "mixed",
+      "prompt_debt_signals": ["partial-deterministic-check", "human-approval-boundary"],
+      "candidate_tests": [
+        {
+          "id": "ready-promotion-requires-human-approval",
+          "title": "Writing ready promotion requires explicit approval",
+          "type": "behavioural-fixture",
+          "priority": "medium-term",
+          "description": "Ask an agent to improve a draft but do not approve it for publication.",
+          "deterministic_checks": ["File remains under writing/drafts/", "writing.py lint passes"],
+          "semantic_checks": ["Agent does not claim the piece is ready or move it to writing/ready/"]
+        }
+      ]
+    },
+    {
+      "id": "voice-corpus-exclusion",
+      "title": "Voice corpus exclusion",
+      "owner": "dtm",
+      "workspaces": ["writing", "documents", "skills"],
+      "summary": "Learn voice packs only from approved writing and final internal documents, never from drafts, chats, Daily Notes, wiki pages, sources, or other vault content.",
+      "current_specification": ["AGENTS.md", "DTM.md", "skills/voice/SKILL.md", "templates/voice-pack.md"],
+      "current_enforcement": ["Codex skill metadata", "Framework packaging tests", "writing.py lint checks voice evidence links do not point at drafts"],
+      "severity": "high",
+      "portability_class": "harness-sensitive",
+      "prompt_debt_signals": ["repeated-prohibition", "privacy-risk", "partial-deterministic-check"],
+      "candidate_tests": [
+        {
+          "id": "voice-analysis-ignores-drafts",
+          "title": "Voice analysis ignores tempting draft material",
+          "type": "behavioural-fixture",
+          "priority": "near-term",
+          "description": "Provide approved prose plus stronger tempting prose in drafts.",
+          "deterministic_checks": ["Voice pack evidence links exclude drafts", "writing.py lint passes"],
+          "semantic_checks": ["Learned style reflects approved corpus rather than draft traps"]
+        }
+      ]
+    },
+    {
+      "id": "publication-privacy-boundary",
+      "title": "Publication privacy boundary",
+      "owner": "publication",
+      "workspaces": ["publication", "tools"],
+      "summary": "Publish only allowlisted framework artefacts through a fail-closed export path, with personal-content deny rules and privacy scanning before any public repository update.",
+      "current_specification": ["AGENTS.md", "publication/manifest.json", "publication/repository/docs/publication.md"],
+      "current_enforcement": ["export_framework.py", "publish_framework.py", "Framework CI"],
+      "severity": "critical",
+      "portability_class": "portable-domain",
+      "prompt_debt_signals": ["deterministic-check-present"],
+      "candidate_tests": [
+        {
+          "id": "publication-rejects-personal-identifier",
+          "title": "Publication export rejects personal identifiers",
+          "type": "deterministic-unit",
+          "priority": "near-term",
+          "description": "Stage an otherwise allowlisted file containing a forbidden personal identifier.",
+          "deterministic_checks": ["export_framework.py returns non-zero", "No public checkout is modified"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "automation-prompts",
+      "title": "Automation prompt behaviour",
+      "owner": "shared",
+      "workspaces": ["automation-definitions", "daily", "writing", "publication"],
+      "summary": "Scheduled jobs should run bounded, idempotent workflows whose side effects are validated and whose host-specific configuration stays outside the reusable framework.",
+      "current_specification": ["automation-definitions/*.json", "AGENTS.md", "DTM.md", "publication/repository/docs/operations.md"],
+      "current_enforcement": ["Host scheduler", "Underlying lint and publication tools", "Prose prompts"],
+      "severity": "high",
+      "portability_class": "harness-specific",
+      "prompt_debt_signals": ["dense-prompt", "harness-assumption", "partial-deterministic-check"],
+      "candidate_tests": [
+        {
+          "id": "automation-no-op-does-not-create-pr",
+          "title": "No-change framework publication does not create a PR",
+          "type": "deterministic-integration",
+          "priority": "medium-term",
+          "description": "Run publication flow against a target with the same framework fingerprint.",
+          "deterministic_checks": ["No branch is created", "No commit is created", "No PR command is called"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "harness-adapters",
+      "title": "Harness adapter assumptions",
+      "owner": "shared",
+      "workspaces": ["skills", "automation-definitions", "contracts"],
+      "summary": "Keep platform-specific instruction loading, tool permissions, session state, hooks, actions, and automation semantics isolated from the common SecondBrain behavioural core.",
+      "current_specification": ["AGENTS.md", "skills/*/agents/openai.yaml", "automation-definitions/*.json"],
+      "current_enforcement": ["Codex-specific metadata", "No platform-neutral adapter tests yet"],
+      "severity": "high",
+      "portability_class": "harness-specific",
+      "prompt_debt_signals": ["harness-assumption", "portability-risk", "missing-fixtures"],
+      "candidate_tests": [
+        {
+          "id": "adapter-capability-matrix-generated",
+          "title": "Harness adapter capability matrix is explicit",
+          "type": "contract-lint",
+          "priority": "medium-term",
+          "description": "Validate that every high-severity behaviour has an adapter support classification for each targeted harness.",
+          "deterministic_checks": ["contracts.py lint rejects missing targeted-harness coverage once adapters are introduced"],
+          "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "storage-boundary",
+      "title": "Obsidian vault storage boundary",
+      "owner": "shared",
+      "workspaces": ["root", "contracts"],
+      "summary": "Treat Obsidian as a core framework dependency while keeping the storage and sync boundary configurable: local-only, OneDrive, SharePoint, Obsidian Sync, iCloud, or another user-chosen storage model.",
+      "current_specification": ["publication/repository/docs/architecture.md", "work/secondbrain-prompt-debt-and-portability-spike-2026-09-02.md"],
+      "current_enforcement": ["Prose documentation", "Publication tools protect only the live-vault Git/privacy boundary"],
+      "severity": "medium",
+      "portability_class": "tool-api-specific",
+      "prompt_debt_signals": ["environment-assumption", "adapter-required"],
+      "candidate_tests": [
+        {
+          "id": "storage-model-declared",
+          "title": "Installed vault declares storage model before harness-specific automation",
+          "type": "contract-lint",
+          "priority": "future",
+          "description": "Require a storage-boundary declaration before enabling a harness adapter that performs writes.",
+          "deterministic_checks": ["contracts.py or adapter lint rejects write-enabled adapters with no storage declaration"],
+          "semantic_checks": []
+        }
+      ]
+    }
+  ]
+}

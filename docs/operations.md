@@ -9,10 +9,16 @@ Incomplete work remains visible in the inbox.
 
 ## Daily collaboration
 
-The DTM opens and closes Daily Notes, carries only incomplete tasks and active
-questions forward, instantiates enabled recurrence, captures decisions, and
-maintains project continuity. Durable knowledge can graduate to the wiki while
-remaining clearly distinguished from externally sourced evidence.
+An explicitly activated DTM thread opens and closes Daily Notes, carries only
+incomplete tasks and active questions forward, instantiates enabled recurrence,
+captures decisions, and maintains project continuity. Durable knowledge can
+graduate to the wiki while remaining clearly distinguished from externally
+sourced evidence.
+
+Specialised work can run in separate non-DTM threads. Those threads must not
+edit Daily Notes directly; they use `dtm-handoff` to send completed outcomes,
+new tasks, blockers, decisions, findings, and follow-up context to the active
+DTM thread for interpretation and capture.
 
 ## Internal documents
 
@@ -27,9 +33,10 @@ separately under `documents/`.
 
 ## Maintenance
 
-Run both structural linters after framework changes. Periodically perform a
-semantic wiki review for contradictions, stale claims, unsupported assertions,
-orphans, and evidence gaps.
+Run the structural linters after framework changes, including
+`python3 tools/contracts.py lint` when behaviour contracts change. Periodically
+perform a semantic wiki review for contradictions, stale claims, unsupported
+assertions, orphans, and evidence gaps.
 
 ## Collaborative writing
 

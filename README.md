@@ -31,8 +31,11 @@ The installer copies only framework files and never copies this repository's
 After installation:
 
 1. Put a source directly in `raw/` and ask the Knowledge Agent to ingest it.
-2. Ask the DTM to open or update today's Daily Note.
-3. Review `framework/automation-definitions/` and recreate only the automations
+2. Start a dedicated DTM thread with `$dtm`; only DTM-activated threads update
+   Daily Notes directly.
+3. Use `dtm-handoff` from non-DTM work threads when completed work should be
+   reflected in the Daily Note.
+4. Review `framework/automation-definitions/` and recreate only the automations
    appropriate for your host.
 
 See [Installation](docs/installation.md), [Architecture](docs/architecture.md),

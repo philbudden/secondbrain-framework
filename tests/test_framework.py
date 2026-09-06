@@ -20,6 +20,15 @@ def load_dtm_module():
     return module
 
 
+def load_contracts_module():
+    path = ROOT / "framework" / "tools" / "contracts.py"
+    spec = importlib.util.spec_from_file_location("secondbrain_contracts", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 class ObsidianConfigurationTests(unittest.TestCase):
     def test_templates_and_daily_notes_match_installed_layout(self):
         obsidian = ROOT / "framework" / "obsidian"
@@ -53,6 +62,24 @@ class ChangelogTests(unittest.TestCase):
                 )
 
 
+class BehaviourContractTests(unittest.TestCase):
+    def test_behaviour_inventory_is_valid_and_covers_core_boundaries(self):
+        contracts = load_contracts_module()
+        inventory = json.loads(
+            (ROOT / "framework" / "contracts" / "behaviour-inventory.json").read_text(encoding="utf-8")
+        )
+        errors, warnings = contracts.validate_inventory(inventory)
+        behaviours = {item["id"]: item for item in inventory["behaviours"]}
+
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+        self.assertIn("role-routing", behaviours)
+        self.assertIn("raw-source-lifecycle", behaviours)
+        self.assertIn("publication-privacy-boundary", behaviours)
+        self.assertIn("harness-adapters", behaviours)
+        self.assertEqual(behaviours["publication-privacy-boundary"]["severity"], "critical")
+
+
 class SkillPackagingTests(unittest.TestCase):
     def test_dtm_skill_is_explicit_and_thread_scoped(self):
         skill = ROOT / "framework" / "skills" / "dtm"
@@ -61,8 +88,22 @@ class SkillPackagingTests(unittest.TestCase):
 
         self.assertIn("name: dtm", instructions)
         self.assertIn("thread-scoped", instructions)
+        self.assertIn("DTM YYYY-MM-DD", instructions)
+        self.assertIn("Daily Note write authority", instructions)
         self.assertIn("$end-dtm", instructions)
         self.assertIn("allow_implicit_invocation: false", metadata)
+
+    def test_dtm_handoff_skill_targets_active_dtm_thread(self):
+        skill = ROOT / "framework" / "skills" / "dtm-handoff"
+        instructions = (skill / "SKILL.md").read_text(encoding="utf-8")
+        metadata = (skill / "agents" / "openai.yaml").read_text(encoding="utf-8")
+
+        self.assertIn("name: dtm-handoff", instructions)
+        self.assertIn("DTM YYYY-MM-DD", instructions)
+        self.assertIn("Do not create, edit, append to, reorder, or otherwise modify `daily/`", instructions)
+        self.assertIn("send_message_to_thread", instructions)
+        self.assertIn("Incremental checkpoint", instructions)
+        self.assertIn("DTM Hand-Off", metadata)
 
     def test_voice_skill_excludes_drafts_and_is_explicit(self):
         skill = ROOT / "framework" / "skills" / "voice"

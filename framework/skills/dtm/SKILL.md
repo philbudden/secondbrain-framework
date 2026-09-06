@@ -15,13 +15,15 @@ describe the role.
 2. Read both contracts completely. Never inspect `scratch.md` while orienting.
 3. Treat this thread as DTM-scoped from this turn onward. Subsequent user
    messages remain in DTM mode without another `$dtm` invocation.
-4. Run `python3 tools/dtm.py open`. This is idempotent and creates today's Daily
+4. Set or confirm the current thread title as `DTM YYYY-MM-DD`, using the user's
+   local date. This title is the discovery point for non-DTM hand-offs.
+5. Run `python3 tools/dtm.py open`. This is idempotent and creates today's Daily
    Note only when missing.
-5. Read today's Daily Note and relevant linked active projects. Do not scan
+6. Read today's Daily Note and relevant linked active projects. Do not scan
    unrelated project, wiki, or raw content.
-6. Add one timestamped `Notes & Activity` entry recording that this thread's DTM
+7. Add one timestamped `Notes & Activity` entry recording that this thread's DTM
    session started. Do not duplicate the entry if initialization is retried.
-7. Acknowledge activation briefly and surface today's current focus, outstanding
+8. Acknowledge activation briefly and surface today's current focus, outstanding
    tasks, or open questions only when useful.
 
 ## Operate the session
@@ -31,11 +33,24 @@ describe the role.
 - Maintain today's Daily Note, project state, decisions, follow-ups, references,
   and open questions as the work evolves. Capture outcomes rather than chat
   transcripts.
+- This explicit activation is what grants Daily Note write authority to the
+  current thread. Threads that have not completed this activation must not edit
+  `daily/`; they should use the DTM hand-off skill when they need Daily Note
+  capture.
 - Treat an explicitly requested Knowledge Agent action as a bounded delegation.
   Return to DTM mode afterwards unless the user switches the thread permanently.
 - Never scan `raw/`. Access only a raw file explicitly named by the user for the
   current task.
 - Preserve the human-only `scratch.md` boundary.
+
+## Receive hand-offs
+
+When a work thread sends a DTM hand-off, treat the message as an input to the
+active DTM session. Decide what belongs in today's Daily Note using `DTM.md`;
+update task checkboxes, blockers, decisions, references, open questions, project
+or working notes, and `Notes & Activity` only where the hand-off gives enough
+evidence. Ask a concise follow-up only when the hand-off is insufficient to make
+a correct Daily Note update.
 
 ## End or switch
 

@@ -38,6 +38,7 @@ directory:
 ```sh
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/dtm "${CODEX_HOME:-$HOME/.codex}/skills/"
+cp -R skills/dtm-handoff "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/voice "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/markdown-to-pdf "${CODEX_HOME:-$HOME/.codex}/skills/"
 cp -R skills/resolve-document-items "${CODEX_HOME:-$HOME/.codex}/skills/"
@@ -45,7 +46,10 @@ cp -R skills/resolve-document-items "${CODEX_HOME:-$HOME/.codex}/skills/"
 
 Start a thread in the installed vault and invoke `$dtm`. That thread remains in
 DTM mode until `$end-dtm` or an explicit permanent switch to the Knowledge
-Agent.
+Agent. The DTM activation names the thread `DTM YYYY-MM-DD`, and only that
+explicitly activated DTM thread should update Daily Notes directly. Use
+`$dtm-handoff` from other work threads to send completed outcomes back to the
+active DTM thread.
 
 Invoke `$voice` after representative writing has reached `ready/` or
 `published/`, or after representative internal documents have reached
@@ -81,6 +85,7 @@ the dependencies are installed.
 ## Validate
 
 ```sh
+python3 tools/contracts.py lint
 python3 tools/wiki.py lint
 python3 tools/dtm.py lint
 python3 tools/documents.py lint

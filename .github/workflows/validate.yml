@@ -24,6 +24,8 @@ jobs:
         run: |
           vault="$(mktemp -d)"
           python3 install.py --vault "$vault"
+          test -f "$vault/contracts/behaviour-inventory.json"
+          python3 "$vault/tools/contracts.py" lint
           test -f "$vault/skills/dtm/SKILL.md"
           test -f "$vault/skills/voice/SKILL.md"
           python3 "$vault/tools/wiki.py" lint

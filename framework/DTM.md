@@ -30,11 +30,22 @@ At session start, ensure today's Daily Note exists, load its current operational
 context, and record one timestamped activation entry under `Notes & Activity`.
 Do not duplicate that entry if initialization is retried.
 
+At session start, set or confirm the DTM thread title as `DTM YYYY-MM-DD`, using
+the user's local date. Non-DTM work threads use that exact title to find the
+active DTM session for hand-offs.
+
 Treat the DTM-invoked thread as the primary coordination thread for the day
 unless the user explicitly redirects it. Long-running or self-contained
 execution work may be split into separate threads to reduce context pressure,
 but those threads are bounded delegations rather than replacements for the DTM
 session.
+
+Only an explicitly DTM-activated thread may write to Daily Notes. Non-DTM work
+threads must not create, edit, append to, or otherwise modify files under
+`daily/`, and must not implicitly activate DTM because Daily Note information
+would be useful. The scheduled rollover task is exempt and may run the rollover
+lifecycle directly. A non-DTM thread that needs completed work captured in the
+Daily Note must use the DTM hand-off workflow instead of editing the note.
 
 Within the active DTM thread, substantive work must be captured in today's
 Daily Note during the same task before the agent gives a close-out response. Do
@@ -44,8 +55,9 @@ When work is delegated to another thread:
 
 - keep the original DTM thread as the canonical place for daily continuity and
   prioritisation;
-- record the delegated task's material outcome back in today's Daily Note as
-  soon as it is known;
+- when a hand-off arrives from a work thread, interpret it under the existing DTM
+  rules and record the delegated task's material outcome back in today's Daily
+  Note as soon as it is known;
 - restate that the main thread remains in DTM mode after any compaction or
   summary step before continuing with new work.
 
@@ -220,7 +232,7 @@ version already held in conversational context.
 
 ## Interaction capture
 
-For substantive DTM work, use today's Daily Note. If none exists, run
+For substantive DTM work in an explicitly DTM-activated thread, use today's Daily Note. If none exists, run
 `python3 tools/dtm.py open` before recording activity.
 
 Add DTM interactions chronologically under `Notes & Activity` using:
@@ -255,6 +267,12 @@ If the significant action is specifically the creation or material extension of
 a wiki artefact, do not rely on Daily Note capture alone. Record the outcome in
 today's Daily Note and also append a root-log entry that makes the wiki change
 traceable at system level.
+
+When processing a DTM hand-off from another thread, update the Daily Note from
+the received outcomes rather than replaying or requesting the originating
+thread's full context. Capture completed tasks, task progress, new follow-ups,
+blockers, decisions, significant findings, useful retained context, and
+references according to the normal Daily Note rules.
 
 ## Tasks
 

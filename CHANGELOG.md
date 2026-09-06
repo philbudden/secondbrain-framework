@@ -7,6 +7,16 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-08-31]
+
+### Added
+
+- `dtm-handoff` skill for sending incremental work-thread outcomes to the active DTM thread without granting Daily Note write authority.
+
+### Changed
+
+- Daily Note writes are now reserved for explicitly DTM-activated threads, with scheduled rollover as the only direct-write exception.
+
 ## [2026-08-24]
 
 ### Changed

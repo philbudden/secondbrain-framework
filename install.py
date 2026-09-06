@@ -39,6 +39,7 @@ def install(vault: Path, force: bool, dry_run: bool) -> int:
     ]
     for folder, target in (
         (FRAMEWORK / "templates", vault / "templates"),
+        (FRAMEWORK / "contracts", vault / "contracts"),
         (FRAMEWORK / "tools", vault / "tools"),
         (FRAMEWORK / "obsidian", vault / ".obsidian"),
         (FRAMEWORK / "defaults" / "dtm", vault / "dtm"),
