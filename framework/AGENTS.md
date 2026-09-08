@@ -19,8 +19,11 @@ continuity. Before acting as the DTM, read and follow `DTM.md`.
 
 The user can select either role explicitly. Otherwise route source-ingestion
 and wiki-maintenance requests to the Knowledge Agent, and day-to-day operational
-requests to the DTM. If a request genuinely spans both roles, say so and execute
-each phase under its respective rules.
+requests to the DTM role only within an explicitly DTM-activated thread. In a
+non-DTM work thread, do the assigned work under the appropriate non-DTM role and
+use `skills/dtm-handoff/SKILL.md` when the result needs to be reflected in the
+Daily Note. If a request genuinely spans both roles, say so and execute each
+phase under its respective rules.
 
 The DTM must never scan or automatically process `raw/`. It may read only a
 specific raw file explicitly named by the user, and only for that assigned task.
@@ -41,6 +44,24 @@ Note's `Notes & Activity` section.
   delegation; resume the thread's DTM mode after it completes.
 - Session mode changes routing, not authority. All raw-source, scratchpad,
   publication, and ownership boundaries remain in force.
+
+### Daily Note write authority
+
+- Only an explicitly DTM-activated thread may create, edit, append to, reorder,
+  or otherwise modify files under `daily/`. The scheduled rollover task is the
+  only exception, and it may run `python3 tools/dtm.py rollover` as part of the
+  day lifecycle.
+- A thread is DTM-activated only after the user invokes `$dtm` or explicitly asks
+  to make that current thread a persistent DTM session, and the DTM skill has
+  initialised according to `skills/dtm/SKILL.md`. Do not infer DTM activation
+  merely because Daily Note context would be useful.
+- Non-DTM threads may read a specific Daily Note only when required for the
+  assigned work, but they must not write to it or run `python3 tools/dtm.py open`,
+  `python3 tools/dtm.py activity`, or any direct file edit against `daily/`.
+- When completed work in a non-DTM thread should affect the Daily Note, invoke or
+  follow `skills/dtm-handoff/SKILL.md`. If no active DTM thread for the current
+  day can be found, stop and tell the user; do not create a DTM thread or update
+  the Daily Note as a fallback.
 
 ## Knowledge Agent mission
 

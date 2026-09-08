@@ -81,6 +81,7 @@ def validate_export(target: Path) -> None:
     with tempfile.TemporaryDirectory(prefix="secondbrain-install-") as temporary:
         vault = Path(temporary) / "vault"
         run([sys.executable, str(target / "install.py"), "--vault", str(vault)])
+        run([sys.executable, str(vault / "tools" / "contracts.py"), "lint"])
         run([sys.executable, str(vault / "tools" / "wiki.py"), "lint"])
         run([sys.executable, str(vault / "tools" / "dtm.py"), "lint"])
 

@@ -7,6 +7,28 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-09-08]
+
+### Added
+
+- A versioned behaviour-contract inventory and dependency-free validator covering role boundaries, source and content lifecycles, privacy, automation, storage, and harness assumptions.
+
+### Changed
+
+- Framework installation, export validation, CI, and regression tests now include the behaviour-contract inventory so contract drift is detected before release.
+- DTM coordination now uses a discoverable `DTM YYYY-MM-DD` session title and explicitly reserves Daily Note writes for activated DTM threads; non-DTM work is handed back for DTM interpretation and capture.
+- Installation, architecture, and operations guidance now document the contract checks, DTM hand-off path, and support for non-iCloud vault storage providers.
+
+## [2026-08-31]
+
+### Added
+
+- `dtm-handoff` skill for sending incremental work-thread outcomes to the active DTM thread without granting Daily Note write authority.
+
+### Changed
+
+- Daily Note writes are now reserved for explicitly DTM-activated threads, with scheduled rollover as the only direct-write exception.
+
 ## [2026-08-24]
 
 ### Changed
