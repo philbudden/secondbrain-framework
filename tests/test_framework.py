@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import re
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -23,6 +25,15 @@ def load_dtm_module():
 def load_contracts_module():
     path = ROOT / "framework" / "tools" / "contracts.py"
     spec = importlib.util.spec_from_file_location("secondbrain_contracts", path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_workspaces_module():
+    path = ROOT / "framework" / "tools" / "workspaces.py"
+    spec = importlib.util.spec_from_file_location("secondbrain_workspaces", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -277,6 +288,90 @@ class RecurrenceSafetyTests(unittest.TestCase):
                 "## Schedule & Recurring\n\n- [ ] One-off carryable schedule item",
                 created,
             )
+
+
+class WorkspaceIndexTests(unittest.TestCase):
+    def setUp(self):
+        self.workspaces = load_workspaces_module()
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name)
+        self.projects = self.root / "projects"
+        self.work = self.root / "work"
+        self.projects.mkdir()
+        self.work.mkdir()
+        self.workspaces.ROOT = self.root
+        self.workspaces.PROJECTS = self.projects
+        self.workspaces.WORK = self.work
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def write_note(self, folder, filename, title, note_type, status, summary):
+        (folder / filename).write_text(
+            "\n".join(
+                [
+                    "---",
+                    f"title: {title}",
+                    f"type: {note_type}",
+                    f"status: {status}",
+                    "created: 2030-01-01",
+                    "updated: 2030-01-02",
+                    "tags:",
+                    "  - test",
+                    "---",
+                    "",
+                    summary,
+                    "",
+                ]
+            ),
+            encoding="utf-8",
+        )
+
+    def test_write_generates_sorted_project_and_work_indexes(self):
+        self.write_note(self.projects, "zebra-project.md", "Zebra Project", "project", "active", "A project that should appear after Alpha.")
+        self.write_note(self.projects, "alpha-project.md", "Alpha Project", "project", "completed", "A completed project with a durable outcome.")
+        self.write_note(self.work, "parking-note.md", "Parking Note", "working-note", "parked", "A parked operational note.")
+        self.write_note(self.work, "current-note.md", "Current Note", "working-note", "current", "A current operational note.")
+
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(self.workspaces.write_indexes(), 0)
+
+        projects_index = (self.projects / "index.md").read_text(encoding="utf-8")
+        work_index = (self.work / "index.md").read_text(encoding="utf-8")
+        self.assertEqual(projects_index.count("[[projects/alpha-project|Alpha Project]]"), 1)
+        self.assertEqual(projects_index.count("[[projects/zebra-project|Zebra Project]]"), 1)
+        self.assertLess(projects_index.index("[[projects/zebra-project|Zebra Project]]"), projects_index.index("## Completed"))
+        self.assertEqual(work_index.count("[[work/current-note|Current Note]]"), 1)
+        self.assertEqual(work_index.count("[[work/parking-note|Parking Note]]"), 1)
+        self.assertIn("## Reference\n\n<!-- No reference items. -->", work_index)
+
+    def test_lint_rejects_missing_duplicate_and_stale_index_entries(self):
+        self.write_note(self.projects, "project-one.md", "Project One", "project", "active", "A project note.")
+        self.write_note(self.work, "work-one.md", "Work One", "working-note", "current", "A work note.")
+        with redirect_stdout(io.StringIO()):
+            self.workspaces.write_indexes()
+
+        (self.projects / "index.md").write_text(
+            "# Projects Index\n\n- [[projects/deleted-project|Deleted Project]]\n",
+            encoding="utf-8",
+        )
+        work_index = self.work / "index.md"
+        work_index.write_text(
+            work_index.read_text(encoding="utf-8")
+            + "\n- [[work/work-one|Work One]]\n"
+            + "- [[work/deleted-work|Deleted Work]]\n",
+            encoding="utf-8",
+        )
+
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(self.workspaces.lint(), 1)
+
+        diagnostics = output.getvalue()
+        self.assertIn("projects/project-one.md: missing from projects/index.md", diagnostics)
+        self.assertIn("projects/index.md: stale entry projects/deleted-project", diagnostics)
+        self.assertIn("work/work-one.md: listed 2 times in work/index.md", diagnostics)
+        self.assertIn("work/index.md: stale entry work/deleted-work", diagnostics)
 
 
 if __name__ == "__main__":

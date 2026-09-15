@@ -88,6 +88,7 @@ the dependencies are installed.
 python3 tools/contracts.py lint
 python3 tools/wiki.py lint
 python3 tools/dtm.py lint
+python3 tools/workspaces.py lint
 python3 tools/documents.py lint
 python3 tools/writing.py lint
 ```

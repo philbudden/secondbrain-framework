@@ -2,8 +2,6 @@ name: Validate framework
 
 on:
   pull_request:
-  push:
-    branches: [main]
 
 permissions:
   contents: read
@@ -18,7 +16,7 @@ jobs:
           python-version: "3.11"
       - name: Compile tools
         run: python3 -m py_compile framework/tools/*.py install.py
-      - name: Run framework regression tests
+      - name: Run framework unit tests
         run: python3 -m unittest discover -s tests
       - name: Install and lint sanitized example
         run: |
@@ -28,7 +26,9 @@ jobs:
           python3 "$vault/tools/contracts.py" lint
           test -f "$vault/skills/dtm/SKILL.md"
           test -f "$vault/skills/voice/SKILL.md"
+          test -f "$vault/tools/workspaces.py"
           python3 "$vault/tools/wiki.py" lint
           python3 "$vault/tools/dtm.py" lint
+          python3 "$vault/tools/workspaces.py" lint
           python3 "$vault/tools/documents.py" lint
           python3 "$vault/tools/writing.py" lint

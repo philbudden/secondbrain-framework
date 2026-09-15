@@ -9,6 +9,7 @@
     {"source": "contracts", "destination": "framework/contracts"},
     {"source": "tools/wiki.py", "destination": "framework/tools/wiki.py"},
     {"source": "tools/dtm.py", "destination": "framework/tools/dtm.py"},
+    {"source": "tools/workspaces.py", "destination": "framework/tools/workspaces.py"},
     {"source": "tools/contracts.py", "destination": "framework/tools/contracts.py"},
     {"source": "tools/documents.py", "destination": "framework/tools/documents.py"},
     {"source": "tools/document_deliverables.py", "destination": "framework/tools/document_deliverables.py"},
