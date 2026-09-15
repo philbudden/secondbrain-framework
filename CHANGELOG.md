@@ -7,6 +7,12 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-09-15]
+
+### Added
+
+- Publish workspace-index generation and lint tooling, with regression coverage for project and work indexes.
+
 ## [2026-09-08]
 
 ### Added

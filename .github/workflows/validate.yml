@@ -28,7 +28,9 @@ jobs:
           python3 "$vault/tools/contracts.py" lint
           test -f "$vault/skills/dtm/SKILL.md"
           test -f "$vault/skills/voice/SKILL.md"
+          test -f "$vault/tools/workspaces.py"
           python3 "$vault/tools/wiki.py" lint
           python3 "$vault/tools/dtm.py" lint
+          python3 "$vault/tools/workspaces.py" lint
           python3 "$vault/tools/documents.py" lint
           python3 "$vault/tools/writing.py" lint
