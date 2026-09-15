@@ -2,25 +2,12 @@ name: Validate framework
 
 on:
   pull_request:
-  push:
 
 permissions:
   contents: read
 
 jobs:
-  unit-tests:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Run framework unit tests
-        run: python3 -m unittest discover -s tests
-
-  full-validation:
-    if: github.event_name == 'pull_request'
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
