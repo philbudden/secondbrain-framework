@@ -219,6 +219,17 @@ def lint() -> int:
     elif work_items:
         errors.append("work/index.md: missing curated index")
 
+    project_targets = {
+        relative(item["path"]).removesuffix(".md") for item in project_items
+    }
+    work_targets = {
+        relative(item["path"]).removesuffix(".md") for item in work_items
+    }
+    for target in sorted(set(project_index_links) - project_targets):
+        errors.append(f"projects/index.md: stale entry {target}")
+    for target in sorted(set(work_index_links) - work_targets):
+        errors.append(f"work/index.md: stale entry {target}")
+
     for item in project_items:
         path = item["path"]
         label = relative(path)
@@ -321,4 +332,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -345,15 +345,23 @@ class WorkspaceIndexTests(unittest.TestCase):
         self.assertEqual(work_index.count("[[work/parking-note|Parking Note]]"), 1)
         self.assertIn("## Reference\n\n<!-- No reference items. -->", work_index)
 
-    def test_lint_rejects_missing_and_duplicate_index_entries(self):
+    def test_lint_rejects_missing_duplicate_and_stale_index_entries(self):
         self.write_note(self.projects, "project-one.md", "Project One", "project", "active", "A project note.")
         self.write_note(self.work, "work-one.md", "Work One", "working-note", "current", "A work note.")
         with redirect_stdout(io.StringIO()):
             self.workspaces.write_indexes()
 
-        (self.projects / "index.md").write_text("# Projects Index\n", encoding="utf-8")
+        (self.projects / "index.md").write_text(
+            "# Projects Index\n\n- [[projects/deleted-project|Deleted Project]]\n",
+            encoding="utf-8",
+        )
         work_index = self.work / "index.md"
-        work_index.write_text(work_index.read_text(encoding="utf-8") + "\n- [[work/work-one|Work One]]\n", encoding="utf-8")
+        work_index.write_text(
+            work_index.read_text(encoding="utf-8")
+            + "\n- [[work/work-one|Work One]]\n"
+            + "- [[work/deleted-work|Deleted Work]]\n",
+            encoding="utf-8",
+        )
 
         output = io.StringIO()
         with redirect_stdout(output):
@@ -361,7 +369,9 @@ class WorkspaceIndexTests(unittest.TestCase):
 
         diagnostics = output.getvalue()
         self.assertIn("projects/project-one.md: missing from projects/index.md", diagnostics)
+        self.assertIn("projects/index.md: stale entry projects/deleted-project", diagnostics)
         self.assertIn("work/work-one.md: listed 2 times in work/index.md", diagnostics)
+        self.assertIn("work/index.md: stale entry work/deleted-work", diagnostics)
 
 
 if __name__ == "__main__":
