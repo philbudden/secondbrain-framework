@@ -1,0 +1,6 @@
+{
+  "outcome": "handoff",
+  "events": [{"type": "dtm-handoff", "target": "active-dtm-thread"}],
+  "reads": ["work/review-result.md"],
+  "writes": []
+}

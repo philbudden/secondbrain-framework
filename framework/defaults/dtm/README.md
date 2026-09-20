@@ -21,6 +21,8 @@ Supported schedule examples:
 Areas determine the destination section: `personal`, `professional`, or
 `schedule`. Rule IDs must remain stable and unique.
 
+Use recurrence rules only for actions the user still needs to perform. An automated publication, message, job, or other scheduled event is context rather than a task and must not be represented by a recurrence rule.
+
 The DTM validates the complete recurrence file before rollover. Invalid rules
 produce an explicit error before either Daily Note is changed; they are not
 silently skipped, because a missed recurring commitment could otherwise go

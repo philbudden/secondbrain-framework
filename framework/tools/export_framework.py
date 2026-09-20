@@ -66,6 +66,8 @@ def copy_entry(source: Path, destination: Path) -> None:
     for item in sorted(source.rglob("*")):
         if item.is_symlink():
             raise ExportError(f"Symlinks are not publishable: {item.relative_to(LIVE_ROOT)}")
+        if "__pycache__" in item.parts:
+            continue
         if item.is_file():
             if item.name == ".DS_Store":
                 continue

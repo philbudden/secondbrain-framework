@@ -11,7 +11,7 @@ No unreleased changes.
 
 ### Added
 
-- Publish workspace-index generation and lint tooling, with regression coverage for project and work indexes.
+- Three synthetic behavioural fixtures for non-DTM Daily Note write authority, voice-draft exclusion, and raw-archive filename collisions, with a harness-neutral evaluator for observable filesystem and trace outcomes.
 
 ## [2026-09-08]
 
