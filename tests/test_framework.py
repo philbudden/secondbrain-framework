@@ -71,17 +71,18 @@ class ChangelogTests(unittest.TestCase):
                     f"{line} at line {line_number} must be nested under ## [YYYY-MM-DD], not {current_section}",
                 )
 
-    def test_current_release_retains_each_dated_item(self):
+    def test_releases_retain_their_dated_items(self):
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-        release = changelog.split("## [2026-09-15]", maxsplit=1)[1].split("## [", maxsplit=1)[0]
+        september_15 = changelog.split("## [2026-09-15]", maxsplit=1)[1].split("## [", maxsplit=1)[0]
+        september_20 = changelog.split("## [2026-09-20]", maxsplit=1)[1].split("## [", maxsplit=1)[0]
 
         self.assertIn(
             "- Publish workspace-index generation and lint tooling, with regression coverage for project and work indexes.",
-            release,
+            september_15,
         )
         self.assertIn(
             "- Three synthetic behavioural fixtures for non-DTM Daily Note write authority, voice-draft exclusion, and raw-archive filename collisions, with a harness-neutral evaluator for observable filesystem and trace outcomes.",
-            release,
+            september_20,
         )
 
     def test_publication_guard_rejects_removed_dated_item(self):

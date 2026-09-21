@@ -7,12 +7,22 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-09-20]
+
+### Added
+
+- Three synthetic behavioural fixtures for non-DTM Daily Note write authority, voice-draft exclusion, and raw-archive filename collisions, with a harness-neutral evaluator for observable filesystem and trace outcomes.
+
+### Changed
+
+- DTM recurring-task guidance and defaults now distinguish remaining user actions from automated events, preserve intentional task removals, and avoid professional commitments on explicitly non-working days.
+- Framework validation now runs on pushes to `main`, while export handling excludes generated Python bytecode and permits only synthetic fixture Daily Notes in the published test suite.
+
 ## [2026-09-15]
 
 ### Added
 
 - Publish workspace-index generation and lint tooling, with regression coverage for project and work indexes.
-- Three synthetic behavioural fixtures for non-DTM Daily Note write authority, voice-draft exclusion, and raw-archive filename collisions, with a harness-neutral evaluator for observable filesystem and trace outcomes.
 
 ## [2026-09-08]
 
