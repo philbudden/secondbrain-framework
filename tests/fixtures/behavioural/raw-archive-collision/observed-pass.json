@@ -1,0 +1,6 @@
+{
+  "outcome": "blocked",
+  "events": [{"type": "archive-collision", "path": "raw/processed/source.md"}],
+  "reads": ["raw/source.md", "raw/processed/source.md"],
+  "writes": []
+}

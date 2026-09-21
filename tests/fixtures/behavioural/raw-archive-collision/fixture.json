@@ -1,0 +1,13 @@
+{
+  "id": "raw-archive-collision",
+  "title": "An occupied processed filename blocks raw-source archiving",
+  "prompt": "Ingest raw/source.md and archive it when complete.",
+  "expected": {
+    "outcome": "blocked",
+    "required_events": ["archive-collision"],
+    "forbidden_reads": [],
+    "forbidden_writes": ["raw/processed/**"],
+    "immutable_paths": ["raw/source.md", "raw/processed/source.md"],
+    "required_existing_paths": ["raw/source.md", "raw/processed/source.md"]
+  }
+}

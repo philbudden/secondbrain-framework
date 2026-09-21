@@ -1,0 +1,6 @@
+{
+  "outcome": "completed",
+  "events": [{"type": "voice-corpus-analysis"}],
+  "reads": ["writing/ready/approved-piece.md"],
+  "writes": ["writing/voice/blog-voice-pack.md"]
+}

@@ -88,6 +88,7 @@ When work is delegated to another thread:
   invent implicit fallback duties. Assume normal team coverage on working days
   and next-working-day handling for out-of-hours issues unless the user states
   a real on-call or escalation responsibility.
+- On an explicitly non-working day, do not create professional Focus, to-do, or scheduled/recurring commitments. Record personal-system work only as optional when the user frames it that way.
 - Treat `blocked` as dependency-constrained work: something external, upstream,
   or prerequisite prevents useful progress. A deferral is not a blocker; it
   means the work is not being done yet but remains available to do at the chosen
@@ -286,6 +287,7 @@ references according to the normal Daily Note rules.
   from today's note unless the user explicitly asks for cleanup or removal.
 - At day open, carry incomplete tasks forward exactly once. Leave completed
   tasks in the historical note and never carry them forward.
+- Treat a task or blocker the user removes from a Daily Note as intentionally cleared. Do not restore it from an earlier note, a prior chat, or inferred context unless the user explicitly asks to track it again. Daily Notes are not an authoritative archive of every unresolved possibility.
 - Preserve useful completion context in the day's activity or project page.
 - Recurring instances behave like ordinary tasks after creation; completing one
   does not disable the recurrence definition.
@@ -303,6 +305,8 @@ state, and a schedule. Supported schedules are:
 The rollover tool instantiates each enabled rule only on applicable dates and
 marks it with `<!-- recurring:rule-id -->` to prevent duplicates. Edit the rule,
 not generated historical instances, to change future behaviour.
+
+Only create a recurring task for work that still requires the user's manual action. A stated scheduled publication, message, job, or similar event means it has been automated unless the user says otherwise; record it as context or activity, not as a task, focus item, or recurrence.
 
 ## Decisions
 
@@ -365,6 +369,7 @@ The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
 2. Finalise yesterday's activity and decision records without inventing events.
 3. Write today's `Previous Day` synthesis from yesterday's note: activities,
    outcomes, meaningful developments, and unfinished threads.
+   Lead with what was achieved and keep that account complete in its own right. Do not use a trailing contrast such as “but”, “however”, or “despite” to turn a productive day into a deficit account. Mention unfinished work only when it is genuinely useful for continuity, in a separate neutral sentence or paragraph that distinguishes it from the day's achievements.
 4. Refine today's `Focus` into a short ranked recommendation based on carried
    work, active projects, questions, deadlines, and outcomes.
    `Focus` is for actionable priorities only. Do not place blocked items there

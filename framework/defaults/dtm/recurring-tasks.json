@@ -22,20 +22,10 @@
       }
     },
     {
-      "id": "tuesday-issue-newsletter",
-      "task": "Issue the weekly newsletter",
-      "area": "schedule",
-      "enabled": true,
-      "schedule": {
-        "frequency": "weekly",
-        "weekdays": ["Tuesday"]
-      }
-    },
-    {
       "id": "wednesday-linkedin-weekly-promotion",
       "task": "Post the single weekly LinkedIn promotion for the week's published article or newsletter thread",
       "area": "schedule",
-      "enabled": true,
+      "enabled": false,
       "schedule": {
         "frequency": "weekly",
         "weekdays": ["Wednesday"]

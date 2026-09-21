@@ -35,7 +35,11 @@ requirements in the changelog.
 Keep `CHANGELOG.md` grouped by the date the framework change was made. The
 `[Unreleased]` section is only a holding heading; `Added`, `Changed`, and other
 Keep a Changelog subsections must appear under a dated `## [YYYY-MM-DD]`
-section, never directly under `[Unreleased]`.
+section, never directly under `[Unreleased]`. Dated release notes are
+append-only: retain every existing dated item verbatim, adding new items to its
+own date or the applicable existing date rather than replacing an earlier
+week's item. The publisher validates this against the current default branch
+before it creates a publication commit.
 
 ## Rollback
 

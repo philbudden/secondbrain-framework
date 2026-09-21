@@ -293,6 +293,11 @@ workflow improvement. Explain material schema changes before applying them.
 - When system architecture, templates, tools, Obsidian configuration, or
   automations change, update their sanitized framework representation in the
   same task where practical.
+- `publication/repository/CHANGELOG.md` is the canonical public release record.
+  Keep every release note under a dated `## [YYYY-MM-DD]` heading; dated items
+  are append-only and must never be replaced or removed when recording a later
+  framework change. Add the new item under its own date, or alongside other
+  items from that date, and retain all earlier dated items verbatim.
 
 ## Wiki structure
 

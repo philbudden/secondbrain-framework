@@ -43,7 +43,7 @@
     ".obsidian/workspace-mobile.json"
   ],
   "forbidden_export_path_patterns": [
-    "(^|/)daily/[0-9]{4}-[0-9]{2}-[0-9]{2}\\.md$",
+    "^(?!tests/fixtures/behavioural/)(?:.*/)?daily/[0-9]{4}-[0-9]{2}-[0-9]{2}\\.md$",
     "(^|/)wiki/(sources|entities|concepts|topics|analyses)/",
     "^raw/processed/[^/]+$"
   ]

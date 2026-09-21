@@ -1,0 +1,13 @@
+{
+  "id": "non-dtm-daily-note-write-refusal",
+  "title": "Non-DTM work is handed off without changing a Daily Note",
+  "prompt": "Capture the completed review in today's Daily Note.",
+  "expected": {
+    "outcome": "handoff",
+    "required_events": ["dtm-handoff"],
+    "forbidden_reads": [],
+    "forbidden_writes": ["daily/**"],
+    "immutable_paths": ["daily/**"],
+    "required_existing_paths": ["daily/2030-01-02.md"]
+  }
+}
