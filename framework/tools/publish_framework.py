@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import re
 import shutil
 import subprocess
 import sys
@@ -86,6 +87,40 @@ def validate_export(target: Path) -> None:
         run([sys.executable, str(vault / "tools" / "dtm.py"), "lint"])
 
 
+def dated_changelog_items(path: Path) -> dict[str, list[str]]:
+    """Return list items grouped by dated release heading in a changelog."""
+    dated_heading = re.compile(r"^## \[(\d{4}-\d{2}-\d{2})\]$")
+    items: dict[str, list[str]] = {}
+    current_date: str | None = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = dated_heading.match(line)
+        if match:
+            current_date = match.group(1)
+            items.setdefault(current_date, [])
+        elif line.startswith("## "):
+            current_date = None
+        elif current_date and line.startswith("- "):
+            items[current_date].append(line)
+    return items
+
+
+def validate_changelog_history(target: Path, staging: Path) -> None:
+    """Reject an export that would remove an already published dated item."""
+    published = dated_changelog_items(target / "CHANGELOG.md")
+    proposed = dated_changelog_items(staging / "CHANGELOG.md")
+    removed = [
+        f"{release}: {item}"
+        for release, items in published.items()
+        for item in items
+        if item not in proposed.get(release, [])
+    ]
+    if removed:
+        raise PublishError(
+            "Export would remove dated CHANGELOG.md history; dated release notes are append-only: "
+            + "; ".join(removed)
+        )
+
+
 def existing_pr(repo: str, branch: str) -> str:
     result = run(
         ["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "open", "--json", "url", "--jq", ".[0].url"],
@@ -140,6 +175,7 @@ def publish(target: Path, repo: str, assignee: str, base: str) -> int:
     with tempfile.TemporaryDirectory(prefix="secondbrain-export-") as temporary:
         staging = Path(temporary)
         fingerprint = export_framework(staging)
+        validate_changelog_history(target, staging)
         if fingerprint == repository_digest(target):
             print("No meaningful framework changes; no branch, commit, or PR created.")
             return 0

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import sys
 import tempfile
 import unittest
 from datetime import date, timedelta
@@ -27,6 +28,15 @@ def load_contracts_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def load_publisher_module():
+    tools = str(ROOT / "framework" / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import publish_framework
+
+    return publish_framework
 
 
 class ObsidianConfigurationTests(unittest.TestCase):
@@ -60,6 +70,34 @@ class ChangelogTests(unittest.TestCase):
                     dated_section,
                     f"{line} at line {line_number} must be nested under ## [YYYY-MM-DD], not {current_section}",
                 )
+
+    def test_current_release_retains_each_dated_item(self):
+        changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        release = changelog.split("## [2026-09-15]", maxsplit=1)[1].split("## [", maxsplit=1)[0]
+
+        self.assertIn(
+            "- Publish workspace-index generation and lint tooling, with regression coverage for project and work indexes.",
+            release,
+        )
+        self.assertIn(
+            "- Three synthetic behavioural fixtures for non-DTM Daily Note write authority, voice-draft exclusion, and raw-archive filename collisions, with a harness-neutral evaluator for observable filesystem and trace outcomes.",
+            release,
+        )
+
+    def test_publication_guard_rejects_removed_dated_item(self):
+        publisher = load_publisher_module()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = root / "target"
+            staging = root / "staging"
+            target.mkdir()
+            staging.mkdir()
+            target_changelog = "# Changelog\n\n## [2026-09-15]\n\n### Added\n\n- Retained item.\n"
+            (target / "CHANGELOG.md").write_text(target_changelog, encoding="utf-8")
+            (staging / "CHANGELOG.md").write_text("# Changelog\n", encoding="utf-8")
+
+            with self.assertRaises(publisher.PublishError):
+                publisher.validate_changelog_history(target, staging)
 
 
 class BehaviourContractTests(unittest.TestCase):
