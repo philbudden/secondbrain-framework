@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"completed","events":[{"type":"query-answered"},{"type":"evidence-gap-stated"}],"reads":["wiki/sources/study.md","wiki/concepts/topic.md"],"writes":["work/query-answer.md"],"validations":[]}

@@ -1,0 +1,13 @@
+{
+  "id": "invalid-dtm-recurrence",
+  "title": "Invalid recurrence blocks rollover before any Daily Note mutation",
+  "prompt": "Run the daily rollover with the configured recurrence data.",
+  "expected": {
+    "outcome": "blocked",
+    "required_events": ["recurrence-invalid"],
+    "required_validations": ["tools/dtm.py rollover --date 2030-01-02"],
+    "immutable_paths": ["daily/2030-01-01.md"],
+    "required_existing_paths": ["daily/2030-01-01.md"],
+    "required_absent_paths": ["daily/2030-01-02.md"]
+  }
+}

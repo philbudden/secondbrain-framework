@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"completed","events":[{"type":"workspace-index-refreshed"}],"reads":["work/index.md"],"writes":["work/research-pack.md","work/index.md"],"validations":[{"command":"tools/workspaces.py lint","exit_code":0}]}

@@ -1,0 +1,15 @@
+{
+  "id": "cited-wiki-query",
+  "title": "A wiki query cites evidence and states its gap",
+  "prompt": "What does the evidence say, and what remains unknown? Save the answer as work/query-answer.md.",
+  "expected": {
+    "outcome": "completed",
+    "required_events": ["query-answered", "evidence-gap-stated"],
+    "required_changed_paths": ["work/query-answer.md"],
+    "required_existing_paths": ["work/query-answer.md"],
+    "forbidden_writes": ["daily/**"],
+    "required_file_text": {
+      "work/query-answer.md": ["[[wiki/sources/study|Study]]", "**Gap:**"]
+    }
+  }
+}

@@ -7,6 +7,12 @@ for tagged releases.
 
 No unreleased changes.
 
+## [2026-09-21]
+
+### Added
+
+- An eleven-case behavioural migration suite, fixture-run evaluator CLI, and model-comparison runbook covering core ingestion, query, opinion, DTM, lifecycle, privacy, and automation boundaries.
+
 ## [2026-09-20]
 
 ### Added

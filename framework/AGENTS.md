@@ -293,6 +293,14 @@ workflow improvement. Explain material schema changes before applying them.
 - When system architecture, templates, tools, Obsidian configuration, or
   automations change, update their sanitized framework representation in the
   same task where practical.
+- Framework experiments and behaviour changes originate in the live vault so
+  they can be dogfooded against the workflows and failures they are intended to
+  improve. Treat `contracts/`, `tools/`, and their live evaluation fixtures as
+  the canonical implementation; keep `publication/repository/` as the
+  sanitized, publishable representation in the same task. The separate external
+  framework checkout is downstream publication state, not the canonical place
+  to begin an experiment. The scheduled weekly publication automation is
+  responsible for cascading retained live changes to that checkout.
 - `publication/repository/CHANGELOG.md` is the canonical public release record.
   Keep every release note under a dated `## [YYYY-MM-DD]` heading; dated items
   are append-only and must never be replaced or removed when recording a later

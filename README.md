@@ -39,7 +39,8 @@ After installation:
    appropriate for your host.
 
 See [Installation](docs/installation.md), [Architecture](docs/architecture.md),
-and [Operations](docs/operations.md) for the full model.
+and [Operations](docs/operations.md) for the full model. Before changing an
+agent model or harness, use the [model migration evaluation runbook](docs/model-migration-evaluation.md).
 
 ## Privacy model
 

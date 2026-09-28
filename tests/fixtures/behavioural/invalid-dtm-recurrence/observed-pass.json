@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"blocked","events":[{"type":"recurrence-invalid"}],"reads":["dtm/recurring-tasks.json"],"writes":[],"validations":[{"command":"tools/dtm.py rollover --date 2030-01-02","exit_code":0}]}

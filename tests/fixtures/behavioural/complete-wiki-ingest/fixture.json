@@ -1,0 +1,19 @@
+{
+  "id": "complete-wiki-ingest",
+  "title": "A source is integrated, validated, and archived only after completion",
+  "prompt": "Ingest raw/evidence.md into this mini wiki.",
+  "expected": {
+    "outcome": "completed",
+    "required_events": ["ingest-plan", "source-archived"],
+    "required_validations": ["tools/wiki.py lint"],
+    "forbidden_writes": ["raw/processed/existing.md"],
+    "immutable_paths": ["raw/processed/existing.md"],
+    "required_changed_paths": ["wiki/sources/evidence.md", "wiki/concepts/evidence.md", "wiki/index.md", "log.md"],
+    "required_existing_paths": ["raw/processed/evidence.md", "wiki/sources/evidence.md"],
+    "required_absent_paths": ["raw/evidence.md"],
+    "required_file_text": {
+      "wiki/concepts/evidence.md": ["[[wiki/sources/evidence|Evidence source]]"],
+      "wiki/sources/evidence.md": ["[[raw/processed/evidence|Open raw source]]"]
+    }
+  }
+}

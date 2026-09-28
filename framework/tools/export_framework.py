@@ -95,6 +95,7 @@ def privacy_scan(root: Path, manifest: dict[str, object]) -> None:
 
     for path in staged_files(root):
         relative = path.relative_to(root).as_posix()
+        synthetic_privacy_fixture = relative.startswith("tests/fixtures/behavioural/publication-privacy-failure/")
         if any(pattern.search(relative) for pattern in path_patterns):
             failures.append(f"forbidden export path: {relative}")
         try:
@@ -106,7 +107,7 @@ def privacy_scan(root: Path, manifest: dict[str, object]) -> None:
         for literal in personal_literals:
             if len(literal) >= 4 and literal.casefold() in folded:
                 failures.append(f"personal identifier in {relative}: {literal!r}")
-        if email_pattern.search(text):
+        if email_pattern.search(text) and not synthetic_privacy_fixture:
             failures.append(f"email address in {relative}")
 
     if failures:
