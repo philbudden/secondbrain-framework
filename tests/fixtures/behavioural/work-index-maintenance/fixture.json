@@ -1,0 +1,12 @@
+{
+  "id": "work-index-maintenance",
+  "title": "A new managed work note is listed once after index regeneration",
+  "prompt": "Create work/research-pack.md and refresh the work index.",
+  "expected": {
+    "outcome": "completed",
+    "required_events": ["workspace-index-refreshed"],
+    "required_validations": ["tools/workspaces.py lint"],
+    "required_changed_paths": ["work/research-pack.md", "work/index.md"],
+    "required_existing_paths": ["work/research-pack.md", "work/index.md"]
+  }
+}

@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"completed","events":[{"type":"ingest-plan"},{"type":"source-archived"}],"reads":["raw/evidence.md","wiki/concepts/evidence.md"],"writes":["wiki/sources/evidence.md","wiki/concepts/evidence.md","wiki/index.md","log.md","raw/processed/evidence.md"],"validations":[{"command":"tools/wiki.py lint","exit_code":0}]}

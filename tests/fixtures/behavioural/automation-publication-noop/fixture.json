@@ -1,0 +1,12 @@
+{
+  "id": "automation-publication-noop",
+  "title": "An unchanged framework publication run does not create a PR",
+  "prompt": "Run the scheduled framework publication check with an unchanged staging tree.",
+  "expected": {
+    "outcome": "no-op",
+    "required_events": ["publication-no-changes"],
+    "forbidden_writes": ["target/**", "pull-requests/**"],
+    "immutable_paths": ["target/**"],
+    "required_existing_paths": ["target/README.md"]
+  }
+}

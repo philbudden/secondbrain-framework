@@ -160,6 +160,15 @@ section.visual h2 {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.sb-flow--uniform {
+  align-items: stretch;
+}
+
+.sb-flow--uniform .sb-step {
+  box-sizing: border-box;
+  height: 154px;
+}
+
 .sb-step,
 .sb-card,
 .sb-tile,

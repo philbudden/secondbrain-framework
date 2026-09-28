@@ -27,10 +27,17 @@ class BehaviouralFixtureTests(unittest.TestCase):
         fixture = self.fixture(name)
         with tempfile.TemporaryDirectory() as temporary:
             after = Path(temporary) / "vault"
-            shutil.copytree(fixture.initial, after)
+            shutil.copytree(fixture.reference_after, after)
             if mutate:
                 mutate(after)
             return evaluate(fixture, observed or self.observed(name), after)
+
+    def test_migration_fixture_references_all_pass(self):
+        fixture_names = sorted(path.name for path in FIXTURES.iterdir() if path.is_dir())
+        self.assertGreaterEqual(len(fixture_names), 10)
+        for name in fixture_names:
+            with self.subTest(fixture=name):
+                self.assertEqual(self.assess(name), [])
 
     def test_non_dtm_daily_note_write_fixture_accepts_handoff_and_rejects_note_changes(self):
         self.assertEqual(self.assess("non-dtm-daily-note-write-refusal"), [])
@@ -59,6 +66,22 @@ class BehaviouralFixtureTests(unittest.TestCase):
             (after / "raw" / "source.md").rename(after / "raw" / "processed" / "source-copy.md")
 
         self.assertIn("immutable path changed: raw/source.md", self.assess("raw-archive-collision", mutate=move_pending))
+
+    def test_required_change_and_validation_are_enforced(self):
+        observed = self.observed("complete-wiki-ingest")
+        observed["validations"] = []
+        self.assertIn(
+            "required validation did not pass: tools/wiki.py lint",
+            self.assess("complete-wiki-ingest", observed),
+        )
+
+        def restore_concept(after: Path) -> None:
+            after.joinpath("wiki/concepts/evidence.md").write_text("# Evidence\n\nExisting concept.\n", encoding="utf-8")
+
+        self.assertIn(
+            "required path did not change: wiki/concepts/evidence.md",
+            self.assess("complete-wiki-ingest", mutate=restore_concept),
+        )
 
 
 if __name__ == "__main__":

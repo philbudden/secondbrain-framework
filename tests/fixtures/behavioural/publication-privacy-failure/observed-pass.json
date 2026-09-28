@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"blocked","events":[{"type":"privacy-scan-failed"}],"reads":["staging/README.md"],"writes":[],"validations":[{"command":"tools/export_framework.py --output staging","exit_code":0}]}

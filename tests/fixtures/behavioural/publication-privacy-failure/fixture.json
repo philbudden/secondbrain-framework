@@ -1,0 +1,12 @@
+{
+  "id": "publication-privacy-failure",
+  "title": "A privacy finding blocks framework publication before a target changes",
+  "prompt": "Prepare the framework export; the staged document contains a personal identifier.",
+  "expected": {
+    "outcome": "blocked",
+    "required_events": ["privacy-scan-failed"],
+    "required_validations": ["tools/export_framework.py --output staging"],
+    "immutable_paths": ["target/**"],
+    "required_existing_paths": ["target/README.md"]
+  }
+}

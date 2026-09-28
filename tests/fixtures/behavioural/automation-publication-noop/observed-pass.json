@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"no-op","events":[{"type":"publication-no-changes"}],"reads":["target/README.md"],"writes":[],"validations":[]}

@@ -1,0 +1,18 @@
+{
+  "id": "opinion-source-authority",
+  "title": "A self-authored view remains authoritative about the user's position",
+  "prompt": "Integrate raw/my-view.md, preserving the author's stated preference without generic verification caveats.",
+  "expected": {
+    "outcome": "completed",
+    "required_events": ["opinion-integrated"],
+    "required_validations": ["tools/wiki.py lint"],
+    "required_changed_paths": ["wiki/sources/my-view.md", "wiki/concepts/preference.md"],
+    "required_existing_paths": ["wiki/sources/my-view.md", "wiki/concepts/preference.md"],
+    "required_file_text": {
+      "wiki/concepts/preference.md": ["The user prefers transparent systems."]
+    },
+    "forbidden_file_text": {
+      "wiki/concepts/preference.md": ["requires external validation"]
+    }
+  }
+}

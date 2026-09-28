@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-02",
+  "updated": "2026-09-21",
   "description": "Machine-readable inventory of SecondBrain behaviours that should be tracked as explicit contracts, deterministic checks, fixtures, or harness-specific adapters.",
   "behaviours": [
     {
@@ -71,7 +71,7 @@
           "semantic_checks": ["Agent reports the collision and asks for resolution"]
         },
         {
-          "id": "raw-source-archived-after-complete-ingest",
+          "id": "complete-wiki-ingest",
           "title": "Source archive happens only after complete ingest",
           "type": "behavioural-fixture",
           "priority": "medium-term",
@@ -140,7 +140,7 @@
       "prompt_debt_signals": ["semantic-judgement", "partial-deterministic-check"],
       "candidate_tests": [
         {
-          "id": "query-answer-cites-source-pages",
+          "id": "cited-wiki-query",
           "title": "Query answer cites source pages and states gaps",
           "type": "behavioural-fixture",
           "priority": "near-term",
@@ -163,7 +163,7 @@
       "prompt_debt_signals": ["semantic-judgement", "model-style-sensitivity", "prose-only-control"],
       "candidate_tests": [
         {
-          "id": "opinion-source-not-weakened",
+          "id": "opinion-source-authority",
           "title": "Self-authored opinion is not weakened with generic caveats",
           "type": "behavioural-fixture",
           "priority": "near-term",
@@ -209,7 +209,7 @@
       "prompt_debt_signals": ["deterministic-check-present", "semantic-summary-gap"],
       "candidate_tests": [
         {
-          "id": "invalid-recurrence-fails-before-rollover",
+          "id": "invalid-dtm-recurrence",
           "title": "Invalid recurrence blocks rollover before mutation",
           "type": "deterministic-unit",
           "priority": "near-term",
@@ -241,7 +241,7 @@
       "prompt_debt_signals": ["deterministic-check-present", "publication-gap"],
       "candidate_tests": [
         {
-          "id": "work-index-lists-new-note-once",
+          "id": "work-index-maintenance",
           "title": "New work note appears once in Work Index",
           "type": "deterministic-unit",
           "priority": "near-term",
@@ -264,7 +264,7 @@
       "prompt_debt_signals": ["partial-deterministic-check", "human-approval-boundary"],
       "candidate_tests": [
         {
-          "id": "ready-promotion-requires-human-approval",
+          "id": "writing-ready-boundary",
           "title": "Writing ready promotion requires explicit approval",
           "type": "behavioural-fixture",
           "priority": "medium-term",
@@ -310,7 +310,7 @@
       "prompt_debt_signals": ["deterministic-check-present"],
       "candidate_tests": [
         {
-          "id": "publication-rejects-personal-identifier",
+          "id": "publication-privacy-failure",
           "title": "Publication export rejects personal identifiers",
           "type": "deterministic-unit",
           "priority": "near-term",
@@ -333,7 +333,7 @@
       "prompt_debt_signals": ["dense-prompt", "harness-assumption", "partial-deterministic-check"],
       "candidate_tests": [
         {
-          "id": "automation-no-op-does-not-create-pr",
+          "id": "automation-publication-noop",
           "title": "No-change framework publication does not create a PR",
           "type": "deterministic-integration",
           "priority": "medium-term",

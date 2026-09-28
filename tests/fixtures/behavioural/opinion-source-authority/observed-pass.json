@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"completed","events":[{"type":"opinion-integrated"}],"reads":["raw/my-view.md"],"writes":["wiki/sources/my-view.md","wiki/concepts/preference.md"],"validations":[{"command":"tools/wiki.py lint","exit_code":0}]}

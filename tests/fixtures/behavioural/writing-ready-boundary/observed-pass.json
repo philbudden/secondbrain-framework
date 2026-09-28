@@ -1,0 +1,1 @@
+{"model":"reference","harness":"fixture","outcome":"completed","events":[{"type":"draft-revised"}],"reads":["writing/drafts/article.md"],"writes":["writing/drafts/article.md"],"validations":[{"command":"tools/writing.py lint","exit_code":0}]}
