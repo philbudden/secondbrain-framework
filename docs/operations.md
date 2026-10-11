@@ -15,6 +15,11 @@ captures decisions, and maintains project continuity. Durable knowledge can
 graduate to the wiki while remaining clearly distinguished from externally
 sourced evidence.
 
+Completing work includes its normal delivery: sharing, sending, handing over,
+or publishing an output does not need a separate follow-up task unless the user
+asks for one. When a hand-off confirms delivery is complete, do not create or
+carry a delivery task; correct any stale Daily Note entry.
+
 Specialised work can run in separate non-DTM threads. Those threads must not
 edit Daily Notes directly; they use `dtm-handoff` to send completed outcomes,
 new tasks, blockers, decisions, findings, and follow-up context to the active

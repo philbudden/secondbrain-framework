@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "updated": "2026-09-29",
+  "description": "Provider-neutral capability profiles for SecondBrain task routing. Profile names describe the capability needed; harness adapters may map them to current models and reasoning settings.",
+  "profiles": [
+    {
+      "id": "no-llm",
+      "title": "No language model",
+      "description": "A deterministic command, transformation, or inspection can complete the request without semantic judgement.",
+      "semantic_judgement": "none",
+      "context_volume": "none",
+      "risk_ceiling": "low",
+      "escalate_when": ["The request needs interpretation, synthesis, or ambiguous policy judgement."]
+    },
+    {
+      "id": "routine",
+      "title": "Routine",
+      "description": "A bounded, low-ambiguity task with clear inputs, outputs, authority, and inexpensive validation.",
+      "semantic_judgement": "limited",
+      "context_volume": "small",
+      "risk_ceiling": "moderate",
+      "escalate_when": ["Required context is unavailable or exceeds the packet.", "The task reveals material ambiguity, consequential risk, or a missing acceptance check."]
+    },
+    {
+      "id": "balanced",
+      "title": "Balanced",
+      "description": "Bounded implementation, analysis, or synthesis that needs considered judgement but has explicit ownership and acceptance checks.",
+      "semantic_judgement": "moderate",
+      "context_volume": "bounded",
+      "risk_ceiling": "high",
+      "escalate_when": ["The work becomes cross-domain, materially ambiguous, or consequential beyond the declared acceptance checks.", "A required validator, authority, or source is missing."]
+    },
+    {
+      "id": "strong",
+      "title": "Strong",
+      "description": "Difficult synthesis, consequential ambiguity, or high-value judgement where lower profiles would create avoidable correction or escalation risk.",
+      "semantic_judgement": "high",
+      "context_volume": "large",
+      "risk_ceiling": "consequential",
+      "escalate_when": ["The user must make a decision outside the packet's delegated authority.", "Evidence is insufficient for a consequential recommendation."]
+    }
+  ]
+}
