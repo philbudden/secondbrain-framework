@@ -288,6 +288,12 @@ references according to the normal Daily Note rules.
   follow-up task unless the user explicitly asks to track that action. When a
   completed-work hand-off confirms that delivery has already happened, do not
   create or carry a delivery task; correct any stale Daily Note entry instead.
+- Do not derive follow-up tasks from a work report merely because an output
+  could be polished, checked, reformatted, or extended further. Create a task
+  only when the user explicitly asks for it, an existing assigned outcome is
+  still incomplete, or the follow-up is necessary to complete the agreed work.
+  Record incidental limitations as context in `Notes & Activity` or the
+  relevant artefact; do not turn them into new tasks by default.
 - In the current Daily Note, preserve visible completion by checking completed
   items off instead of removing them. Do not silently delete completed tasks
   from today's note unless the user explicitly asks for cleanup or removal.
