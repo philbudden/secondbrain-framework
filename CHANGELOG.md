@@ -3,7 +3,7 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
-## [Unreleased]
+## [2026-10-11]
 
 ### Changed
 
