@@ -35,7 +35,7 @@
       "id": "monday-review-wiki-blog-post",
       "task": "Review the generated weekly wiki blog draft",
       "area": "personal",
-      "enabled": true,
+      "enabled": false,
       "schedule": {
         "frequency": "weekly",
         "weekdays": ["Monday"]

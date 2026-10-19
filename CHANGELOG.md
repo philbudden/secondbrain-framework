@@ -3,9 +3,21 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
-## [Unreleased]
+## [2026-10-11]
 
-No unreleased changes.
+### Changed
+
+- DTM task guidance treats normal sharing, sending, handover, and publication as part of completing work unless a separate follow-up is requested.
+
+## [2026-09-29]
+
+### Added
+
+- Provider-neutral `no-llm`, `routine`, `balanced`, and `strong` task profiles, plus versioned task and completion envelopes with dependency-free packet validation. The contracts retain the existing DTM hand-off and Daily Note authority boundary without selecting models or dispatching workers.
+
+### Changed
+
+- Daily Note guidance now classifies tasks by whether they are work for the user's employer, while treating extracurricular work as personal and using contextual judgement for ambiguous cases.
 
 ## [2026-09-21]
 

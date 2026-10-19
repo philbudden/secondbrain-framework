@@ -25,6 +25,16 @@ Run `python3 tools/contracts.py lint` after changing the inventory. The
 validator is deliberately dependency-free so it can run in ordinary Python
 environments and in framework CI.
 
+`contracts/task-profiles.json` defines the provider-neutral `no-llm`,
+`routine`, `balanced`, and `strong` capability profiles. A task packet declares
+the task class, context and risk level, allowed paths, write authority, tools,
+validation, acceptance checks, and escalation conditions. Its completion packet
+records outcomes, artefacts, verification, uncertainty, blockers, follow-up,
+and Daily Note implications. `tools/task_envelopes.py` validates both contracts
+and individual packets. These contracts do not select a model or dispatch work;
+harness adapters retain that responsibility, and non-DTM hand-offs retain the
+existing Daily Note boundary.
+
 ## Role boundary
 
 The Knowledge Agent owns systematic source ingestion and wiki maintenance. An

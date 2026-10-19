@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-21",
+  "updated": "2026-09-29",
   "description": "Machine-readable inventory of SecondBrain behaviours that should be tracked as explicit contracts, deterministic checks, fixtures, or harness-specific adapters.",
   "behaviours": [
     {
@@ -340,6 +340,29 @@
           "description": "Run publication flow against a target with the same framework fingerprint.",
           "deterministic_checks": ["No branch is created", "No commit is created", "No PR command is called"],
           "semantic_checks": []
+        }
+      ]
+    },
+    {
+      "id": "task-profiles-and-completion-envelopes",
+      "title": "Provider-neutral task profiles and completion envelopes",
+      "owner": "shared",
+      "workspaces": ["contracts", "tools", "skills"],
+      "summary": "Classify bounded work by provider-neutral capability profile and require an explicit task packet and completion packet before any future routing or automated dispatch.",
+      "current_specification": ["contracts/task-profiles.json", "contracts/task-envelope-contract.json", "skills/dtm-handoff/SKILL.md"],
+      "current_enforcement": ["tools/task_envelopes.py lint", "tools/task_envelopes.py validate-task", "tools/task_envelopes.py validate-completion", "Unit tests"],
+      "severity": "high",
+      "portability_class": "portable-domain",
+      "prompt_debt_signals": ["model-name-coupling", "implicit-handoff", "routing-judgement"],
+      "candidate_tests": [
+        {
+          "id": "task-envelope-authority-validation",
+          "title": "Task packets enforce declared profile and path authority",
+          "type": "deterministic-unit",
+          "priority": "near-term",
+          "description": "Validate a bounded routine task and reject a non-DTM packet that declares Daily Note paths.",
+          "deterministic_checks": ["Declared capability profile exists", "Path is vault-relative", "daily/** requires dtm-session-only authority", "Completion packet carries DTM hand-off fields"],
+          "semantic_checks": ["The router selects a profile only after the later dry-run routing experiment"]
         }
       ]
     },

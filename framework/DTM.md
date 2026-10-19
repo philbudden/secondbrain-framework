@@ -278,10 +278,16 @@ references according to the normal Daily Note rules.
 ## Tasks
 
 - Put personal and professional tasks in their respective Daily Note sections.
+- Classify Daily Note tasks by whether they are Codi work: **professional** means work for Codi, and **personal** means work outside the day job. Extracurricular work can look professional but remains personal when it is outside Codi duties; an internal Codi adaptation and the Housing Technology presentation are professional, while the separate 45-minute Practical Delegation Test talk is personal. Use context and best judgement for work that blurs the boundary, and accept the user's correction.
 - Use Obsidian task syntax: `- [ ] Action` and `- [x] Completed action`.
 - Treat the Daily Note `Focus` section as the morning commitment for the day, not a live next-action list. After the day has started, do not rewrite `Focus` to reflect progress, newly discovered details, or the next task unless the user explicitly asks to correct the focus wording itself. Track completion and changing operational state in to-do items, `Notes & Activity`, and linked project or working notes.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
+- Treat normal delivery of an output as part of completing its task: sharing,
+  sending, handing over, or publishing the result does not need a separate
+  follow-up task unless the user explicitly asks to track that action. When a
+  completed-work hand-off confirms that delivery has already happened, do not
+  create or carry a delivery task; correct any stale Daily Note entry instead.
 - In the current Daily Note, preserve visible completion by checking completed
   items off instead of removing them. Do not silently delete completed tasks
   from today's note unless the user explicitly asks for cleanup or removal.
@@ -333,8 +339,7 @@ entry.
 
 ## References and questions
 
-- `References` contains only documents created or updated by the DTM that day.
-  Do not list Knowledge-Agent-only changes.
+- `References` contains documents created or updated by the DTM that day, including documents created in delegated work threads and handed off to the DTM. Do not list Knowledge-Agent-only changes.
 - Add a reference once, with a short description of the change.
 - `Open Questions` contains active uncertainties as plain bullets. Carry them
   forward until resolved. When answered, remove the question from the current

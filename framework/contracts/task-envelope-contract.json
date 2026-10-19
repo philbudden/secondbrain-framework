@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "updated": "2026-09-29",
+  "description": "Versioned provider-neutral task and completion envelope contract. It defines bounded work and return information; it does not dispatch workers, select models, or grant filesystem authority.",
+  "task_packet": {
+    "required_fields": ["version", "task_id", "objective", "task_class", "capability_profile", "context_volume", "risk", "allowed_paths", "write_authority", "required_tools", "validation", "acceptance_criteria", "escalate_when", "return_schema"],
+    "context_volume_values": ["none", "small", "bounded", "large"],
+    "risk_values": ["low", "moderate", "high", "consequential"],
+    "write_authority_values": ["none", "declared-paths", "dtm-session-only"],
+    "return_schema_values": ["completion-packet-v1"],
+    "path_rules": ["Paths are vault-relative, non-empty, and may not contain '..'.", "daily/** requires write_authority 'dtm-session-only'.", "A task with write_authority 'none' must not declare writable paths."],
+    "manual_transport": "A non-DTM worker uses the DTM Hand-Off skill to transport a completion packet to the active DTM thread; the packet does not authorise a Daily Note write."
+  },
+  "completion_packet": {
+    "required_fields": ["version", "task_id", "status", "outcomes", "artifacts", "verification", "uncertainty", "blockers", "follow_up", "daily_note_implications"],
+    "status_values": ["completed", "partial", "blocked", "failed"],
+    "dtm_handoff_projection": {
+      "outcomes": "Outcomes",
+      "daily_note_implications": "Daily Note implications for you to assess",
+      "verification": "Verification",
+      "blockers": "Open points"
+    },
+    "manual_transport": "When hand-off is required, send one concise DTM Hand-Off containing these fields and preserve the originating-thread checkpoint after delivery."
+  }
+}
