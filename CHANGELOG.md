@@ -3,6 +3,20 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
+## [2026-10-19]
+
+### Added
+
+- A PDF-to-Markdown skill for faithful, human-readable conversion from a freshly supplied source URL.
+
+### Changed
+
+- DTM task guidance now keeps incidental opportunities to polish, check, reformat, or extend work as context unless they are necessary to complete the agreed outcome.
+
+### Fixed
+
+- The task-envelope regression test now locates the tool in both the source-vault and published-framework layouts.
+
 ## [2026-10-11]
 
 ### Changed

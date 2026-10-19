@@ -6,7 +6,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = importlib.util.spec_from_file_location("task_envelopes", ROOT / "framework" / "tools" / "task_envelopes.py")
+TOOL = ROOT / "tools" / "task_envelopes.py"
+if not TOOL.exists():
+    TOOL = ROOT / "framework" / "tools" / "task_envelopes.py"
+SPEC = importlib.util.spec_from_file_location("task_envelopes", TOOL)
 assert SPEC and SPEC.loader
 task_envelopes = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(task_envelopes)
