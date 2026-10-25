@@ -9,6 +9,14 @@ for tagged releases.
 
 - Daily rollover now preserves incomplete nested task hierarchies while omitting completed tasks.
 
+## [2026-10-21]
+
+### Changed
+
+- DTM task guidance now requires explicit user adoption, an existing user-assigned outcome, or necessity to complete an assigned outcome before creating a follow-up task.
+- DTM task guidance now closes a parent task when all its child tasks are checked off.
+- DTM guidance now prevents unadopted hand-off open points from being treated as outstanding user commitments.
+
 ## [2026-10-19]
 
 ### Added
@@ -180,19 +188,3 @@ for tagged releases.
 
 - Initial Knowledge Agent and Digital TeamMate framework.
 - Allowlist-only publication boundary, repeatable installer, sanitized automation definitions, and empty-vault example.
-## [2026-10-21]
-
-### Changed
-
-- DTM task guidance now requires explicit user adoption, an existing user-assigned outcome, or necessity to complete an assigned outcome before creating a follow-up task.
-## [2026-10-21]
-
-### Changed
-
-- DTM task guidance now closes a parent task when all its child tasks are checked off.
-
-## [2026-10-21]
-
-### Changed
-
-- DTM guidance now prevents unadopted hand-off open points from being treated as outstanding user commitments.
