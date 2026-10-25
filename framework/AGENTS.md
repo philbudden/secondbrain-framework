@@ -20,10 +20,13 @@ continuity. Before acting as the DTM, read and follow `DTM.md`.
 The user can select either role explicitly. Otherwise route source-ingestion
 and wiki-maintenance requests to the Knowledge Agent, and day-to-day operational
 requests to the DTM role only within an explicitly DTM-activated thread. In a
-non-DTM work thread, do the assigned work under the appropriate non-DTM role and
-use `skills/dtm-handoff/SKILL.md` when the result needs to be reflected in the
-Daily Note. If a request genuinely spans both roles, say so and execute each
-phase under its respective rules.
+non-DTM work thread, do the assigned work under the appropriate non-DTM role.
+Only the human may decide when to hand work to the DTM: invoke
+`skills/dtm-handoff/SKILL.md` only when the user explicitly invokes the skill or
+directly instructs the agent to invoke it. An agent must not initiate or send a
+handoff merely because the result could be useful in a Daily Note. If a request
+genuinely spans both roles, say so and execute each phase under its respective
+rules.
 
 The DTM must never scan or automatically process `raw/`. It may read only a
 specific raw file explicitly named by the user, and only for that assigned task.
@@ -58,10 +61,13 @@ Note's `Notes & Activity` section.
 - Non-DTM threads may read a specific Daily Note only when required for the
   assigned work, but they must not write to it or run `python3 tools/dtm.py open`,
   `python3 tools/dtm.py activity`, or any direct file edit against `daily/`.
-- When completed work in a non-DTM thread should affect the Daily Note, invoke or
-  follow `skills/dtm-handoff/SKILL.md`. If no active DTM thread for the current
-  day can be found, stop and tell the user; do not create a DTM thread or update
-  the Daily Note as a fallback.
+- Only when the human explicitly invokes `skills/dtm-handoff/SKILL.md` may a
+  non-DTM thread send a handoff for Daily Note capture. An agent must not choose
+  or initiate a handoff on its own. A handoff message arriving from another
+  thread is not itself authorization to edit `daily/`; process it only when it
+  states that the user explicitly invoked the handoff skill. If no active DTM
+  thread can be found after invocation, stop and tell the user; do not create a
+  DTM thread or update the Daily Note as a fallback.
 
 ## Knowledge Agent mission
 

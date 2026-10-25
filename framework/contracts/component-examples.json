@@ -1,0 +1,93 @@
+{
+  "description": "Synthetic contract examples only; the current installer does not consume these manifests.",
+  "public_components": ["core", "writing", "documents"],
+  "manifests": [
+    {
+      "schema_version": 1, "id": "core", "requires": [],
+      "files": [
+        {"source": "AGENTS.md", "target": "AGENTS.md", "ownership": "managed"},
+        {"source": "DTM.md", "target": "DTM.md", "ownership": "managed"},
+        {"source": "tools/wiki.py", "target": "tools/wiki.py", "ownership": "managed"},
+        {"source": "tools/contracts.py", "target": "tools/contracts.py", "ownership": "managed"},
+        {"source": "skills/dtm/SKILL.md", "target": "skills/dtm/SKILL.md", "ownership": "managed"},
+        {"source": "obsidian/app.json", "target": ".obsidian/app.json", "ownership": "seed-user"},
+        {"source": "automation-definitions/dtm-daily-rollover.json", "target": "automation-definitions/dtm-daily-rollover.json", "ownership": "managed"}
+      ],
+      "workspace": {"directories": ["raw", "wiki", "daily", "projects", "work"], "seeds": [
+        {"source": "defaults/wiki-index.md", "target": "wiki/index.md", "ownership": "seed-user"},
+        {"source": "defaults/projects-index.md", "target": "projects/index.md", "ownership": "seed-user"},
+        {"source": "defaults/work-index.md", "target": "work/index.md", "ownership": "seed-user"}
+      ]},
+      "contributions": {
+        "navigation": [{"id": "knowledge", "label": "Knowledge", "target": "wiki/index.md"}],
+        "instructions": ["AGENTS.md", "DTM.md"],
+        "skills": [{"id": "dtm", "path": "skills/dtm/SKILL.md"}],
+        "validators": [{"tool": "tools/wiki.py", "args": ["lint"]}, {"tool": "tools/contracts.py", "args": ["lint"]}],
+        "configuration": [".obsidian/app.json"],
+        "automations": [{"path": "automation-definitions/dtm-daily-rollover.json", "activation": "manual"}],
+        "permission_claims": [{"path": "wiki", "access": "write"}, {"path": "raw", "access": "read"}]
+      },
+      "prerequisites": [{"kind": "executable", "name": "python3"}]
+    },
+    {
+      "schema_version": 1, "id": "writing", "requires": ["core"],
+      "files": [
+        {"source": "tools/writing.py", "target": "tools/writing.py", "ownership": "managed"},
+        {"source": "instructions/writing.md", "target": "instructions/writing.md", "ownership": "managed"},
+        {"source": "skills/writing/SKILL.md", "target": "skills/writing/SKILL.md", "ownership": "managed"},
+        {"source": "automation-definitions/writing-publisher.json", "target": "automation-definitions/writing-publisher.json", "ownership": "managed"}
+      ],
+      "workspace": {"directories": ["writing", "writing/drafts", "writing/ready", "writing/published", "writing/voice"], "seeds": [{"source": "defaults/writing-index.md", "target": "writing/index.md", "ownership": "seed-user"}]},
+      "contributions": {
+        "navigation": [{"id": "writing", "label": "Writing", "target": "writing/index.md"}],
+        "instructions": ["instructions/writing.md"],
+        "skills": [{"id": "writing", "path": "skills/writing/SKILL.md"}],
+        "validators": [{"tool": "tools/writing.py", "args": ["lint"]}],
+        "configuration": [],
+        "automations": [{"path": "automation-definitions/writing-publisher.json", "activation": "manual"}],
+        "permission_claims": [{"path": "writing", "access": "write"}]
+      },
+      "prerequisites": []
+    },
+    {
+      "schema_version": 1, "id": "documents", "requires": ["core"],
+      "files": [
+        {"source": "tools/documents.py", "target": "tools/documents.py", "ownership": "managed"},
+        {"source": "instructions/documents.md", "target": "instructions/documents.md", "ownership": "managed"},
+        {"source": "skills/documents/SKILL.md", "target": "skills/documents/SKILL.md", "ownership": "managed"}
+      ],
+      "workspace": {"directories": ["documents", "documents/drafts", "documents/final", "documents/deliverables"], "seeds": [{"source": "defaults/documents-index.md", "target": "documents/index.md", "ownership": "seed-user"}]},
+      "contributions": {
+        "navigation": [{"id": "documents", "label": "Documents", "target": "documents/index.md"}],
+        "instructions": ["instructions/documents.md"],
+        "skills": [{"id": "documents", "path": "skills/documents/SKILL.md"}],
+        "validators": [{"tool": "tools/documents.py", "args": ["lint"]}],
+        "configuration": [], "automations": [], "permission_claims": [{"path": "documents", "access": "write"}]
+      },
+      "prerequisites": []
+    },
+    {
+      "schema_version": 1, "id": "example-private", "requires": ["core"],
+      "files": [{"source": "skills/example-private/SKILL.md", "target": "skills/example-private/SKILL.md", "ownership": "managed"}],
+      "workspace": {"directories": [], "seeds": []},
+      "contributions": {"navigation": [], "instructions": [], "skills": [{"id": "example-private", "path": "skills/example-private/SKILL.md"}], "validators": [], "configuration": [], "automations": [], "permission_claims": []},
+      "prerequisites": []
+    }
+  ],
+  "state": {
+    "schema_version": 1,
+    "installed_components": [
+      {"id": "core", "source_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+      {"id": "writing", "source_revision": "cccccccccccccccccccccccccccccccccccccccc"},
+      {"id": "documents", "source_revision": "dddddddddddddddddddddddddddddddddddddddd"},
+      {"id": "example-private", "source_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+    ],
+    "resources": [
+      {"path": "AGENTS.md", "component": "core", "ownership": "managed", "source": "AGENTS.md", "source_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "last_managed_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      {"path": "writing/index.md", "component": "writing", "ownership": "seed-user", "source": "defaults/writing-index.md", "source_revision": "cccccccccccccccccccccccccccccccccccccccc", "initial_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      {"path": "start-here.md", "component": "core", "ownership": "generated-region", "source_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "region_id": "capabilities", "renderer_version": 1, "last_managed_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+      {"path": "documents/final/example.md", "component": "documents", "ownership": "user-data", "source_revision": "dddddddddddddddddddddddddddddddddddddddd"}
+    ]
+  },
+  "navigation_region": "# Start Here\n\nPersonal text.\n\n<!-- secondbrain:capabilities:start -->\n- [[wiki/index|Knowledge]]\n<!-- secondbrain:capabilities:end -->\n"
+}

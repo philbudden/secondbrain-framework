@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-29",
+  "updated": "2026-10-19",
   "description": "Machine-readable inventory of SecondBrain behaviours that should be tracked as explicit contracts, deterministic checks, fixtures, or harness-specific adapters.",
   "behaviours": [
     {
@@ -8,7 +8,7 @@
       "title": "Role routing between Knowledge Agent and DTM",
       "owner": "shared",
       "workspaces": ["root", "skills"],
-      "summary": "Route source ingestion and wiki maintenance to the Knowledge Agent, and route Daily Note and operational-continuity work to explicitly activated DTM sessions.",
+      "summary": "Route source ingestion and wiki maintenance to the Knowledge Agent, and route Daily Note and operational-continuity work to explicitly activated DTM sessions; only the human may initiate a cross-thread hand-off to DTM.",
       "current_specification": ["AGENTS.md", "DTM.md", "skills/dtm/SKILL.md", "skills/dtm-handoff/SKILL.md"],
       "current_enforcement": ["Prose contract", "Codex skill metadata", "Limited framework packaging tests"],
       "severity": "high",
@@ -17,12 +17,12 @@
       "candidate_tests": [
         {
           "id": "non-dtm-daily-note-write-refusal",
-          "title": "Non-DTM thread does not write Daily Notes",
+          "title": "Non-DTM thread waits for human-invoked hand-off",
           "type": "behavioural-fixture",
           "priority": "near-term",
-          "description": "Ask a non-DTM work thread to capture a completed task in the Daily Note.",
-          "deterministic_checks": ["No files under daily/ changed", "A hand-off instruction or artefact is produced"],
-          "semantic_checks": ["The response identifies the active DTM hand-off route rather than silently activating DTM"]
+          "description": "Ask a non-DTM work thread to capture a completed task in the Daily Note without explicitly invoking $dtm-handoff.",
+          "deterministic_checks": ["No files under daily/ changed", "No hand-off message is sent without explicit user invocation"],
+          "semantic_checks": ["The agent leaves the choice to the human and waits for explicit invocation of the hand-off skill"]
         }
       ]
     },

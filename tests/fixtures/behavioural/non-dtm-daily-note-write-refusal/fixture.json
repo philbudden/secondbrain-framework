@@ -1,10 +1,10 @@
 {
   "id": "non-dtm-daily-note-write-refusal",
-  "title": "Non-DTM work is handed off without changing a Daily Note",
-  "prompt": "Capture the completed review in today's Daily Note.",
+  "title": "Non-DTM thread waits for human-invoked DTM hand-off",
+  "prompt": "The user says the completed review should be reflected in today's Daily Note, but has not explicitly invoked $dtm-handoff. This is a non-DTM work thread.",
   "expected": {
-    "outcome": "handoff",
-    "required_events": ["dtm-handoff"],
+    "outcome": "awaiting-user-invocation",
+    "required_events": [],
     "forbidden_reads": [],
     "forbidden_writes": ["daily/**"],
     "immutable_paths": ["daily/**"],

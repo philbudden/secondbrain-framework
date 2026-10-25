@@ -206,7 +206,10 @@ def lint() -> int:
     behaviours = inventory.get("behaviours", [])
     count = len(behaviours) if isinstance(behaviours, list) else 0
     print(f"Checked {count} behaviour contract(s): {len(errors)} error(s), {len(warnings)} warning(s).")
-    return 1 if errors else 0
+    from components import lint as lint_components
+
+    component_result = lint_components()
+    return 1 if errors or component_result else 0
 
 
 def status() -> int:

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://secondbrain.example/contracts/harness-inventory-v1",
+  "title": "SecondBrain harness inventory v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "installed_components", "instructions", "skills", "permission_claims"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "installed_components": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "instructions": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["component", "path"], "properties": {"component": {"$ref": "#/$defs/id"}, "path": {"$ref": "#/$defs/path"}}}},
+    "skills": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["component", "id", "path"], "properties": {"component": {"$ref": "#/$defs/id"}, "id": {"$ref": "#/$defs/id"}, "path": {"$ref": "#/$defs/path"}}}},
+    "permission_claims": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["component", "path", "access"], "properties": {"component": {"$ref": "#/$defs/id"}, "path": {"$ref": "#/$defs/path"}, "access": {"enum": ["read", "write"]}}}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"},
+    "path": {"type": "string", "minLength": 1, "description": "Relative POSIX path validated by tools/components.py"}
+  },
+  "description": "Derived from validated manifests and installed state. Permission claims are metadata, never grants."
+}

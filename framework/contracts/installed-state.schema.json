@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://secondbrain.example/contracts/installed-state-v1",
+  "title": "SecondBrain installed state v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "installed_components", "resources"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "installed_components": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "source_revision"], "properties": {"id": {"type": "string"}, "source_revision": {"type": "string", "description": "Exact 40- or 64-digit source commit/hash"}}}},
+    "resources": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "component", "ownership", "source_revision"], "properties": {
+      "path": {"type": "string"}, "component": {"type": "string"}, "ownership": {"enum": ["managed", "seed-user", "generated-file", "generated-region", "user-data"]}, "source_revision": {"type": "string"},
+      "source": {"type": "string", "description": "Required for managed and seed-user resources; must equal the owning manifest mapping source. Omitted for generated and user data."},
+      "initial_sha256": {"type": "string"}, "last_managed_sha256": {"type": "string"}, "region_id": {"type": "string"}, "renderer_version": {"type": "integer", "minimum": 1}
+    }, "allOf": [{"if": {"properties": {"ownership": {"enum": ["managed", "seed-user"]}}, "required": ["ownership"]}, "then": {"required": ["source"]}, "else": {"not": {"required": ["source"]}}}]}}
+  },
+  "description": "Validated by tools/components.py. This contract records state only; it does not grant overwrite or deletion authority."
+}

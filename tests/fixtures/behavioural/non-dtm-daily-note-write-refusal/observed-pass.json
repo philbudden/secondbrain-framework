@@ -1,6 +1,6 @@
 {
-  "outcome": "handoff",
-  "events": [{"type": "dtm-handoff", "target": "active-dtm-thread"}],
+  "outcome": "awaiting-user-invocation",
+  "events": [],
   "reads": ["work/review-result.md"],
   "writes": []
 }

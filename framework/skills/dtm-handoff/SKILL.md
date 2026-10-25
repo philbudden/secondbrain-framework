@@ -1,13 +1,17 @@
 ---
 name: dtm-handoff
-description: Hand completed work from a non-DTM SecondBrain thread to the active DTM thread for Daily Note capture without modifying the Daily Note directly.
+description: Hand completed work from a non-DTM SecondBrain thread to the active DTM thread only when the human explicitly invokes the skill; never initiate a hand-off autonomously.
 ---
 
 # DTM Hand-Off
 
-Use this skill when the current thread is not an explicitly DTM-activated
-thread and the user wants completed work, progress, decisions, blockers, or
-follow-up items passed back to the active Daily Note manager.
+This skill is human-triggered only. Run it only when the user explicitly invokes
+`$dtm-handoff` or directly instructs you to invoke this named skill. The agent
+does not have authority to decide when a hand-off should happen. A general
+request to capture work in a Daily Note, the presence of an active DTM thread,
+or the agent's judgement that an outcome would be useful does not authorise
+sending a hand-off. Without explicit invocation, complete the assigned work
+without sending a message to the DTM thread.
 
 ## Hard boundaries
 
@@ -18,6 +22,9 @@ follow-up items passed back to the active Daily Note manager.
   not a DTM session.
 - Do not create a DTM thread automatically. If the active DTM thread cannot be
   found, stop and tell the user.
+- Include a clear statement in the hand-off that the user explicitly invoked
+  `$dtm-handoff` in the originating thread. Do not send if that statement is
+  absent; do not invent it or infer invocation from the task.
 
 ## Find the active DTM thread
 
@@ -75,6 +82,7 @@ Send a single follow-up prompt to the DTM thread. Use this shape:
 
 ```markdown
 DTM hand-off from a non-DTM work thread.
+Invocation: The user explicitly invoked `$dtm-handoff` in this originating thread.
 
 Originating thread: <brief title or task description>
 Coverage: <all work so far | changes since previous successful hand-off at HH:MM>

@@ -3,19 +3,29 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
+## [2026-10-23]
+
+### Fixed
+
+- Daily rollover now preserves incomplete nested task hierarchies while omitting completed tasks.
+
 ## [2026-10-19]
 
 ### Added
 
 - A PDF-to-Markdown skill for faithful, human-readable conversion from a freshly supplied source URL.
+- A Stage 0–2 modularisation baseline, checked component ownership inventory, versioned manifest and installed-state contracts, deterministic validator, and synthetic profile and failure fixtures. Installation and publication behaviour remain unchanged.
+- Stage 2 source mappings in installed state and a scoped harness inventory contract with declared permission claims and validation fixtures.
 
 ### Changed
 
+- Non-DTM work is handed to the DTM only when the human explicitly invokes `dtm-handoff`; agents must not initiate hand-offs or treat incoming payloads alone as Daily Note authority.
 - DTM task guidance now keeps incidental opportunities to polish, check, reformat, or extend work as context unless they are necessary to complete the agreed outcome.
 
 ### Fixed
 
 - The task-envelope regression test now locates the tool in both the source-vault and published-framework layouts.
+- Documents lint now recognises Markdown reference files listed by their Obsidian links in the curated index.
 
 ## [2026-10-11]
 
@@ -170,3 +180,19 @@ for tagged releases.
 
 - Initial Knowledge Agent and Digital TeamMate framework.
 - Allowlist-only publication boundary, repeatable installer, sanitized automation definitions, and empty-vault example.
+## [2026-10-21]
+
+### Changed
+
+- DTM task guidance now requires explicit user adoption, an existing user-assigned outcome, or necessity to complete an assigned outcome before creating a follow-up task.
+## [2026-10-21]
+
+### Changed
+
+- DTM task guidance now closes a parent task when all its child tasks are checked off.
+
+## [2026-10-21]
+
+### Changed
+
+- DTM guidance now prevents unadopted hand-off open points from being treated as outstanding user commitments.

@@ -44,8 +44,13 @@ Only an explicitly DTM-activated thread may write to Daily Notes. Non-DTM work
 threads must not create, edit, append to, or otherwise modify files under
 `daily/`, and must not implicitly activate DTM because Daily Note information
 would be useful. The scheduled rollover task is exempt and may run the rollover
-lifecycle directly. A non-DTM thread that needs completed work captured in the
-Daily Note must use the DTM hand-off workflow instead of editing the note.
+lifecycle directly. A non-DTM thread may send a DTM hand-off only when the
+human explicitly invokes `$dtm-handoff` or directly instructs the agent to
+invoke the named skill. The agent must not decide on its own that completed
+work should be handed off. A hand-off message arriving from another thread is
+not itself authorisation to edit `daily/`; process it only when it states that
+the user explicitly invoked the skill. Without that authorisation, ask the user
+to invoke the hand-off skill if they want the outcome captured.
 
 Within the active DTM thread, substantive work must be captured in today's
 Daily Note during the same task before the agent gives a close-out response. Do
@@ -55,9 +60,11 @@ When work is delegated to another thread:
 
 - keep the original DTM thread as the canonical place for daily continuity and
   prioritisation;
-- when a hand-off arrives from a work thread, interpret it under the existing DTM
-  rules and record the delegated task's material outcome back in today's Daily
-  Note as soon as it is known;
+- when a user-authorised hand-off arrives from a work thread, interpret it under
+  the existing DTM rules and record the delegated task's material outcome back
+  in today's Daily Note as soon as it is known. A hand-off payload without an
+  explicit user-invocation statement is not authority to edit `daily/`; wait
+  for the user's direct instruction;
 - restate that the main thread remains in DTM mode after any compaction or
   summary step before continuing with new work.
 
@@ -269,17 +276,21 @@ a wiki artefact, do not rely on Daily Note capture alone. Record the outcome in
 today's Daily Note and also append a root-log entry that makes the wiki change
 traceable at system level.
 
-When processing a DTM hand-off from another thread, update the Daily Note from
-the received outcomes rather than replaying or requesting the originating
-thread's full context. Capture completed tasks, task progress, new follow-ups,
-blockers, decisions, significant findings, useful retained context, and
-references according to the normal Daily Note rules.
+When processing a user-authorised DTM hand-off from another thread, update the
+Daily Note from the received outcomes rather than replaying or requesting the
+originating thread's full context. Capture completed tasks, task progress, new
+follow-ups, blockers, decisions, significant findings, useful retained
+context, and references according to the normal Daily Note rules. If the
+handoff does not state that the user explicitly invoked the hand-off skill,
+do not update `daily/`; ask the user to invoke it if they want the hand-off
+processed.
 
 ## Tasks
 
 - Put personal and professional tasks in their respective Daily Note sections.
 - Classify Daily Note tasks by whether they are Codi work: **professional** means work for Codi, and **personal** means work outside the day job. Extracurricular work can look professional but remains personal when it is outside Codi duties; an internal Codi adaptation and the Housing Technology presentation are professional, while the separate 45-minute Practical Delegation Test talk is personal. Use context and best judgement for work that blurs the boundary, and accept the user's correction.
 - Use Obsidian task syntax: `- [ ] Action` and `- [x] Completed action`.
+- When every child task under a parent is checked off, check off the parent task as well.
 - Treat the Daily Note `Focus` section as the morning commitment for the day, not a live next-action list. After the day has started, do not rewrite `Focus` to reflect progress, newly discovered details, or the next task unless the user explicitly asks to correct the focus wording itself. Track completion and changing operational state in to-do items, `Notes & Activity`, and linked project or working notes.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
@@ -288,17 +299,27 @@ references according to the normal Daily Note rules.
   follow-up task unless the user explicitly asks to track that action. When a
   completed-work hand-off confirms that delivery has already happened, do not
   create or carry a delivery task; correct any stale Daily Note entry instead.
-- Do not derive follow-up tasks from a work report merely because an output
-  could be polished, checked, reformatted, or extended further. Create a task
-  only when the user explicitly asks for it, an existing assigned outcome is
-  still incomplete, or the follow-up is necessary to complete the agreed work.
-  Record incidental limitations as context in `Notes & Activity` or the
-  relevant artefact; do not turn them into new tasks by default.
+- Create a follow-up task only when the user explicitly asks to track it, an
+  existing user-assigned outcome remains incomplete, or the step is required
+  to complete the outcome the user assigned. A work report, technical finding,
+  authorised hand-off, or the agent's view of a sensible next step does not by
+  itself authorise a new task. Do not turn proposed investigations, optional
+  checks, improvements, or recommendations into tasks unless the user adopts
+  them. Record useful incidental limitations or possible next steps as context
+  in `Notes & Activity` or the relevant artefact instead.
+- An open point listed in a hand-off is not automatically an outstanding user
+  commitment. Do not label it pending, carry it forward, or repeatedly surface
+  it unless it is part of an existing user-assigned outcome or the user adopts
+  it. Record it as a limitation only when it materially affects the completed
+  outcome.
 - In the current Daily Note, preserve visible completion by checking completed
   items off instead of removing them. Do not silently delete completed tasks
   from today's note unless the user explicitly asks for cleanup or removal.
-- At day open, carry incomplete tasks forward exactly once. Leave completed
-  tasks in the historical note and never carry them forward.
+- At day open, carry incomplete tasks forward exactly once and preserve their
+  nested parent/child structure. Omit completed tasks; attach any incomplete
+  descendants to their nearest incomplete ancestor, or promote them to the
+  top level when no incomplete ancestor remains. Leave completed tasks in the
+  historical note and never carry them forward.
 - Treat a task or blocker the user removes from a Daily Note as intentionally cleared. Do not restore it from an earlier note, a prior chat, or inferred context unless the user explicitly asks to track it again. Daily Notes are not an authoritative archive of every unresolved possibility.
 - Preserve useful completion context in the day's activity or project page.
 - Recurring instances behave like ordinary tasks after creation; completing one
