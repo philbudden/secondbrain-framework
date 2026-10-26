@@ -12,6 +12,7 @@
     {"source": "tools/dtm.py", "destination": "framework/tools/dtm.py"},
     {"source": "tools/workspaces.py", "destination": "framework/tools/workspaces.py"},
     {"source": "tools/contracts.py", "destination": "framework/tools/contracts.py"},
+    {"source": "tools/components.py", "destination": "framework/tools/components.py"},
     {"source": "tools/task_envelopes.py", "destination": "framework/tools/task_envelopes.py"},
     {"source": "tools/behavioural_fixtures.py", "destination": "framework/tools/behavioural_fixtures.py"},
     {"source": "tools/documents.py", "destination": "framework/tools/documents.py"},

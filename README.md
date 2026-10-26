@@ -33,8 +33,10 @@ After installation:
 1. Put a source directly in `raw/` and ask the Knowledge Agent to ingest it.
 2. Start a dedicated DTM thread with `$dtm`; only DTM-activated threads update
    Daily Notes directly.
-3. Use `dtm-handoff` from non-DTM work threads when completed work should be
-   reflected in the Daily Note.
+3. Invoke `$dtm-handoff` from a non-DTM work thread only when you, the human,
+   choose to pass outcomes to the DTM. Agents must not initiate or send a
+   hand-off on their own; an incoming hand-off is not Daily Note authority
+   unless it records your explicit invocation.
 4. Review `framework/automation-definitions/` and recreate only the automations
    appropriate for your host.
 

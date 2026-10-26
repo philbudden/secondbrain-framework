@@ -211,7 +211,7 @@ def lint() -> int:
 
     if REFERENCE.exists():
         for path in reference_files:
-            count = index_links.count(relative(path))
+            count = index_links.count(relative(path).removesuffix(".md"))
             if count == 0:
                 errors.append(f"{relative(path)}: missing from documents/index.md")
             elif count > 1:

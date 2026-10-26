@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://secondbrain.example/contracts/component-manifest-v1",
+  "title": "SecondBrain component manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "requires", "files", "workspace", "contributions", "prerequisites"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"$ref": "#/$defs/id"},
+    "requires": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "files": {"type": "array", "items": {"$ref": "#/$defs/file"}},
+    "workspace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["directories", "seeds"],
+      "properties": {
+        "directories": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+        "seeds": {"type": "array", "items": {"$ref": "#/$defs/seed"}}
+      }
+    },
+    "contributions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["navigation", "instructions", "skills", "validators", "configuration", "automations", "permission_claims"],
+      "properties": {
+        "navigation": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "label", "target"], "properties": {"id": {"$ref": "#/$defs/id"}, "label": {"type": "string", "minLength": 1}, "target": {"$ref": "#/$defs/path"}}}},
+        "instructions": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+        "skills": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "path"], "properties": {"id": {"$ref": "#/$defs/id"}, "path": {"$ref": "#/$defs/path"}}}},
+        "validators": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["tool", "args"], "properties": {"tool": {"$ref": "#/$defs/path"}, "args": {"type": "array", "items": {"type": "string", "minLength": 1}}}}},
+        "configuration": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/path"}},
+        "automations": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "activation"], "properties": {"path": {"$ref": "#/$defs/path"}, "activation": {"const": "manual"}}}},
+        "permission_claims": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "access"], "properties": {"path": {"$ref": "#/$defs/path"}, "access": {"enum": ["read", "write"]}}}}
+      }
+    },
+    "prerequisites": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["kind", "name"], "properties": {"kind": {"enum": ["executable", "python-module"]}, "name": {"type": "string", "minLength": 1}}}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"},
+    "path": {"type": "string", "minLength": 1, "description": "Relative POSIX path; tools/components.py additionally rejects traversal, backslashes, reserved roots and symlinks."},
+    "file": {"type": "object", "additionalProperties": false, "required": ["source", "target", "ownership"], "properties": {"source": {"$ref": "#/$defs/path"}, "target": {"$ref": "#/$defs/path"}, "ownership": {"enum": ["managed", "seed-user"]}}},
+    "seed": {"type": "object", "additionalProperties": false, "required": ["source", "target", "ownership"], "properties": {"source": {"$ref": "#/$defs/path"}, "target": {"$ref": "#/$defs/path"}, "ownership": {"const": "seed-user"}}}
+  }
+}

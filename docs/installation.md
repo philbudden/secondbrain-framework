@@ -47,9 +47,11 @@ cp -R skills/resolve-document-items "${CODEX_HOME:-$HOME/.codex}/skills/"
 Start a thread in the installed vault and invoke `$dtm`. That thread remains in
 DTM mode until `$end-dtm` or an explicit permanent switch to the Knowledge
 Agent. The DTM activation names the thread `DTM YYYY-MM-DD`, and only that
-explicitly activated DTM thread should update Daily Notes directly. Use
-`$dtm-handoff` from other work threads to send completed outcomes back to the
-active DTM thread.
+explicitly activated DTM thread should update Daily Notes directly. Invoke
+`$dtm-handoff` from another work thread only when you, the human, choose to
+send completed outcomes to the active DTM thread. Agents must not initiate or
+send a hand-off on their own, and the receiving DTM requires the hand-off to
+state that you explicitly invoked the skill.
 
 Invoke `$voice` after representative writing has reached `ready/` or
 `published/`, or after representative internal documents have reached

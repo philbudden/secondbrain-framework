@@ -43,9 +43,11 @@ DTM does not scan the raw inbox, and the Knowledge Agent never writes the Daily
 Note activity section.
 
 Non-DTM work threads may perform specialised execution with their own model and
-context, but they do not write Daily Notes directly. When their outcomes should
-be captured, they use the `dtm-handoff` skill to send a concise incremental
-hand-off to the active DTM thread named `DTM YYYY-MM-DD`.
+context, but they do not write Daily Notes directly. Only the human decides
+whether to hand outcomes to the DTM and explicitly invokes the `dtm-handoff`
+skill. Agents must not choose when to send one; a hand-off message alone does
+not authorise a Daily Note edit unless it records the user's explicit
+invocation.
 
 ## Production boundary
 

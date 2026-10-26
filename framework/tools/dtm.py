@@ -33,7 +33,9 @@ AREA_SECTION = {
     "professional": "Professional To-Do",
     "schedule": "Schedule & Recurring",
 }
-TASK_RE = re.compile(r"^- \[ \] .+$", re.M)
+TASK_LINE_RE = re.compile(
+    r"^(?P<indent>[ \t]*)- \[(?P<state>[ xX])\] (?P<body>.+)$"
+)
 QUESTION_RE = re.compile(r"^- (?!\[[ xX]\] )(?!<!--)(.+)$", re.M)
 WIKI_LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -102,7 +104,35 @@ def section(text: str, heading: str) -> str:
 
 
 def incomplete_tasks(text: str, heading: str) -> list[str]:
-    return TASK_RE.findall(section(text, heading))
+    carried: list[str] = []
+    # Each stack entry stores source indentation and the depth it has in the
+    # carried task tree. Completed tasks are omitted, while unfinished children
+    # stay nested under the nearest unfinished ancestor.
+    stack: list[tuple[int, int | None]] = []
+
+    for line in section(text, heading).splitlines():
+        match = TASK_LINE_RE.match(line)
+        if not match:
+            continue
+
+        source_indent = len(match.group("indent").expandtabs(4))
+        while stack and stack[-1][0] >= source_indent:
+            stack.pop()
+
+        carried_parent_depth = next(
+            (depth for _, depth in reversed(stack) if depth is not None),
+            None,
+        )
+        carried_depth: int | None = None
+        if match.group("state") == " ":
+            carried_depth = (
+                0 if carried_parent_depth is None else carried_parent_depth + 1
+            )
+            carried.append(f"{'  ' * carried_depth}- [ ] {match.group('body')}")
+
+        stack.append((source_indent, carried_depth))
+
+    return carried
 
 
 def carryable_schedule_tasks(text: str) -> list[str]:
