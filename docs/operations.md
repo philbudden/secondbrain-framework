@@ -33,8 +33,14 @@ commitment. Do not label it pending, carry it forward, or repeatedly surface it
 unless it is part of an existing user-assigned outcome or the user adopts it.
 Record it as a limitation only when it materially affects the completed outcome.
 
-When every child task under a parent is checked off, check off the parent task
-as well.
+Whenever you check off a task, immediately inspect its parent. If all of the
+parent's child tasks are checked off, check off the parent too, then repeat the
+same check for each ancestor up to the top-level task. Do not defer this
+reconciliation until later in the task or until the user points out the stale
+parent. Before closing out Daily Note edits, verify that no parent has all
+children checked while remaining unchecked. Keep independent follow-ups as
+separate sibling or top-level tasks instead of nesting them under a completed
+child.
 
 Specialised work can run in separate non-DTM threads. Those threads must not
 edit Daily Notes directly. Only the human decides whether to hand their

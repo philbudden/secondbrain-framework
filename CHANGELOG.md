@@ -3,6 +3,12 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
+## [2026-10-29]
+
+### Changed
+
+- DTM task handling now requires immediate recursive parent completion checks after checking off a child, plus a final stale-parent review before closing out Daily Note edits.
+
 ## [2026-10-23]
 
 ### Fixed
