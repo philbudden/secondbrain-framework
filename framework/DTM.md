@@ -290,7 +290,14 @@ processed.
 - Put personal and professional tasks in their respective Daily Note sections.
 - Classify Daily Note tasks by whether they are Codi work: **professional** means work for Codi, and **personal** means work outside the day job. Extracurricular work can look professional but remains personal when it is outside Codi duties; an internal Codi adaptation and the Housing Technology presentation are professional, while the separate 45-minute Practical Delegation Test talk is personal. Use context and best judgement for work that blurs the boundary, and accept the user's correction.
 - Use Obsidian task syntax: `- [ ] Action` and `- [x] Completed action`.
-- When every child task under a parent is checked off, check off the parent task as well.
+- Whenever you check off a task, immediately inspect its parent. If all of the
+  parent's child tasks are checked off, check off the parent too, then repeat
+  the same check for each ancestor up to the top-level task. Do not defer this
+  reconciliation until later in the task or until the user points out the
+  stale parent. Before closing out Daily Note edits, verify that no parent has
+  all children checked while remaining unchecked. Keep independent follow-ups
+  as separate sibling or top-level tasks instead of nesting them under a
+  completed child.
 - Treat the Daily Note `Focus` section as the morning commitment for the day, not a live next-action list. After the day has started, do not rewrite `Focus` to reflect progress, newly discovered details, or the next task unless the user explicitly asks to correct the focus wording itself. Track completion and changing operational state in to-do items, `Notes & Activity`, and linked project or working notes.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
@@ -307,6 +314,15 @@ processed.
   checks, improvements, or recommendations into tasks unless the user adopts
   them. Record useful incidental limitations or possible next steps as context
   in `Notes & Activity` or the relevant artefact instead.
+- Do not infer a user-owned follow-up from an agent's permissions or execution
+  boundary. In particular, an agent being unable to push, publish, merge, or
+  perform another external action does not mean that the user must do it. Record
+  that action as a task only when the user explicitly assigned it or it is an
+  established incomplete user-owned outcome; otherwise describe the actual state
+  in activity context without creating a task. Before carrying forward a task
+  originating from a hand-off, verify that it reflects a user-assigned outcome
+  and that the outcome is still incomplete; remove it from the current note when
+  the user says it was not requested or was completed outside the agent workflow.
 - An open point listed in a hand-off is not automatically an outstanding user
   commitment. Do not label it pending, carry it forward, or repeatedly surface
   it unless it is part of an existing user-assigned outcome or the user adopts
