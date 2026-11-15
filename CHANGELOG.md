@@ -3,6 +3,14 @@
 This project follows Keep a Changelog principles and uses semantic versioning
 for tagged releases.
 
+## [2026-11-11]
+
+### Changed
+
+- DTM contracts, the Daily Note template, and rollover guidance now require Focus items to come from top-level tasks, keeping subtasks out of Focus.
+- DTM task guidance now treats user status updates as context by default and prohibits creating tasks from them without clear user authority or an existing assigned outcome.
+- DTM task guidance now preserves existing task wording and hierarchy during status updates; progress belongs in Notes & Activity, and subtasks require explicit user direction.
+
 ## [2026-10-29]
 
 ### Changed

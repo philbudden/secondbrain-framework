@@ -299,6 +299,7 @@ processed.
   as separate sibling or top-level tasks instead of nesting them under a
   completed child.
 - Treat the Daily Note `Focus` section as the morning commitment for the day, not a live next-action list. After the day has started, do not rewrite `Focus` to reflect progress, newly discovered details, or the next task unless the user explicitly asks to correct the focus wording itself. Track completion and changing operational state in to-do items, `Notes & Activity`, and linked project or working notes.
+- Every `Focus` item must correspond to a top-level task in the Daily Note's To-Do hierarchy. Never put a nested subtask in `Focus`; use its nearest top-level parent task instead.
 - Make tasks concrete and outcome-oriented. Link the relevant project when one
   exists.
 - Treat normal delivery of an output as part of completing its task: sharing,
@@ -314,6 +315,21 @@ processed.
   checks, improvements, or recommendations into tasks unless the user adopts
   them. Record useful incidental limitations or possible next steps as context
   in `Notes & Activity` or the relevant artefact instead.
+- Treat user-provided updates in the active DTM thread as reports by default,
+  including updates about work in progress or completed, changed circumstances,
+  open issues, upcoming events, and possible next steps. Capture the reported
+  outcome in `Notes & Activity`; update relevant existing artefacts only to
+  reflect information the user supplied or the state of existing assigned
+  work. Do not create a To-Do, Focus item, reminder, recurring task, or new
+  artefact action item from the update alone. Words such as “next”, “pending”,
+  “still open”, or “should” do not by themselves authorise a task. When the
+  update concerns an existing task, record its progress, blocker, delay, or
+  other status in `Notes & Activity`; do not rewrite, rename, annotate, split,
+  move, or otherwise restructure the task, and do not add subtasks unless the
+  user explicitly asks. Preserve the task's exact wording, identifier, and
+  parent-child structure. When the user reports completion, record it in
+  `Notes & Activity` and, if needed, change only the completion checkbox. If
+  task authority is unclear, record context only and leave task lists unchanged.
 - Do not infer a user-owned follow-up from an agent's permissions or execution
   boundary. In particular, an agent being unable to push, publish, merge, or
   perform another external action does not mean that the user must do it. Record
@@ -433,7 +449,9 @@ The scheduled lifecycle runs at 00:01 in the user's local timezone. It should:
    or task. Do not bundle unrelated work into one focus line, even when the
    second item is smaller, adjacent, or non-urgent. Put that follow-through in
    the appropriate to-do section unless it genuinely deserves its own focus
-   slot.
+   slot. Every focus item must correspond to a top-level task in the Daily
+   Note's To-Do hierarchy; never put a nested subtask in `Focus`, and use its
+   nearest top-level parent task instead.
 5. Keep the mechanically carried personal/professional tasks and open questions;
    correct duplicates or categorisation errors if necessary.
 6. Confirm scheduled and recurring instances are relevant for the date.
