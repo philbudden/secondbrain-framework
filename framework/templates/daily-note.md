@@ -16,7 +16,7 @@ tags:
 
 ## Focus
 
-<!-- Each numbered focus item must cover one distinct project or task only. -->
+<!-- Each numbered focus item must match a top-level To-Do item, never a nested subtask, and cover one distinct project or task only. -->
 
 ## Blockers
 
